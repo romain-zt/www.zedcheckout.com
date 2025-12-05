@@ -395,12 +395,23 @@
     }
   },
   "footer": {
-    "brand": "🔎 Chercheur Indépendant E-commerce · Diagnostic · Étude de vos options",
-    "copyright": "© 2025 ZED TECH - Recherche indépendante e-commerce",
-    "disclaimer": "ZED TECH est un prestataire de services indépendant. Shopify et autres plateformes e-commerce sont des marques déposées de leurs propriétaires respectifs. Nous aidons les marchands à optimiser leur checkout pendant leur phase de croissance.",
+    "brand": "ZedCheckout · Canal conversationnel e-commerce",
+    "copyright": "© 2025 ZedCheckout - Propulsé par ZED TECH",
+    "disclaimer": "ZedCheckout est un produit édité par ZED TECH. Shopify et autres plateformes e-commerce sont des marques déposées de leurs propriétaires respectifs.",
+    "links": {
+      "product": "Produit",
+      "pricing": "Tarifs",
+      "docs": "Documentation",
+      "support": "Support",
+      "legal": "Mentions légales",
+      "privacy": "Confidentialité",
+      "terms": "CGV"
+    },
     "legal": {
-      "capital": "au capital de 10 000€",
-      "address": "149 avenue du Maine, 75014 Paris"
+      "entity": "ZED TECH - EURL au capital de 10 000€",
+      "siret": "SIRET: 99324412800019",
+      "address": "149 avenue du Maine, 75014 Paris",
+      "contact": "contact@zedcheckout.com"
     }
   },
   "capture": {

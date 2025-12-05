@@ -395,12 +395,23 @@
     }
   },
   "footer": {
-    "brand": "🔎 Independent E-commerce Researcher · Diagnosis · Study of Your Options",
-    "copyright": "© 2025 ZED TECH - Independent e-commerce research",
-    "disclaimer": "ZED TECH is an independent service provider. Shopify and other e-commerce platforms are trademarks of their respective owners. We help merchants optimize their checkout during their growth phase.",
+    "brand": "ZedCheckout · Conversational commerce channel",
+    "copyright": "© 2025 ZedCheckout - Powered by ZED TECH",
+    "disclaimer": "ZedCheckout is a product published by ZED TECH. Shopify and other e-commerce platforms are registered trademarks of their respective owners.",
+    "links": {
+      "product": "Product",
+      "pricing": "Pricing",
+      "docs": "Documentation",
+      "support": "Support",
+      "legal": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    },
     "legal": {
-      "capital": "with capital of €10,000",
-      "address": "149 avenue du Maine, 75014 Paris"
+      "entity": "ZED TECH - EURL with capital of €10,000",
+      "siret": "SIRET: 99324412800019",
+      "address": "149 avenue du Maine, 75014 Paris",
+      "contact": "contact@zedcheckout.com"
     }
   },
   "capture": {

@@ -13,31 +13,23 @@ export default function Footer() {
         </div>
         
         <div className="footer-links">
-          <a
-            href="https://linkedin.com/in/romain-piveteau"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            LinkedIn
-          </a>
-          <a
-            href="https://piveteau.digital"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Portfolio
-          </a>
-          <a href="mailto:romain@zedtech.fr">
-            romain@zedtech.fr
-          </a>
+          <a href="#product">{t('links.product')}</a>
+          <a href="#pricing">{t('links.pricing')}</a>
+          <a href="#docs">{t('links.docs')}</a>
+          <a href="#support">{t('links.support')}</a>
+          <a href="#legal">{t('links.legal')}</a>
+          <a href="#privacy">{t('links.privacy')}</a>
+          <a href="#terms">{t('links.terms')}</a>
         </div>
 
         <div className="footer-legal">
+          <p>{t('legal.entity')}</p>
+          <p>{t('legal.siret')}</p>
+          <p>{t('legal.address')}</p>
           <p>
-            ZED TECH - EURL {t('legal.capital')} - SIRET: 99324412800019
-          </p>
-          <p>
-            {t('legal.address')}
+            <a href={`mailto:${t('legal.contact')}`}>
+              {t('legal.contact')}
+            </a>
           </p>
         </div>
 
