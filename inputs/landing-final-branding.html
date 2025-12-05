@@ -1,0 +1,3526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO -->
+    <title>Checkout Booster - Doublez vos conversions sans Shopify Plus</title>
+    <meta name="description" content="Optimisez votre checkout Shopify et doublez vos conversions. Sans payer €27,600/an. Sans recruter. Rejoignez la waitlist.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Branding colors from banner */
+            --beige: #F5EDE4;
+            --salmon: #FFC9B9;
+            --navy: #1E2A47;
+            --navy-light: #2D3E5F;
+            --text-dark: #1A1A1A;
+            --text-gray: #5A5A5A;
+            --accent: #E88B7A;
+            --white: #FFFFFF;
+            --light-gray: #F9F9F9;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--white);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Alert Bar */
+        .alert-bar {
+            background: var(--navy);
+            color: white;
+            text-align: center;
+            padding: 12px 20px;
+            font-weight: 500;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--salmon);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-bar strong {
+            color: var(--salmon);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--beige) 0%, var(--salmon) 100%);
+            padding: 60px 24px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.3) 100%);
+            pointer-events: none;
+        }
+
+        .hero-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .hero-visual {
+            position: relative;
+            z-index: 1;
+            animation: slideInRight 0.8s ease-out 0.2s backwards;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(30, 42, 71, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .hero-image:hover {
+            transform: translateY(-8px);
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: var(--navy);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+            animation: fadeIn 0.6s ease-out 0.3s backwards;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--navy);
+            letter-spacing: -0.02em;
+        }
+
+        .hero .subtitle {
+            font-size: 18px;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            color: var(--text-dark);
+            opacity: 0.85;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-top: 32px;
+        }
+
+        .hero-cta .btn {
+            animation: scaleIn 0.6s ease-out 0.6s backwards;
+        }
+
+        /* Section Commune */
+        section {
+            padding: 80px 24px;
+        }
+
+        .section-header {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--navy);
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        /* Section 2 - État des Lieux (3 Choix) */
+        .choices-section {
+            background: var(--light-gray);
+        }
+
+        .choices-intro {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            text-align: center;
+        }
+
+        .choices-comparison {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+        }
+
+        .comparison-image {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 1024px) {
+            .choices-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        .choice-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 32px;
+            border: 2px solid #E5E5E5;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        }
+
+        .choice-card.highlighted {
+            border-color: var(--accent);
+            box-shadow: 0 8px 32px rgba(232, 139, 122, 0.15);
+        }
+
+        .choice-number {
+            width: 48px;
+            height: 48px;
+            background: var(--beige);
+            color: var(--navy);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .choice-card:hover .choice-number {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .choice-card.highlighted .choice-number {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 16px rgba(232, 139, 122, 0.3);
+        }
+
+        .choice-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--navy);
+            line-height: 1.3;
+        }
+
+        .choice-card p {
+            color: var(--text-gray);
+            line-height: 1.7;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        .choice-highlight {
+            background: var(--beige);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: auto;
+            font-size: 14px;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .choice-card.highlighted .choice-highlight {
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            color: white;
+        }
+
+        /* Section 3 - Notice / Anti-Vente */
+        .notice-section {
+            background: var(--navy);
+            color: white;
+        }
+
+        .notice-box {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .notice-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: var(--salmon);
+        }
+
+        .notice-list {
+            text-align: left;
+            margin: 32px 0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 32px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notice-item {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 17px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            line-height: 1.6;
+        }
+
+        .notice-item:last-child {
+            border-bottom: none;
+        }
+
+        .notice-item::before {
+            content: '✗';
+            color: var(--salmon);
+            font-weight: 700;
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .notice-or {
+            margin: 24px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--salmon);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .notice-cta {
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 36px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: var(--salmon);
+            color: var(--navy);
+            box-shadow: 0 4px 16px rgba(232, 139, 122, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(232, 139, 122, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--navy);
+            border: 2px solid var(--navy);
+        }
+
+        .btn-secondary:hover {
+            background: var(--navy);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .hero .btn-secondary {
+            color: white;
+            border-color: white;
+        }
+
+        .hero .btn-secondary:hover {
+            background: white;
+            color: var(--navy);
+        }
+
+        /* Section 4 - Story/Emotions */
+        .story-section {
+            background: white;
+        }
+
+        .story-content {
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .story-text {
+            order: 1;
+        }
+
+        .story-visual {
+            order: 2;
+        }
+
+        .story-image {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .story-image:hover {
+            transform: scale(1.03);
+        }
+
+        .story-intro {
+            font-size: 17px;
+            color: var(--text-dark);
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .story-highlight {
+            background: linear-gradient(135deg, var(--beige), var(--salmon));
+            padding: 40px;
+            border-radius: 16px;
+            margin: 40px 0;
+            border-left: 6px solid var(--accent);
+            transition: transform 0.3s ease;
+        }
+
+        .story-highlight:hover {
+            transform: translateY(-4px);
+        }
+
+        .story-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 24px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .metric-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: var(--text-gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Process Section */
+        .process-section {
+            background: white;
+            padding: 80px 24px;
+        }
+
+        .process-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .process-timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .process-step {
+            position: relative;
+            padding: 0 0 48px 80px;
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            transition: transform 0.3s ease;
+        }
+
+        .process-step:hover {
+            transform: translateX(8px);
+        }
+
+        .process-step:last-child {
+            padding-bottom: 0;
+        }
+
+        .process-step::before {
+            content: '';
+            position: absolute;
+            left: 27px;
+            top: 56px;
+            bottom: -8px;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--salmon), transparent);
+        }
+
+        .process-step:last-child::before {
+            display: none;
+        }
+
+        .process-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            box-shadow: 0 8px 24px rgba(232, 139, 122, 0.3);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .process-step:hover .process-number {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(232, 139, 122, 0.4);
+        }
+
+        .process-content {
+            flex: 1;
+        }
+
+        .process-step h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .process-step p {
+            color: var(--text-gray);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .process-highlight {
+            display: inline-block;
+            background: var(--beige);
+            color: var(--navy);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .process-cta {
+            text-align: center;
+            margin-top: 48px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--beige), var(--salmon));
+            border-radius: 16px;
+        }
+
+        .process-cta h3 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 16px;
+        }
+
+        .process-cta p {
+            font-size: 17px;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+        }
+
+        /* ROI Calculator Section */
+        .roi-section {
+            background: linear-gradient(135deg, var(--light-gray), var(--beige));
+            padding: 80px 24px;
+        }
+
+        .roi-calculator {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            background: white;
+            padding: 48px;
+            border-radius: 20px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+        }
+
+        .roi-setup {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .roi-setup-label {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+
+        .roi-setup-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .roi-setup-option {
+            cursor: pointer;
+        }
+
+        .roi-setup-option input[type="radio"] {
+            display: none;
+        }
+
+        .option-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 32px;
+            background: var(--light-gray);
+            border: 3px solid transparent;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .roi-setup-option input[type="radio"]:checked + .option-card {
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            border-color: var(--accent);
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(232, 139, 122, 0.3);
+        }
+
+        .roi-setup-option input[type="radio"]:checked + .option-card .option-title,
+        .roi-setup-option input[type="radio"]:checked + .option-card .option-fees {
+            color: white;
+        }
+
+        .roi-setup-option:hover .option-card {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .option-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .option-fees {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        .roi-input {
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .roi-input label {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+
+        .roi-input-wrapper {
+            position: relative;
+            display: inline-block;
+            max-width: 350px;
+            width: 100%;
+        }
+
+        .roi-input input {
+            width: 100%;
+            padding: 20px 60px 20px 24px;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--navy);
+            border: 3px solid var(--accent);
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, white, rgba(232, 139, 122, 0.02));
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .roi-input input:hover {
+            border-color: var(--salmon);
+            box-shadow: 0 8px 24px rgba(232, 139, 122, 0.2);
+        }
+
+        .roi-input input:focus {
+            outline: none;
+            border-color: var(--salmon);
+            box-shadow: 0 0 0 5px rgba(232, 139, 122, 0.15), 0 8px 24px rgba(232, 139, 122, 0.2);
+            transform: scale(1.02);
+        }
+
+        .roi-input .currency {
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+            pointer-events: none;
+        }
+
+        .roi-input-hint {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        .roi-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .roi-card {
+            background: var(--light-gray);
+            padding: 32px 24px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .roi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .roi-card.highlight {
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            border-color: var(--accent);
+        }
+
+        .roi-card.highlight .roi-label,
+        .roi-card.highlight .roi-value {
+            color: white;
+        }
+
+        .roi-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .roi-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .roi-value.success {
+            color: #10B981;
+        }
+
+        .roi-divider {
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .roi-divider::before,
+        .roi-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--accent));
+        }
+
+        .roi-divider::before {
+            left: 0;
+        }
+
+        .roi-divider::after {
+            right: 0;
+            background: linear-gradient(to left, transparent, var(--accent));
+        }
+
+        .roi-divider span {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            color: white;
+            border-radius: 50%;
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 48px;
+            box-shadow: 0 4px 16px rgba(232, 139, 122, 0.3);
+        }
+
+        .roi-conversion-section {
+            margin: 40px 0;
+        }
+
+        .roi-conversion-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--navy);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .roi-conversion-subtitle {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .roi-conversion-slider {
+            background: var(--beige);
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+        }
+
+        .roi-conversion-slider label {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .slider-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 0 20px;
+            margin-bottom: 48px;
+        }
+
+        .slider-track {
+            position: absolute;
+            left: 20px;
+            right: 100px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .slider-marker {
+            position: absolute;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .marker-dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 3px solid var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .slider-marker:hover .marker-dot {
+            transform: scale(1.3);
+            border-color: var(--salmon);
+            box-shadow: 0 4px 12px rgba(232, 139, 122, 0.4);
+        }
+
+        .slider-wrapper input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, 
+                white 0%, 
+                white 40%, 
+                rgba(232, 139, 122, 0.1) 40%,
+                rgba(232, 139, 122, 0.1) 60%,
+                rgba(232, 139, 122, 0.2) 60%,
+                rgba(232, 139, 122, 0.3) 100%);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        .slider-wrapper input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(232, 139, 122, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .slider-wrapper input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(232, 139, 122, 0.6);
+        }
+
+        .slider-wrapper input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(232, 139, 122, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .slider-wrapper input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(232, 139, 122, 0.6);
+        }
+
+        .slider-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .slider-labels {
+            position: relative;
+            width: 100%;
+            height: 50px;
+            padding: 0 20px;
+        }
+
+        .slider-labels span {
+            position: absolute;
+            transform: translateX(-50%);
+            font-size: 13px;
+            color: var(--navy);
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.3;
+            white-space: nowrap;
+        }
+
+        .slider-labels span small {
+            display: block;
+            font-size: 11px;
+            color: var(--text-gray);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .roi-conversion-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .roi-summary {
+            background: var(--light-gray);
+            padding: 40px;
+            border-radius: 16px;
+            margin-top: 40px;
+        }
+
+        .roi-summary h3 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--navy);
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .roi-summary-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .roi-summary-table th {
+            background: var(--navy);
+            color: white;
+            padding: 16px 12px;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .roi-summary-table th:first-child {
+            text-align: left;
+        }
+
+        .roi-summary-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #E5E5E5;
+            font-size: 15px;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .roi-summary-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .roi-summary-table tbody tr:hover {
+            background: rgba(232, 139, 122, 0.02);
+        }
+
+        .roi-summary-table tr.total-row {
+            border-top: 3px solid var(--accent);
+        }
+
+        .roi-summary-table tr.total-row td {
+            background: linear-gradient(135deg, var(--beige), rgba(255, 201, 185, 0.3));
+            font-size: 17px;
+            font-weight: 700;
+            padding: 20px 12px;
+            border-bottom: none;
+        }
+
+        .roi-summary-table tr.total-row td:last-child {
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            color: white;
+            font-size: 20px;
+        }
+
+        .roi-note {
+            background: var(--beige);
+            padding: 20px 24px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--navy);
+            border-left: 4px solid var(--accent);
+            margin-top: 32px;
+        }
+
+        .roi-comparison {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 48px;
+            border-radius: 20px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+        }
+
+        .roi-comparison h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .roi-comparison table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .roi-comparison th {
+            background: var(--navy);
+            color: white;
+            padding: 18px 16px;
+            font-weight: 700;
+            font-size: 15px;
+            text-align: center;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .roi-comparison th:first-child {
+            text-align: left;
+            background: var(--navy);
+        }
+
+        .roi-comparison th:last-child {
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            position: relative;
+        }
+
+        .roi-comparison th:last-child::after {
+            content: '⭐ Recommandé';
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .roi-comparison td {
+            padding: 18px 16px;
+            border-bottom: 1px solid #E5E5E5;
+            font-size: 15px;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .roi-comparison tr:last-child td {
+            border-bottom: none;
+        }
+
+        .roi-comparison td:first-child {
+            font-weight: 600;
+            color: var(--navy);
+            text-align: left;
+            background: rgba(30, 42, 71, 0.02);
+        }
+
+        .roi-comparison td:not(:first-child) {
+            font-weight: 600;
+        }
+
+        .roi-comparison td:last-child {
+            background: rgba(232, 139, 122, 0.08);
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .roi-comparison tbody tr:hover {
+            background: rgba(232, 139, 122, 0.02);
+        }
+
+        .roi-comparison tbody tr:hover td:last-child {
+            background: rgba(232, 139, 122, 0.12);
+        }
+
+        .roi-comparison tr.highlight-row {
+            border-top: 2px solid var(--accent);
+        }
+
+        .roi-comparison tr.highlight-row td {
+            background: var(--beige);
+            font-weight: 700;
+            padding: 22px 16px;
+            font-size: 15px;
+        }
+
+        .roi-comparison tr.highlight-row td:first-child {
+            background: var(--beige);
+        }
+
+        .roi-comparison tr.highlight-row td:last-child {
+            background: linear-gradient(135deg, var(--salmon), var(--accent));
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 16px rgba(232, 139, 122, 0.3);
+        }
+
+        /* Social Proof */
+        .social-proof {
+            background: white;
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .social-proof-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .social-proof h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 32px;
+        }
+
+        .social-proof-images {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            opacity: 0.6;
+            filter: grayscale(100%);
+            transition: all 0.3s ease;
+        }
+
+        .social-proof-images:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        .social-proof-images img {
+            height: 40px;
+            width: auto;
+        }
+
+        /* Pricing / Offres */
+        .offers-section {
+            background: var(--light-gray);
+        }
+
+        .offers-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 32px;
+            margin-top: 60px;
+            max-width: 1140px;
+            margin-left: auto;
+            margin-right: auto;
+            align-items: start;
+        }
+
+        .offers-stack {
+            position: relative;
+            width: 340px;
+            min-height: 600px;
+            cursor: pointer;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .offers-stack::before {
+            content: '2 autres options';
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--navy);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 10;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+        }
+
+        .offers-stack.expanded::before {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .offers-stack::after {
+            content: '👉 Cliquez pour déplier';
+            position: absolute;
+            bottom: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            opacity: 0.8;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+            animation: pulseHint 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseHint {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.4; }
+        }
+
+        .offers-stack.expanded::after {
+            opacity: 0;
+        }
+
+        .offers-stack.expanded {
+            width: 720px;
+        }
+
+        @media (max-width: 1200px) {
+            .offers-stack.expanded {
+                width: 680px;
+            }
+
+            .offers-stack.expanded .offer-card:nth-child(2) {
+                left: 348px;
+            }
+        }
+
+        .offers-stack .offer-card {
+            position: absolute;
+            width: 340px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .offers-stack .offer-card:first-child {
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .offers-stack .offer-card:nth-child(2) {
+            top: 20px;
+            left: 20px;
+            z-index: 1;
+            opacity: 0.4;
+            transform: scale(0.96) rotate(-1deg);
+            filter: blur(2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .offers-stack:hover .offer-card:nth-child(2) {
+            opacity: 0.7;
+            filter: blur(1px);
+            transform: scale(0.97) rotate(-0.5deg);
+        }
+
+        .offers-stack.expanded .offer-card:first-child {
+            left: 0;
+            z-index: 2;
+        }
+
+        .offers-stack.expanded .offer-card:nth-child(2) {
+            left: 372px;
+            top: 0;
+            z-index: 2;
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0px);
+        }
+
+        .offer-featured-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: start;
+        }
+
+        .offer-featured-wrapper .offer-card {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        @media (max-width: 1024px) {
+            .offers-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .offers-stack {
+                width: 100%;
+                position: relative;
+                min-height: auto;
+                cursor: default;
+                display: flex;
+                flex-direction: column-reverse;
+            }
+
+            .offers-stack::before,
+            .offers-stack::after {
+                display: none;
+            }
+
+            .offers-stack .offer-card {
+                position: relative;
+                width: 100%;
+                margin-bottom: 24px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            }
+
+            .offers-stack .offer-card:last-child {
+                margin-bottom: 0;
+            }
+
+            .offers-stack .offer-card:first-child {
+                top: auto;
+                left: auto;
+            }
+
+            .offers-stack .offer-card:nth-child(2) {
+                top: auto;
+                left: auto;
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0px);
+            }
+
+            .offers-stack.expanded {
+                width: 100%;
+            }
+
+            .offers-stack.expanded .offer-card:nth-child(2) {
+                left: auto;
+            }
+
+            .offer-featured-wrapper {
+                order: -1;
+            }
+        }
+
+        .offer-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 32px;
+            border: 2px solid #E5E5E5;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .offer-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .offer-card.featured {
+            border-color: var(--accent);
+            border-width: 3px;
+            box-shadow: 0 16px 48px rgba(232, 139, 122, 0.2);
+            background: linear-gradient(to bottom, #ffffff, #fffbf9);
+        }
+
+        .offer-card.featured:hover {
+            box-shadow: 0 24px 64px rgba(232, 139, 122, 0.3);
+        }
+
+        .offer-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .offer-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--navy);
+            line-height: 1.3;
+        }
+
+        .offer-card .description {
+            color: var(--text-gray);
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .offer-content {
+            flex: 1;
+        }
+
+        .offer-pricing {
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 2px solid #F0F0F0;
+        }
+
+        .price-label {
+            font-size: 11px;
+            color: var(--text-gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .price {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 8px;
+            line-height: 1.1;
+            white-space: nowrap;
+            display: block;
+        }
+
+        .price-note {
+            color: var(--text-gray);
+            font-size: 12px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .price-note strong {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .offer-features {
+            list-style: none;
+            margin: 24px 0;
+        }
+
+        .offer-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 15px;
+            color: var(--text-gray);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .offer-features li:hover {
+            padding-left: 8px;
+            color: var(--navy);
+        }
+
+        .offer-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .offer-features li:hover::before {
+            transform: scale(1.3);
+        }
+
+        .offer-features li:last-child {
+            border-bottom: none;
+        }
+
+        /* Waitlist Form */
+        .waitlist-section {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: white;
+        }
+
+        .waitlist-content {
+            max-width: 650px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .waitlist-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .waitlist-subtitle {
+            font-size: 19px;
+            margin-bottom: 48px;
+            opacity: 0.9;
+        }
+
+        .waitlist-form {
+            background: white;
+            padding: 48px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--navy);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E5E5E5;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            transition: border-color 0.3s ease;
+            background: white;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(232, 139, 122, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 18px 32px;
+            font-size: 18px;
+            margin-top: 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(232, 139, 122, 0.3);
+        }
+
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-submit:hover::after {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn-submit:hover {
+            background: var(--navy);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px rgba(30, 42, 71, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+
+        .form-note {
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--navy);
+            color: white;
+            padding: 60px 24px 40px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-brand {
+            font-size: 18px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--salmon);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.7;
+        }
+
+        .footer-copyright {
+            margin-top: 32px;
+            opacity: 0.5;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .story-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            section {
+                padding: 60px 20px;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .process-section {
+                padding: 60px 20px;
+            }
+
+            .process-step {
+                padding: 0 0 40px 64px;
+            }
+
+            .process-number {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+
+            .process-step::before {
+                left: 23px;
+            }
+
+            .process-step h3 {
+                font-size: 19px;
+            }
+
+            .process-step p {
+                font-size: 15px;
+            }
+
+            .process-highlight {
+                font-size: 13px;
+                padding: 3px 10px;
+            }
+
+            .process-cta {
+                padding: 32px 24px;
+            }
+
+            .process-cta h3 {
+                font-size: 22px;
+            }
+
+            .process-cta p {
+                font-size: 15px;
+            }
+
+            .roi-calculator {
+                padding: 32px 24px;
+            }
+
+            .roi-input-wrapper {
+                max-width: 100%;
+            }
+
+            .roi-input input {
+                font-size: 28px;
+                padding: 16px 50px 16px 20px;
+            }
+
+            .roi-input .currency {
+                font-size: 24px;
+                right: 20px;
+            }
+
+            .roi-results {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .roi-card {
+                padding: 24px 20px;
+            }
+
+            .roi-value {
+                font-size: 32px;
+            }
+
+            .roi-comparison {
+                padding: 32px 20px;
+                overflow-x: auto;
+            }
+
+            .roi-comparison table {
+                font-size: 12px;
+            }
+
+            .roi-comparison th,
+            .roi-comparison td {
+                padding: 12px 8px;
+            }
+
+            .roi-setup-options {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .option-card {
+                min-width: auto;
+            }
+
+            .roi-conversion-slider {
+                padding: 24px 20px;
+            }
+
+            .roi-conversion-results {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .slider-wrapper {
+                padding: 0 10px;
+            }
+
+            .slider-track {
+                left: 10px;
+                right: 80px;
+            }
+
+            .slider-labels {
+                padding: 0 10px;
+            }
+
+            .slider-labels span {
+                font-size: 11px;
+            }
+
+            .slider-labels span small {
+                font-size: 10px;
+            }
+
+            .marker-dot {
+                width: 10px;
+                height: 10px;
+                border-width: 2px;
+            }
+
+            .roi-summary {
+                padding: 24px 16px;
+                overflow-x: auto;
+            }
+
+            .roi-summary-table {
+                font-size: 12px;
+                min-width: 600px;
+            }
+
+            .roi-summary-table th,
+            .roi-summary-table td {
+                padding: 12px 8px;
+            }
+
+            .hero {
+                padding: 40px 20px 60px;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+                line-height: 1.2;
+            }
+
+            .hero .subtitle {
+                font-size: 16px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .hero-cta .btn {
+                width: 100%;
+                padding: 16px 32px;
+            }
+
+            .section-title {
+                font-size: 28px;
+                line-height: 1.2;
+            }
+
+            .section-subtitle {
+                font-size: 16px;
+            }
+
+            .alert-bar {
+                font-size: 12px;
+                padding: 10px 16px;
+            }
+
+            .choices-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .choice-card {
+                padding: 32px 24px;
+            }
+
+            .choices-comparison {
+                padding: 20px;
+                margin-bottom: 40px;
+            }
+
+            .story-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .story-text {
+                order: 2;
+            }
+
+            .story-visual {
+                order: 1;
+            }
+
+            .story-intro {
+                font-size: 16px;
+            }
+
+            .story-metrics {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .metric {
+                padding: 20px 16px;
+            }
+
+            .metric-value {
+                font-size: 32px;
+            }
+
+            .metric-label {
+                font-size: 11px;
+            }
+
+            .story-highlight {
+                padding: 32px 24px;
+            }
+
+            .waitlist-form {
+                padding: 32px 20px;
+            }
+
+            .waitlist-title {
+                font-size: 30px;
+            }
+
+            .waitlist-subtitle {
+                font-size: 16px;
+                margin-bottom: 32px;
+            }
+
+            .btn {
+                padding: 15px 28px;
+                font-size: 15px;
+            }
+
+            .btn-submit {
+                padding: 16px;
+                font-size: 16px;
+            }
+
+            .offer-card {
+                padding: 32px 24px;
+            }
+
+            .offer-card h3 {
+                font-size: 22px;
+            }
+
+            .price {
+                font-size: 28px;
+            }
+
+            .price-label {
+                font-size: 10px;
+            }
+
+            .price-note {
+                font-size: 11px;
+            }
+
+            .footer-links {
+                gap: 20px;
+            }
+
+            .notice-title {
+                font-size: 26px;
+            }
+
+            .notice-item {
+                font-size: 15px;
+            }
+
+            .notice-list {
+                padding: 24px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 26px;
+            }
+
+            .hero .subtitle {
+                font-size: 15px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .process-step {
+                padding: 0 0 36px 56px;
+            }
+
+            .process-number {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+
+            .process-step::before {
+                left: 21px;
+            }
+
+            .process-step h3 {
+                font-size: 18px;
+            }
+
+            .process-step p {
+                font-size: 14px;
+            }
+
+            .process-cta h3 {
+                font-size: 20px;
+            }
+
+            .process-cta p {
+                font-size: 14px;
+            }
+
+            .roi-calculator {
+                padding: 24px 16px;
+            }
+
+            .roi-input label {
+                font-size: 16px;
+            }
+
+            .roi-input input {
+                font-size: 24px;
+                padding: 14px 45px 14px 16px;
+            }
+
+            .roi-input .currency {
+                font-size: 20px;
+                right: 16px;
+            }
+
+            .roi-input-hint {
+                font-size: 13px;
+            }
+
+            .roi-label {
+                font-size: 12px;
+            }
+
+            .roi-value {
+                font-size: 28px;
+            }
+
+            .roi-note {
+                font-size: 14px;
+                padding: 16px 20px;
+            }
+
+            .roi-comparison {
+                padding: 24px 16px;
+            }
+
+            .roi-comparison h3 {
+                font-size: 22px;
+            }
+
+            .roi-comparison table {
+                font-size: 11px;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .roi-comparison th,
+            .roi-comparison td {
+                padding: 10px 6px;
+            }
+
+            .roi-conversion-title {
+                font-size: 22px;
+            }
+
+            .roi-conversion-subtitle {
+                font-size: 14px;
+            }
+
+            .roi-conversion-slider label {
+                font-size: 16px;
+            }
+
+            .slider-value {
+                font-size: 28px;
+                min-width: 70px;
+            }
+
+            .slider-wrapper {
+                padding: 0 5px;
+                gap: 12px;
+            }
+
+            .slider-track {
+                left: 5px;
+                right: 70px;
+            }
+
+            .slider-labels {
+                padding: 0 5px;
+            }
+
+            .slider-labels span {
+                font-size: 10px;
+            }
+
+            .slider-labels span small {
+                font-size: 9px;
+            }
+
+            .marker-dot {
+                width: 8px;
+                height: 8px;
+                border-width: 2px;
+            }
+
+            .slider-value {
+                font-size: 24px;
+                min-width: 60px;
+            }
+
+            .roi-summary h3 {
+                font-size: 22px;
+            }
+
+            .roi-summary-table {
+                font-size: 11px;
+            }
+
+            .roi-summary-table th,
+            .roi-summary-table td {
+                padding: 10px 6px;
+            }
+
+            .roi-summary-table tr.total-row td {
+                font-size: 14px;
+                padding: 16px 6px;
+            }
+
+            .roi-summary-table tr.total-row td:last-child {
+                font-size: 16px;
+            }
+
+            .story-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .social-proof-images {
+                gap: 24px;
+            }
+
+            .social-proof-images img {
+                height: 30px;
+            }
+
+            .price {
+                font-size: 26px;
+            }
+
+            .price-label {
+                font-size: 10px;
+            }
+
+            .price-note {
+                font-size: 11px;
+            }
+
+            .notice-title {
+                font-size: 22px;
+            }
+
+            .notice-item {
+                font-size: 14px;
+            }
+
+            .waitlist-title {
+                font-size: 26px;
+            }
+
+            .waitlist-subtitle {
+                font-size: 15px;
+            }
+
+            .offer-card h3 {
+                font-size: 20px;
+            }
+
+            .choice-card h3 {
+                font-size: 20px;
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 16px;
+                padding: 13px 14px;
+            }
+
+            .btn-submit {
+                padding: 15px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Alert Bar -->
+    <div class="alert-bar">
+        🚀 Phase 0 - Rejoignez la waitlist | <strong>50 premières places à -40%</strong>
+    </div>
+
+    <!-- SECTION 1 - HERO (Orienté problème, inclusif) -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <span class="hero-tag">🔎 Chercheur-Développeur · Diagnostic & Options</span>
+                
+                <h1>Doublez vos conversions sans payer Shopify Plus</h1>
+                
+                <p class="subtitle">
+                    Sortez le checkout de Shopify. Gardez tout ce qui fonctionne. 
+                    Propriété totale. Sans recruter. Sans y passer des mois.
+                </p>
+
+                <div class="hero-cta">
+                    <a href="#waitlist" class="btn btn-primary">Rejoindre la Waitlist</a>
+                    <a href="#story" class="btn btn-secondary">Voir comment ça marche</a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <img src="https://placehold.co/600x500/1E2A47/FFC9B9?text=Checkout+Optimization" 
+                     alt="Checkout Optimization Dashboard" 
+                     class="hero-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2 - ÉTAT DES LIEUX (3 Choix) -->
+    <section class="choices-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">3 options s'offrent à vous aujourd'hui</h2>
+                <p class="section-subtitle">
+                    Chaque PME e-commerce entre €50K et €800K/an CA se pose la même question : 
+                    comment optimiser sans tout casser ?
+                </p>
+            </div>
+
+            <div class="choices-comparison">
+                <img src="https://placehold.co/800x300/1E2A47/FFC9B9?text=Shopify+Standard+vs+Plus+vs+Custom+Checkout" 
+                     alt="Comparaison des options" 
+                     class="comparison-image">
+            </div>
+
+            <div class="choices-grid">
+                <!-- Choix 1 -->
+                <div class="choice-card">
+                    <div class="choice-number">1</div>
+                    <h3>Ne rien changer</h3>
+                    <p>
+                        Vous restez sur Shopify Standard. Checkout verrouillé. 67-82% d'abandons de panier. 
+                        Vous continuez à investir en pub pour compenser les conversions perdues.
+                    </p>
+                    <div class="choice-highlight">
+                        📅 On se revoit dans 6-12 mois ?
+                    </div>
+                </div>
+
+                <!-- Choix 2 -->
+                <div class="choice-card">
+                    <div class="choice-number">2</div>
+                    <h3>Passer sur Shopify Plus</h3>
+                    <p>
+                        €27,600/an (€2,300/mois). Engagement 3 ans. Vous débloquez le checkout custom. 
+                        Les conversions augmentent. Break even à 12 mois si tout se passe bien.
+                    </p>
+                    <div class="choice-highlight">
+                        ⚠️ Mais il faudra repayer €27,600 l'année suivante, et celle d'après...
+                    </div>
+                </div>
+
+                <!-- Choix 3 - Highlighted -->
+                <div class="choice-card highlighted">
+                    <div class="choice-number">3</div>
+                    <h3>Sortir le checkout de Shopify</h3>
+                    <p>
+                        Vous gardez Shopify pour tout ce qui marche (catalogue, paiements, gestion). 
+                        Mais vous sortez le checkout. Setup unique. Propriété totale. Optimisation illimitée.
+                    </p>
+                    <div class="choice-highlight">
+                        ✨ Sans y passer des mois. Sans recruter. Sans chercher un prestataire.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3 - NOTICE / ANTI-VENTE -->
+    <section class="notice-section">
+        <div class="container">
+            <div class="notice-box">
+                <h2 class="notice-title">La suite ne va pas vous intéresser si...</h2>
+                
+                <div class="notice-list">
+                    <div class="notice-item">Votre CA est en dessous de €50K/an</div>
+                    <div class="notice-item">Votre site reçoit moins de 1,000 visiteurs/mois</div>
+                    
+                    <div class="notice-or">OU</div>
+                    
+                    <div class="notice-item">Votre taux de conversion vous satisfait déjà</div>
+                    <div class="notice-item">Vous êtes déjà sur Shopify Plus et content</div>
+                </div>
+
+                <p style="font-size: 18px; margin-top: 32px; opacity: 0.9;">
+                    Si vous correspondez à ces critères, arrêtez-vous là. Notre solution n'est pas faite pour vous.
+                </p>
+
+                <div class="notice-cta">
+                    <p style="font-size: 16px; margin-bottom: 24px; opacity: 0.8;">
+                        Vous avez un doute sur votre situation ?
+                    </p>
+                    <a href="#quiz" class="btn btn-primary">Remplir le diagnostic (2 min)</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4 - STORY / ÉMOTIONS -->
+    <section class="story-section" id="story">
+        <div class="container">
+            <div class="story-content">
+                <div class="section-header">
+                    <h2 class="section-title">Si vous lisez ici, sachez que j'étais dans le même cas</h2>
+                </div>
+
+                <div class="story-grid">
+                    <div class="story-text">
+                <p class="story-intro">
+                    Il y a 18 mois, un partenaire stagnait. CA correct, trafic qualifié, bons produits. 
+                    Mais impossible de passer un palier. Le checkout était le maillon faible.
+                </p>
+
+                <p class="story-intro">
+                    Shopify Plus ? Trop cher. Rester sur Standard ? Frustrant. Migrer complètement ? 
+                    Trop risqué, trop long, trop complexe.
+                </p>
+
+                        <p class="story-intro" style="font-weight: 700; color: var(--accent);">
+                            💡 On a sorti uniquement le checkout. Gardé tout le reste de Shopify. 
+                            Setup en 9 jours. Propriété totale du code.
+                        </p>
+                    </div>
+
+                    <div class="story-visual">
+                        <img src="https://placehold.co/600x450/F5EDE4/1E2A47?text=Before+%26+After+Analytics" 
+                             alt="Résultats avant et après" 
+                             class="story-image">
+                    </div>
+                </div>
+
+                <div class="story-highlight">
+                    <p style="font-size: 19px; margin-bottom: 24px; color: var(--navy); font-weight: 600;">
+                        Résultats mesurés après 3 mois :
+                    </p>
+
+                    <div class="story-metrics">
+                        <div class="metric">
+                            <span class="metric-value">+40%</span>
+                            <span class="metric-label">Conversions</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">6.5%</span>
+                            <span class="metric-label">Avant</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">9.1%</span>
+                            <span class="metric-label">Après</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="story-intro" style="margin-top: 40px; text-align: center; font-size: 20px;">
+                    Même trafic, même budget pub, <strong style="color: var(--accent);">+40% de CA</strong>. 
+                    Sans payer €27,600/an. Avec contrôle total pour continuer à optimiser.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL PROOF -->
+    <section class="social-proof">
+        <div class="container">
+            <div class="social-proof-content">
+                <h3>Ils nous font confiance</h3>
+                <div class="social-proof-images">
+                    <img src="https://placehold.co/120x40/CCCCCC/666666?text=Brand+1" alt="Client 1">
+                    <img src="https://placehold.co/120x40/CCCCCC/666666?text=Brand+2" alt="Client 2">
+                    <img src="https://placehold.co/120x40/CCCCCC/666666?text=Brand+3" alt="Client 3">
+                    <img src="https://placehold.co/120x40/CCCCCC/666666?text=Brand+4" alt="Client 4">
+                    <img src="https://placehold.co/120x40/CCCCCC/666666?text=Brand+5" alt="Client 5">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROCESS SECTION -->
+    <section class="process-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Comment ça se passe concrètement ?</h2>
+                <p class="section-subtitle">
+                    Un process simple et transparent. Vous savez exactement où vous allez.
+                </p>
+            </div>
+
+            <div class="process-container">
+                <div class="process-timeline">
+                    <!-- Étape 1 -->
+                    <div class="process-step">
+                        <div class="process-number">1</div>
+                        <div class="process-content">
+                            <h3>Premier contact : on voit si ça fit</h3>
+                            <p>
+                                Un appel de 10 minutes pour comprendre votre situation, vos objectifs, 
+                                et voir si notre approche correspond à vos besoins.
+                            </p>
+                            <span class="process-highlight">⏱️ 10 minutes · Sans engagement</span>
+                        </div>
+                    </div>
+
+                    <!-- Étape 2 -->
+                    <div class="process-step">
+                        <div class="process-number">2</div>
+                        <div class="process-content">
+                            <h3>Session de diagnostic approfondi</h3>
+                            <p>
+                                Si on valide qu'on peut vous aider : on prévoit 45 minutes pour récupérer 
+                                toutes les infos nécessaires (analytics, trafic, stack technique, parcours client...).
+                            </p>
+                            <span class="process-highlight">⏱️ 45 min (renouvelable 1x si besoin)</span>
+                        </div>
+                    </div>
+
+                    <!-- Étape 3 -->
+                    <div class="process-step">
+                        <div class="process-number">3</div>
+                        <div class="process-content">
+                            <h3>On fait l'audit de votre côté</h3>
+                            <p>
+                                Vous ne faites rien. On analyse vos données, on identifie les points de friction, 
+                                on calcule le potentiel d'optimisation, on prépare les recommandations.
+                            </p>
+                            <span class="process-highlight">✓ Vous n'avez rien à faire</span>
+                        </div>
+                    </div>
+
+                    <!-- Étape 4 -->
+                    <div class="process-step">
+                        <div class="process-number">4</div>
+                        <div class="process-content">
+                            <h3>Vous recevez l'audit complet</h3>
+                            <p>
+                                Dans les 48h : audit détaillé avec diagnostic précis, opportunités chiffrées, 
+                                et plan d'action recommandé selon votre situation.
+                            </p>
+                            <span class="process-highlight">📊 Livraison sous 48h</span>
+                        </div>
+                    </div>
+
+                    <!-- Étape 5 -->
+                    <div class="process-step">
+                        <div class="process-number">5</div>
+                        <div class="process-content">
+                            <h3>On débriefe ensemble (optionnel)</h3>
+                            <p>
+                                10-20 minutes pour répondre à vos questions sur l'audit, clarifier les points techniques, 
+                                et voir si vous voulez passer à l'étape suivante.
+                            </p>
+                            <span class="process-highlight">💬 Q&R · Aucune pression</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="process-cta">
+                    <h3>Prêt à voir ce que vous laissez sur la table ?</h3>
+                    <p>Rejoignez la waitlist Phase 0 · Audit offert · Réponse sous 48h</p>
+                    <a href="#waitlist" class="btn btn-primary">Rejoindre la Waitlist</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OFFRES WAITLIST -->
+    <section class="offers-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Quelle solution correspond à votre situation ?</h2>
+                <p class="section-subtitle">
+                    3 options selon votre CA. Rejoignez la waitlist Phase 0 pour -40% + audit offert
+                </p>
+            </div>
+
+            <div class="offers-grid">
+                <!-- Stack des 2 premières offres -->
+                <div class="offers-stack" id="offersStack">
+                    <!-- Offre 1 - Full Migration (Plus cher) -->
+                <div class="offer-card">
+                        <div class="offer-content">
+                            <h3>Full Migration</h3>
+                            <p class="description">Pour PME €600K-800K+ CA</p>
+                    
+                    <ul class="offer-features">
+                                <li>Plateforme custom complète</li>
+                                <li>Migration données totale</li>
+                                <li>Propriété code + infrastructure</li>
+                                <li>Optimisation continue</li>
+                                <li>6 mois support inclus</li>
+                    </ul>
+                        </div>
+
+                        <div class="offer-pricing">
+                            <div class="price-label">Sur demande</div>
+                            <div class="price">12&nbsp;000€</div>
+                            <p class="price-note"><strong>✓ Audit offert</strong> en Phase 0</p>
+                    <a href="#waitlist" class="btn btn-primary" style="width: 100%;">Rejoindre la Waitlist</a>
+                        </div>
+                </div>
+
+                    <!-- Offre 2 - SaaB (Moyen) -->
+                    <div class="offer-card">
+                        <div class="offer-content">
+                    <h3>SaaB - Shopify as a Backend</h3>
+                    <p class="description">Pour PME €300K-600K/an CA</p>
+                    
+                    <ul class="offer-features">
+                        <li>Tout du Checkout Booster</li>
+                        <li>Frontend custom complet</li>
+                        <li>Backend Shopify (catalogue, paiements)</li>
+                        <li>Optimisation progressive</li>
+                        <li>3 mois support inclus</li>
+                    </ul>
+                        </div>
+
+                        <div class="offer-pricing">
+                            <div class="price-label">Sur demande</div>
+                            <div class="price">6&nbsp;000€</div>
+                            <p class="price-note"><strong>✓ Audit offert</strong> en Phase 0</p>
+                    <a href="#waitlist" class="btn btn-primary" style="width: 100%;">Rejoindre la Waitlist</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Offre 3 - Checkout Booster (Featured) -->
+                <div class="offer-featured-wrapper">
+                    <div class="offer-card featured">
+                        <div class="offer-badge">Recommandé</div>
+                        <div class="offer-content">
+                            <h3>Instant Checkout Booster</h3>
+                            <p class="description">Pour PME €50K-300K/an CA</p>
+                    
+                    <ul class="offer-features">
+                                <li>Checkout custom optimisé</li>
+                                <li>Intégration à votre Shopify actuel</li>
+                                <li>A/B testing configuré</li>
+                                <li>Formation de votre équipe</li>
+                                <li>1 mois support inclus</li>
+                    </ul>
+                        </div>
+
+                        <div class="offer-pricing">
+                            <div class="price-label">Setup unique</div>
+                            <div class="price">1&nbsp;990€</div>
+                            <p class="price-note"><strong>✓ Audit offert</strong> en Phase 0</p>
+                    <a href="#waitlist" class="btn btn-primary" style="width: 100%;">Rejoindre la Waitlist</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI Calculator Section -->
+<section class="roi-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Le Checkout Booster se rembourse automatiquement</h2>
+            <p class="section-subtitle">
+                Économisez 1,5% à 2% sur chaque transaction + Augmentez vos conversions de 30-40%.<br>
+                Même sans amélioration de conversions, l'économie sur les frais rembourse votre investissement.
+            </p>
+        </div>
+
+        <div class="roi-calculator">
+            <div class="roi-setup">
+                <label class="roi-setup-label">Votre setup actuel :</label>
+                <div class="roi-setup-options">
+                    <label class="roi-setup-option">
+                        <input type="radio" name="setup" value="shopify-payments" checked>
+                        <span class="option-card">
+                            <span class="option-title">Shopify Payments</span>
+                            <span class="option-fees">2,95% + 0,30€</span>
+                        </span>
+                    </label>
+                    <label class="roi-setup-option">
+                        <input type="radio" name="setup" value="stripe">
+                        <span class="option-card">
+                            <span class="option-title">Stripe via Shopify</span>
+                            <span class="option-fees">3,4% + 0,25€</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="roi-input">
+                <label>Votre GMV annuel actuel</label>
+                <div class="roi-input-wrapper">
+                    <input type="number" id="gmvInput" value="150000" step="10000" min="0">
+                    <span class="currency">€</span>
+                </div>
+                <div class="roi-input-hint">💡 Modifiez le montant pour voir l'impact</div>
+            </div>
+
+            <div class="roi-results">
+                <div class="roi-card">
+                    <div class="roi-label">Frais Shopify actuels (2%)</div>
+                    <div class="roi-value" id="shopifyFees">€3,000</div>
+                </div>
+
+                <div class="roi-card highlight">
+                    <div class="roi-label">Économie annuelle avec Checkout Booster</div>
+                    <div class="roi-value" id="savings">€3,000</div>
+                </div>
+
+                <div class="roi-card">
+                    <div class="roi-label">ROI sur 3 ans (frais uniquement)</div>
+                    <div class="roi-value success" id="roi3years">+€7,010</div>
+                </div>
+            </div>
+
+            <div class="roi-divider">
+                <span>+</span>
+            </div>
+
+            <div class="roi-conversion-section">
+                <h3 class="roi-conversion-title">Maintenant ajoutons l'impact des conversions</h3>
+                <p class="roi-conversion-subtitle">
+                    En moyenne, nos clients augmentent leurs conversions de 30% à 40% grâce au checkout optimisé
+                </p>
+
+                <div class="roi-conversion-slider">
+                    <label>Augmentation de conversion estimée :</label>
+                    <div class="slider-container">
+                        <div class="slider-wrapper">
+                            <input type="range" id="conversionInput" min="0" max="50" value="30" step="5" list="conversion-markers">
+                            <datalist id="conversion-markers">
+                                <option value="0"></option>
+                                <option value="20"></option>
+                                <option value="30"></option>
+                                <option value="50"></option>
+                            </datalist>
+                            <div class="slider-track">
+                                <div class="slider-marker" style="left: 0%;">
+                                    <div class="marker-dot"></div>
+                                </div>
+                                <div class="slider-marker" style="left: 40%;">
+                                    <div class="marker-dot"></div>
+                                </div>
+                                <div class="slider-marker" style="left: 60%;">
+                                    <div class="marker-dot"></div>
+                                </div>
+                                <div class="slider-marker" style="left: 100%;">
+                                    <div class="marker-dot"></div>
+                                </div>
+                            </div>
+                            <div class="slider-value">
+                                <span id="conversionDisplay">30</span>%
+                            </div>
+                        </div>
+                        <div class="slider-labels">
+                            <span style="left: 0%;">Irréaliste<br><small>0%</small></span>
+                            <span style="left: 40%;">Conservateur<br><small>20%</small></span>
+                            <span style="left: 60%;">Réaliste<br><small>30%</small></span>
+                            <span style="left: 100%;">Optimiste<br><small>50%</small></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="roi-conversion-results">
+                    <div class="roi-card">
+                        <div class="roi-label">CA additionnel année 1</div>
+                        <div class="roi-value success" id="additionalRevenue">+€45,000</div>
+                    </div>
+
+                    <div class="roi-card">
+                        <div class="roi-label">Profit estimé (marge 30%)</div>
+                        <div class="roi-value success" id="additionalProfit">+€13,500</div>
+                    </div>
+
+                    <div class="roi-card highlight">
+                        <div class="roi-label">ROI Total Année 1</div>
+                        <div class="roi-value" id="totalROI">+€15,835</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="roi-summary">
+                <h3>💰 Récapitulatif ROI sur 3 ans</h3>
+                <table class="roi-summary-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Année 1</th>
+                            <th>Année 2</th>
+                            <th>Année 3</th>
+                            <th>Total 3 ans</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Économie frais</td>
+                            <td id="savingsY1">€2,325</td>
+                            <td id="savingsY2">€2,325</td>
+                            <td id="savingsY3">€2,325</td>
+                            <td id="savingsTotal">€6,975</td>
+                        </tr>
+                        <tr>
+                            <td>Profit conversions (marge 30%)</td>
+                            <td id="profitY1">€13,500</td>
+                            <td id="profitY2">€13,500</td>
+                            <td id="profitY3">€13,500</td>
+                            <td id="profitTotal">€40,500</td>
+                        </tr>
+                        <tr>
+                            <td>Investissement initial</td>
+                            <td>-€2,990</td>
+                            <td>€0</td>
+                            <td>€0</td>
+                            <td>-€2,990</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>ROI Net</strong></td>
+                            <td id="roiY1"><strong>+€13,835</strong></td>
+                            <td id="roiY2"><strong>+€15,825</strong></td>
+                            <td id="roiY3"><strong>+€15,825</strong></td>
+                            <td id="roiTotalNet"><strong>+€45,485</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="roi-note">
+                💡 Calcul basé sur une marge moyenne de 30%. Ajustez les paramètres ci-dessus selon votre situation.
+            </div>
+        </div>
+
+        <div class="roi-comparison">
+            <h3>Comparaison 3 ans</h3>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>Shopify Standard</th>
+                    <th>Shopify Plus</th>
+                    <th>Checkout Booster</th>
+                </tr>
+                <tr>
+                    <td>Coût plateforme 3 ans</td>
+                    <td>€1,188</td>
+                    <td>€82,800</td>
+                    <td>€2,990 one-time</td>
+                </tr>
+                <tr>
+                    <td>Frais transaction 3 ans<br>(€150K GMV/an, provider externe)</td>
+                    <td>€9,000</td>
+                    <td>€0</td>
+                    <td>€0</td>
+                </tr>
+                <tr>
+                    <td><strong>Total 3 ans</strong></td>
+                    <td><strong>€10,188</strong></td>
+                    <td><strong>€82,800</strong></td>
+                    <td><strong>€2,990</strong></td>
+                </tr>
+                <tr class="highlight-row">
+                    <td><strong>Économie vs Shopify Standard</strong></td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td><strong>+€7,198</strong></td>
+                </tr>
+                <tr class="highlight-row">
+                    <td><strong>Économie vs Shopify Plus</strong></td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td><strong>+€79,810</strong></td>
+                </tr>
+            </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- WAITLIST FORM -->
+    <section class="waitlist-section" id="waitlist">
+        <div class="container">
+            <div class="waitlist-content">
+                <h2 class="waitlist-title">Rejoignez la waitlist Phase 0</h2>
+                <p class="waitlist-subtitle">
+                    50 premières places. Tarif réduit de 40%. Réponse sous 48h.
+                </p>
+
+                <form class="waitlist-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                    <div class="form-group">
+                        <label for="name">Prénom *</label>
+                        <input type="text" id="name" name="name" placeholder="Votre prénom" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" placeholder="votre@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Téléphone *</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+33 6 XX XX XX XX" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="offer">Offre qui vous intéresse *</label>
+                        <select id="offer" name="offer" required>
+                            <option value="">Sélectionnez une offre...</option>
+                            <option value="checkout-booster">Instant Checkout Booster (€2,990)</option>
+                            <option value="saab">SaaB - Shopify as a Backend (€6,000+)</option>
+                            <option value="full-migration">Full Migration (€12,000+)</option>
+                            <option value="unsure">Pas sûr, je veux en savoir plus</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Rejoindre la Waitlist →
+                    </button>
+
+                    <p class="form-note">
+                        ✓ Sans engagement · ✓ Réponse sous 48h · ✓ Audit gratuit inclus
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                Chercheur-Développeur · Diagnostic · Étude de vos options
+            </div>
+            
+            <div class="footer-links">
+                <a href="https://linkedin.com/in/romain-piveteau" target="_blank">LinkedIn</a>
+                <a href="https://piveteau.digital" target="_blank">Portfolio</a>
+                <a href="mailto:romain@zedtech.fr">romain@zedtech.fr</a>
+            </div>
+
+            <div class="footer-copyright">
+                © 2025 ZED TECH - Recherche indépendante e-commerce
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translate(0, 0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe cards
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.choice-card, .offer-card, .story-highlight');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+                observer.observe(card);
+            });
+
+            // Observe process steps
+            const processSteps = document.querySelectorAll('.process-step');
+            processSteps.forEach((step, index) => {
+                step.style.opacity = '0';
+                step.style.transform = 'translateX(-30px)';
+                step.style.transition = `opacity 0.6s ease ${index * 0.15}s, transform 0.6s ease ${index * 0.15}s`;
+                observer.observe(step);
+            });
+
+            // Observe process CTA
+            const processCta = document.querySelector('.process-cta');
+            if (processCta) {
+                processCta.style.opacity = '0';
+                processCta.style.transform = 'scale(0.95)';
+                processCta.style.transition = 'opacity 0.6s ease 0.8s, transform 0.6s ease 0.8s';
+                observer.observe(processCta);
+            }
+
+            // Observe ROI cards
+            const roiCards = document.querySelectorAll('.roi-card');
+            roiCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = `opacity 0.6s ease ${index * 0.15}s, transform 0.6s ease ${index * 0.15}s`;
+                observer.observe(card);
+            });
+
+            // Observe ROI calculator
+            const roiCalculator = document.querySelector('.roi-calculator');
+            if (roiCalculator) {
+                roiCalculator.style.opacity = '0';
+                roiCalculator.style.transform = 'scale(0.95)';
+                roiCalculator.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(roiCalculator);
+            }
+
+            // Observe ROI comparison
+            const roiComparison = document.querySelector('.roi-comparison');
+            if (roiComparison) {
+                roiComparison.style.opacity = '0';
+                roiComparison.style.transform = 'translateY(40px)';
+                roiComparison.style.transition = 'opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s';
+                observer.observe(roiComparison);
+            }
+
+            // Observe ROI conversion section
+            const roiConversionSection = document.querySelector('.roi-conversion-section');
+            if (roiConversionSection) {
+                roiConversionSection.style.opacity = '0';
+                roiConversionSection.style.transform = 'translateY(30px)';
+                roiConversionSection.style.transition = 'opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s';
+                observer.observe(roiConversionSection);
+            }
+
+            // Observe ROI summary
+            const roiSummary = document.querySelector('.roi-summary');
+            if (roiSummary) {
+                roiSummary.style.opacity = '0';
+                roiSummary.style.transform = 'scale(0.95)';
+                roiSummary.style.transition = 'opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s';
+                observer.observe(roiSummary);
+            }
+
+            // Observe ROI conversion results cards
+            const roiConversionCards = document.querySelectorAll('.roi-conversion-results .roi-card');
+            roiConversionCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `opacity 0.5s ease ${0.3 + index * 0.1}s, transform 0.5s ease ${0.3 + index * 0.1}s`;
+                observer.observe(card);
+            });
+        });
+
+        // Counter animation for metrics
+        const animateCounter = (element, target, duration = 2000) => {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target.toString().includes('%') ? target : target + '%';
+                    clearInterval(timer);
+                } else {
+                    if (target.toString().includes('.')) {
+                        element.textContent = current.toFixed(1) + '%';
+                    } else {
+                        element.textContent = '+' + Math.floor(current) + '%';
+                    }
+                }
+            }, 16);
+        };
+
+        // Observe metrics for counter animation
+        const metricsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const value = entry.target.textContent;
+                    if (value.includes('+')) {
+                        animateCounter(entry.target, 40);
+                    } else if (value === '6.5%') {
+                        let current = 0;
+                        const timer = setInterval(() => {
+                            current += 0.1;
+                            if (current >= 6.5) {
+                                entry.target.textContent = '6.5%';
+                                clearInterval(timer);
+                            } else {
+                                entry.target.textContent = current.toFixed(1) + '%';
+                            }
+                        }, 30);
+                    } else if (value === '9.1%') {
+                        let current = 0;
+                        const timer = setInterval(() => {
+                            current += 0.15;
+                            if (current >= 9.1) {
+                                entry.target.textContent = '9.1%';
+                                clearInterval(timer);
+                            } else {
+                                entry.target.textContent = current.toFixed(1) + '%';
+                            }
+                        }, 30);
+                    }
+                    metricsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const metricValues = document.querySelectorAll('.metric-value');
+            metricValues.forEach(metric => metricsObserver.observe(metric));
+        });
+
+        // Stack interaction for offers (Desktop only)
+        const offersStack = document.getElementById('offersStack');
+        
+        function initStackBehavior() {
+            if (!offersStack) return;
+            
+            // Only activate stack behavior on desktop
+            if (window.innerWidth > 1024) {
+                // Desktop: hover to expand
+                offersStack.addEventListener('mouseenter', handleMouseEnter);
+                offersStack.addEventListener('mouseleave', handleMouseLeave);
+                offersStack.addEventListener('click', handleClick);
+            } else {
+                // Mobile: remove all listeners
+                offersStack.removeEventListener('mouseenter', handleMouseEnter);
+                offersStack.removeEventListener('mouseleave', handleMouseLeave);
+                offersStack.removeEventListener('click', handleClick);
+                offersStack.classList.remove('expanded');
+            }
+        }
+
+        function handleMouseEnter() {
+            offersStack.classList.add('expanded');
+        }
+
+        function handleMouseLeave() {
+            offersStack.classList.remove('expanded');
+        }
+
+        function handleClick() {
+            offersStack.classList.toggle('expanded');
+        }
+
+        // Initialize on load
+        initStackBehavior();
+
+        // Update on resize
+        window.addEventListener('resize', initStackBehavior);
+
+        // ROI Calculator
+        const gmvInput = document.getElementById('gmvInput');
+        const conversionInput = document.getElementById('conversionInput');
+        const conversionDisplay = document.getElementById('conversionDisplay');
+        const shopifyFeesEl = document.getElementById('shopifyFees');
+        const savingsEl = document.getElementById('savings');
+        const roi3yearsEl = document.getElementById('roi3years');
+        const additionalRevenueEl = document.getElementById('additionalRevenue');
+        const additionalProfitEl = document.getElementById('additionalProfit');
+        const totalROIEl = document.getElementById('totalROI');
+        const setupRadios = document.querySelectorAll('input[name="setup"]');
+
+        function animateValue(element) {
+            if (!element) return;
+            element.style.transform = 'scale(1.1)';
+            element.style.color = 'var(--accent)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+                setTimeout(() => {
+                    element.style.color = '';
+                }, 200);
+            }, 150);
+        }
+
+        function formatCurrency(value) {
+            const rounded = Math.round(value);
+            const sign = rounded >= 0 ? '+' : '';
+            return sign + '€' + rounded.toLocaleString('fr-FR');
+        }
+
+        function calculateROI() {
+            const gmv = parseFloat(gmvInput.value) || 0;
+            const conversionIncrease = parseFloat(conversionInput?.value || 30) / 100;
+            
+            // Déterminer le setup actuel
+            const setup = document.querySelector('input[name="setup"]:checked')?.value || 'shopify-payments';
+            
+            let currentFeePercentage;
+            
+            if (setup === 'shopify-payments') {
+                currentFeePercentage = 0.0295; // 2,95%
+            } else {
+                currentFeePercentage = 0.034; // 3,4%
+            }
+            
+            // Avec Checkout Booster + Stripe Direct : 1,4%
+            const newFeePercentage = 0.014;
+            
+            // === CALCULS ÉCONOMIE FRAIS ===
+            const currentFees = gmv * currentFeePercentage;
+            const newFees = gmv * newFeePercentage;
+            const annualSavings = currentFees - newFees;
+            const savings3years = annualSavings * 3;
+            const roi3years = savings3years - 2990;
+            
+            // === CALCULS CONVERSIONS ===
+            const additionalRevenue = gmv * conversionIncrease;
+            const margin = 0.30; // Marge de 30%
+            const additionalProfit = additionalRevenue * margin;
+            
+            // === ROI TOTAL ANNÉE 1 ===
+            const totalROIYear1 = annualSavings + additionalProfit - 2990;
+            
+            // === TABLEAU RÉCAPITULATIF ===
+            const savingsY1 = annualSavings;
+            const savingsY2 = annualSavings;
+            const savingsY3 = annualSavings;
+            const savingsTotal = savingsY1 + savingsY2 + savingsY3;
+            
+            const profitY1 = additionalProfit;
+            const profitY2 = additionalProfit;
+            const profitY3 = additionalProfit;
+            const profitTotal = profitY1 + profitY2 + profitY3;
+            
+            const roiY1 = savingsY1 + profitY1 - 2990;
+            const roiY2 = savingsY2 + profitY2;
+            const roiY3 = savingsY3 + profitY3;
+            const roiTotalNet = roiY1 + roiY2 + roiY3;
+            
+            // === MISE À JOUR AFFICHAGE ===
+            if (shopifyFeesEl) {
+                shopifyFeesEl.textContent = '€' + Math.round(currentFees).toLocaleString('fr-FR');
+                animateValue(shopifyFeesEl);
+            }
+            
+            if (savingsEl) {
+                savingsEl.textContent = '€' + Math.round(annualSavings).toLocaleString('fr-FR') + '/an';
+                animateValue(savingsEl);
+            }
+            
+            if (roi3yearsEl) {
+                roi3yearsEl.textContent = formatCurrency(roi3years);
+                roi3yearsEl.className = 'roi-value ' + (roi3years >= 0 ? 'success' : '');
+                animateValue(roi3yearsEl);
+            }
+            
+            if (additionalRevenueEl) {
+                additionalRevenueEl.textContent = formatCurrency(additionalRevenue);
+                animateValue(additionalRevenueEl);
+            }
+            
+            if (additionalProfitEl) {
+                additionalProfitEl.textContent = formatCurrency(additionalProfit);
+                animateValue(additionalProfitEl);
+            }
+            
+            if (totalROIEl) {
+                totalROIEl.textContent = formatCurrency(totalROIYear1);
+                animateValue(totalROIEl);
+            }
+            
+            // Tableau récapitulatif
+            const updateElement = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = formatCurrency(value).replace('+', '');
+                    if (id.startsWith('roi')) {
+                        el.textContent = formatCurrency(value);
+                    }
+                }
+            };
+            
+            updateElement('savingsY1', savingsY1);
+            updateElement('savingsY2', savingsY2);
+            updateElement('savingsY3', savingsY3);
+            updateElement('savingsTotal', savingsTotal);
+            
+            updateElement('profitY1', profitY1);
+            updateElement('profitY2', profitY2);
+            updateElement('profitY3', profitY3);
+            updateElement('profitTotal', profitTotal);
+            
+            updateElement('roiY1', roiY1);
+            updateElement('roiY2', roiY2);
+            updateElement('roiY3', roiY3);
+            updateElement('roiTotalNet', roiTotalNet);
+        }
+
+        // Mise à jour du display du slider
+        if (conversionInput && conversionDisplay) {
+            // Snap aux valeurs clés
+            const snapValues = [0, 20, 30, 50];
+            
+            conversionInput.addEventListener('input', function() {
+                conversionDisplay.textContent = this.value;
+                calculateROI();
+                
+                // Mise à jour visuelle des marqueurs
+                updateSliderMarkers(this.value);
+            });
+
+            // Snap au relâchement
+            conversionInput.addEventListener('change', function() {
+                const currentValue = parseFloat(this.value);
+                let closestValue = snapValues[0];
+                let minDiff = Math.abs(currentValue - snapValues[0]);
+                
+                snapValues.forEach(val => {
+                    const diff = Math.abs(currentValue - val);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closestValue = val;
+                    }
+                });
+                
+                // Snap si proche d'une valeur clé (moins de 3%)
+                if (minDiff <= 3) {
+                    this.value = closestValue;
+                    conversionDisplay.textContent = closestValue;
+                    calculateROI();
+                    updateSliderMarkers(closestValue);
+                }
+            });
+
+            // Fonction pour mettre à jour l'apparence des marqueurs
+            function updateSliderMarkers(value) {
+                const markers = document.querySelectorAll('.marker-dot');
+                const normalizedValue = parseFloat(value);
+                
+                markers.forEach((marker, index) => {
+                    const markerValue = snapValues[index];
+                    if (Math.abs(normalizedValue - markerValue) <= 2) {
+                        marker.style.background = 'var(--accent)';
+                        marker.style.transform = 'scale(1.2)';
+                    } else {
+                        marker.style.background = 'white';
+                        marker.style.transform = 'scale(1)';
+                    }
+                });
+            }
+
+            // Initialiser les marqueurs
+            updateSliderMarkers(conversionInput.value);
+        }
+
+        if (gmvInput) {
+            // Calcul initial
+            calculateROI();
+            
+            // Recalcul à chaque changement de GMV
+            gmvInput.addEventListener('input', calculateROI);
+            
+            // Recalcul à chaque changement de setup
+            setupRadios.forEach(radio => {
+                radio.addEventListener('change', calculateROI);
+            });
+            
+            // Animation de l'input quand on change
+            gmvInput.addEventListener('input', function() {
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+    </script>
+</body>
+</html>
