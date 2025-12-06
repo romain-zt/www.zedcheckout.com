@@ -57,7 +57,7 @@ export default function Hero() {
 
 
           <div className="hero-cta-z">
-            <a href="https://form.typeform.com/to/QWh5K32o" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+            <a href="/quiz" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
               {t('cta')}
             </a>
             <a href="#roi" className="btn btn-secondary">

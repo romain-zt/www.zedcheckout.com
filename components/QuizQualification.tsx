@@ -390,107 +390,108 @@ export default function QuizQualification() {
         )}
 
         {/* Question Card */}
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={currentStep}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              x: { type: 'spring', stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 },
-            }}
-            className="bg-white rounded-2xl shadow-xl p-8 md:p-12"
-          >
-            {currentQuestion.type === 'welcome' && (
-              <WelcomeScreen onStart={handleNext} question={currentQuestion} />
-            )}
+        <div className="bg-white overflow-x-hidden rounded-2xl shadow-xl p-8 md:p-12">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: 'spring', stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+            >
+              {currentQuestion.type === 'welcome' && (
+                <WelcomeScreen onStart={handleNext} question={currentQuestion} />
+              )}
 
-            {currentQuestion.type === 'section' && (
-              <SectionScreen onContinue={handleNext} question={currentQuestion} />
-            )}
+              {currentQuestion.type === 'section' && (
+                <SectionScreen onContinue={handleNext} question={currentQuestion} />
+              )}
 
-            {currentQuestion.type === 'multiple' && (
-              <MultipleChoiceQuestion
-                question={currentQuestion}
-                value={quizData[currentQuestion.id]}
-                onChange={(value) => handleAnswer(currentQuestion.id, value)}
-              />
-            )}
-
-            {currentQuestion.type === 'checkbox' && (
-              <CheckboxQuestion
-                question={currentQuestion}
-                value={quizData[currentQuestion.id] || []}
-                onChange={(value) => handleAnswer(currentQuestion.id, value)}
-              />
-            )}
-
-            {currentQuestion.type === 'scale' && (
-              <>
-                <ScaleQuestion
+              {currentQuestion.type === 'multiple' && (
+                <MultipleChoiceQuestion
                   question={currentQuestion}
                   value={quizData[currentQuestion.id]}
                   onChange={(value) => handleAnswer(currentQuestion.id, value)}
                 />
-                {showFollowUp && currentQuestion.followUp && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-6"
-                  >
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {currentQuestion.followUp.question}
-                    </label>
-                    <textarea
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      rows={3}
-                      maxLength={100}
-                      value={quizData[`${currentQuestion.id}_followup`] || ''}
-                      onChange={(e) => handleAnswer(`${currentQuestion.id}_followup`, e.target.value)}
-                      placeholder="Décrivez votre principale limitation..."
-                    />
-                  </motion.div>
-                )}
-              </>
-            )}
+              )}
 
-            {currentQuestion.type === 'contact' && (
-              <ContactForm
-                question={currentQuestion}
-                data={quizData}
-                onChange={handleAnswer}
-              />
-            )}
+              {currentQuestion.type === 'checkbox' && (
+                <CheckboxQuestion
+                  question={currentQuestion}
+                  value={quizData[currentQuestion.id] || []}
+                  onChange={(value) => handleAnswer(currentQuestion.id, value)}
+                />
+              )}
 
-            {currentQuestion.type === 'end' && (
-              <EndScreen data={quizData} analysis={analyzeQuizData(quizData)} />
-            )}
+              {currentQuestion.type === 'scale' && (
+                <>
+                  <ScaleQuestion
+                    question={currentQuestion}
+                    value={quizData[currentQuestion.id]}
+                    onChange={(value) => handleAnswer(currentQuestion.id, value)}
+                  />
+                  {showFollowUp && currentQuestion.followUp && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-6"
+                    >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {currentQuestion.followUp.question}
+                      </label>
+                      <textarea
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        rows={3}
+                        maxLength={100}
+                        value={quizData[`${currentQuestion.id}_followup`] || ''}
+                        onChange={(e) => handleAnswer(`${currentQuestion.id}_followup`, e.target.value)}
+                        placeholder="Décrivez votre principale limitation..."
+                      />
+                    </motion.div>
+                  )}
+                </>
+              )}
 
-            {/* Navigation buttons */}
-            {currentQuestion.type !== 'welcome' && currentQuestion.type !== 'end' && currentQuestion.type !== 'section' && (
-              <div className="flex gap-4 mt-8">
-                {currentStep > 0 && (
+              {currentQuestion.type === 'contact' && (
+                <ContactForm
+                  question={currentQuestion}
+                  data={quizData}
+                  onChange={handleAnswer}
+                />
+              )}
+
+              {currentQuestion.type === 'end' && (
+                <EndScreen data={quizData} analysis={analyzeQuizData(quizData)} />
+              )}
+
+              {/* Navigation buttons */}
+              {currentQuestion.type !== 'welcome' && currentQuestion.type !== 'end' && currentQuestion.type !== 'section' && (
+                <div className="flex gap-4 mt-8">
+                  {currentStep > 0 && (
+                    <button
+                      onClick={handleBack}
+                      className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      ← Retour
+                    </button>
+                  )}
                   <button
-                    onClick={handleBack}
-                    className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    onClick={handleNext}
+                    disabled={!canProceed()}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    ← Retour
+                    {currentQuestion.type === 'contact' ? 'Recevoir mon diagnostic →' : 'Continuer →'}
                   </button>
-                )}
-                <button
-                  onClick={handleNext}
-                  disabled={!canProceed()}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  {currentQuestion.type === 'contact' ? 'Recevoir mon diagnostic →' : 'Continuer →'}
-                </button>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

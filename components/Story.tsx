@@ -54,7 +54,7 @@ export default function Story() {
           <div className="behind-scenes-cta">
             <h3 className="behind-scenes-title">{t('behindScenesTitle')}</h3>
             <p className="behind-scenes-text">{t('behindScenesText')}</p>
-            <a href="https://form.typeform.com/to/QWh5K32o" target="_blank" rel="noopener noreferrer" className="behind-scenes-button">
+            <a href="/quiz" target="_blank" rel="noopener noreferrer" className="behind-scenes-button">
               {t('behindScenesCta')} →
             </a>
           </div>

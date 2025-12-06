@@ -38,7 +38,7 @@ export default function Qualification() {
                   {t('validText')}
                 </p>
                 <a 
-                  href="https://form.typeform.com/to/QWh5K32o"
+                  href="/quiz"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="qualification-cta"
