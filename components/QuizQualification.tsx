@@ -68,9 +68,9 @@ const quizQuestions: Question[] = [
     options: [
       'Oui, au moins 1 test/mois',
       'Parfois (1-2 tests/trimestre)',
-      'J\'ai déjà essayé mais c\'est compliqué 🔥',
+      'J\'ai déjà essayé mais c\'est compliqué',
       'Non, je ne sais pas comment faire',
-      'Non, ma plateforme ne le permet pas 🔥🔥',
+      'Non, ma plateforme ne le permet pas',
     ],
     required: true,
   },
@@ -83,7 +83,7 @@ const quizQuestions: Question[] = [
       'Chaque mois',
       'Tous les 3-6 mois',
       'Jamais / Rarement',
-      'Je voudrais mais je n\'y arrive pas 🔥',
+      'Je voudrais mais je n\'y arrive pas',
     ],
     required: true,
   },
@@ -97,7 +97,7 @@ const quizQuestions: Question[] = [
       'Abandon checkout (abandon_cart)',
       'Achat finalisé (purchase)',
       'Erreurs formulaire',
-      'Je ne tracke pas ces événements 🔥',
+      'Je ne tracke pas ces événements',
       'Je ne sais pas comment faire ça',
     ],
     required: true,
@@ -135,7 +135,7 @@ const quizQuestions: Question[] = [
       'Problèmes mobile',
       'Manque de personnalisation',
       'Temps de chargement lent',
-      'Je n\'ai pas encore analysé ça 🔥',
+      'Je n\'ai pas encore analysé ça',
       'Autre',
     ],
     required: true,
@@ -173,7 +173,7 @@ const quizQuestions: Question[] = [
       'Oui, il est < 2%',
       'Oui, il est entre 2-4%',
       'Oui, il est > 4%',
-      'Non, je ne le mesure pas 🔥',
+      'Non, je ne le mesure pas',
     ],
     required: true,
   },
@@ -219,7 +219,7 @@ function analyzeQuizData(data: QuizData) {
   // Expertise level
   const hasTools = Array.isArray(data.q1) && !data.q1.includes('Aucun de ces outils') && !data.q1.includes('Je ne sais pas');
   const toolCount = hasTools ? data.q1.length : 0;
-  const hasTracking = Array.isArray(data.q4) && !data.q4.includes('Je ne tracke pas ces événements 🔥') && !data.q4.includes('Je ne sais pas comment faire ça');
+  const hasTracking = Array.isArray(data.q4) && !data.q4.includes('Je ne tracke pas ces événements') && !data.q4.includes('Je ne sais pas comment faire ça');
   const doesABTesting = data.q2?.includes('Oui, au moins 1 test/mois');
   
   let expertiseLevel: 'debutant' | 'intermediaire' | 'avance';
@@ -234,7 +234,7 @@ function analyzeQuizData(data: QuizData) {
   // Frustration score
   const satisfactionScore = data.q5 || 5;
   const frictionCount = Array.isArray(data.q6) ? data.q6.length : 0;
-  const platformBlocked = data.q2?.includes('Non, ma plateforme ne le permet pas 🔥🔥');
+  const platformBlocked = data.q2?.includes('Non, ma plateforme ne le permet pas');
   
   let frustrationLevel: 'hot_hot_hot' | 'hot' | 'warm';
   if (satisfactionScore <= 2 || platformBlocked) {
@@ -268,7 +268,7 @@ function analyzeQuizData(data: QuizData) {
   if (doesABTesting) score += 15;
   if (satisfactionScore >= 4) score += 20;
   if (complexityCount >= 2) score += 15;
-  if (data.q8 && !data.q8.includes('Non, je ne le mesure pas 🔥')) score += 10;
+  if (data.q8 && !data.q8.includes('Non, je ne le mesure pas')) score += 10;
 
   return {
     expertiseLevel,
@@ -291,10 +291,10 @@ export default function QuizQualification() {
   const totalQuestions = quizQuestions.filter(q => 
     q.type !== 'welcome' && q.type !== 'section' && q.type !== 'end' && q.type !== 'contact'
   ).length;
-  const answeredQuestions = quizQuestions.slice(0, currentStep).filter(q => 
+  const answeredQuestions = quizQuestions.slice(0, currentStep + 1).filter(q => 
     q.type !== 'welcome' && q.type !== 'section' && q.type !== 'end' && q.type !== 'contact'
   ).length;
-  const progress = (answeredQuestions / totalQuestions) * 100;
+  const progress = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
 
   const handleAnswer = (questionId: string, value: any) => {
     setQuizData((prev) => ({ ...prev, [questionId]: value }));
@@ -372,7 +372,7 @@ export default function QuizQualification() {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-600">
-                Question {answeredQuestions + 1} / {totalQuestions}
+                Question {answeredQuestions} / {totalQuestions}
               </span>
               <span className="text-sm font-medium text-blue-600">
                 {Math.round(progress)}%
