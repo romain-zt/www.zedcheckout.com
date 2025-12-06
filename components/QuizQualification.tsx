@@ -2,6 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { submitQuizForm } from '@/app/actions/quiz';
+
+// Track events with Google Analytics
+const trackQuizEvent = (action: string, label?: string, value?: number) => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', action, {
+      event_category: 'Quiz',
+      event_label: label,
+      value: value,
+    });
+  }
+};
 
 // Types
 type QuestionType = 'welcome' | 'multiple' | 'checkbox' | 'scale' | 'text' | 'contact' | 'end' | 'section';
@@ -285,6 +297,14 @@ export default function QuizQualification() {
   const [quizData, setQuizData] = useState<QuizData>({});
   const [showFollowUp, setShowFollowUp] = useState(false);
   const [direction, setDirection] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+
+  // Track quiz start
+  useEffect(() => {
+    trackQuizEvent('quiz_started', 'Quiz Audit Checkout');
+  }, []);
 
   const currentQuestion = quizQuestions[currentStep];
   // Calculate progress excluding welcome, section headers, and end screens
@@ -298,9 +318,47 @@ export default function QuizQualification() {
 
   const handleAnswer = (questionId: string, value: any) => {
     setQuizData((prev) => ({ ...prev, [questionId]: value }));
+    
+    // Track answer
+    if (questionId.startsWith('q') && !questionId.includes('followup')) {
+      trackQuizEvent('quiz_answer', questionId, currentStep);
+    }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // If on contact form, submit the quiz
+    if (currentQuestion.type === 'contact' && canProceed()) {
+      setIsSubmitting(true);
+      setSubmissionError(null);
+      
+      const analysis = analyzeQuizData(quizData);
+      
+      try {
+        const result = await submitQuizForm(quizData, analysis);
+        
+        if (result.isSuccess) {
+          setIsSubmitted(true);
+          
+          // Track successful submission
+          trackQuizEvent('quiz_completed', `${analysis.fitScore} - Score: ${analysis.score}`, analysis.score);
+          
+          // Add a small delay before showing thank you
+          setTimeout(() => {
+            setDirection(1);
+            setCurrentStep((prev) => Math.min(prev + 1, quizQuestions.length - 1));
+            setIsSubmitting(false);
+          }, 800);
+        } else {
+          setSubmissionError(result.message);
+          setIsSubmitting(false);
+        }
+      } catch (error) {
+        setSubmissionError('Une erreur est survenue. Veuillez réessayer.');
+        setIsSubmitting(false);
+      }
+      return;
+    }
+    
     // Check if follow-up is needed
     if (currentQuestion.followUp && !showFollowUp) {
       const shouldShowFollowUp = currentQuestion.followUp.condition(quizData[currentQuestion.id]);
@@ -365,7 +423,7 @@ export default function QuizQualification() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#F5EDE4] via-white to-[#FFC9B9] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {/* Progress bar */}
         {currentQuestion.type !== 'welcome' && currentQuestion.type !== 'end' && currentQuestion.type !== 'section' && (
@@ -374,13 +432,13 @@ export default function QuizQualification() {
               <span className="text-sm font-medium text-gray-600">
                 Question {answeredQuestions} / {totalQuestions}
               </span>
-              <span className="text-sm font-medium text-blue-600">
+              <span className="text-sm font-medium text-[#1E2A47]">
                 {Math.round(progress)}%
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <motion.div
-                className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                className="h-full bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9]"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -445,7 +503,7 @@ export default function QuizQualification() {
                         {currentQuestion.followUp.question}
                       </label>
                       <textarea
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E88B7A] focus:border-transparent transition-all"
                         rows={3}
                         maxLength={100}
                         value={quizData[`${currentQuestion.id}_followup`] || ''}
@@ -458,14 +516,25 @@ export default function QuizQualification() {
               )}
 
               {currentQuestion.type === 'contact' && (
-                <ContactForm
-                  question={currentQuestion}
-                  data={quizData}
-                  onChange={handleAnswer}
-                />
+                <>
+                  <ContactForm
+                    question={currentQuestion}
+                    data={quizData}
+                    onChange={handleAnswer}
+                  />
+                  {submissionError && (
+                    <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                      {submissionError}
+                    </div>
+                  )}
+                </>
               )}
 
-              {currentQuestion.type === 'end' && (
+              {currentQuestion.type === 'end' && isSubmitted && (
+                <ThankYouScreen />
+              )}
+
+              {currentQuestion.type === 'end' && !isSubmitted && (
                 <EndScreen data={quizData} analysis={analyzeQuizData(quizData)} />
               )}
 
@@ -482,10 +551,18 @@ export default function QuizQualification() {
                   )}
                   <button
                     onClick={handleNext}
-                    disabled={!canProceed()}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                    disabled={!canProceed() || isSubmitting}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-lg font-medium hover:from-[#D97A69] hover:to-[#FFB8A3] disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    {currentQuestion.type === 'contact' ? 'Recevoir mon diagnostic →' : 'Continuer →'}
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Envoi en cours...
+                      </span>
+                    ) : currentQuestion.type === 'contact' ? 'Recevoir mon diagnostic →' : 'Continuer →'}
                   </button>
                 </div>
               )}
@@ -507,7 +584,7 @@ function WelcomeScreen({ onStart, question }: { onStart: () => void; question: Q
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
         className="mb-6"
       >
-        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center text-4xl">
+        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#1E2A47] to-[#2D3E5F] rounded-2xl flex items-center justify-center text-4xl">
           🔍
         </div>
       </motion.div>
@@ -515,7 +592,7 @@ function WelcomeScreen({ onStart, question }: { onStart: () => void; question: Q
       <p className="text-lg text-gray-600 mb-8 whitespace-pre-line">{question.description}</p>
       <button
         onClick={onStart}
-        className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium text-lg hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 active:scale-95"
+        className="px-8 py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-lg font-medium text-lg hover:from-[#D97A69] hover:to-[#FFB8A3] transition-all transform hover:scale-105 active:scale-95"
       >
         Démarrer l'audit →
       </button>
@@ -526,15 +603,15 @@ function WelcomeScreen({ onStart, question }: { onStart: () => void; question: Q
 // Component for section screen
 function SectionScreen({ onContinue, question }: { onContinue: () => void; question: Question }) {
   const colorMap: { [key: number]: string } = {
-    1: 'from-blue-500 to-cyan-500',
-    2: 'from-orange-500 to-red-500',
-    3: 'from-purple-500 to-indigo-500',
+    1: 'from-[#1E2A47] to-[#2D3E5F]',
+    2: 'from-[#E88B7A] to-[#FFC9B9]',
+    3: 'from-[#1E2A47] to-[#E88B7A]',
   };
   
   const bgColorMap: { [key: number]: string } = {
-    1: 'from-blue-50 to-cyan-50',
-    2: 'from-orange-50 to-red-50',
-    3: 'from-purple-50 to-indigo-50',
+    1: 'from-[#F5EDE4] to-white',
+    2: 'from-[#FFF5F0] to-white',
+    3: 'from-[#F5EDE4] to-[#FFF5F0]',
   };
 
   const sectionNum = question.sectionNumber || 1;
@@ -595,17 +672,17 @@ function MultipleChoiceQuestion({
             onClick={() => onChange(option)}
             className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
               value === option
-                ? 'border-blue-500 bg-blue-50'
+                ? 'border-[#E88B7A] bg-[#FFF5F0]'
                 : 'border-gray-200 hover:border-gray-300 bg-white'
             }`}
           >
             <div className="flex items-center">
               <div
                 className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                  value === option ? 'border-blue-500' : 'border-gray-300'
+                  value === option ? 'border-[#E88B7A]' : 'border-gray-300'
                 }`}
               >
-                {value === option && <div className="w-3 h-3 rounded-full bg-blue-500" />}
+                {value === option && <div className="w-3 h-3 rounded-full bg-[#E88B7A]" />}
               </div>
               <span className="font-medium text-gray-800">{option}</span>
             </div>
@@ -647,14 +724,14 @@ function CheckboxQuestion({
             onClick={() => handleToggle(option)}
             className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
               value.includes(option)
-                ? 'border-blue-500 bg-blue-50'
+                ? 'border-[#E88B7A] bg-[#FFF5F0]'
                 : 'border-gray-200 hover:border-gray-300 bg-white'
             }`}
           >
             <div className="flex items-center">
               <div
                 className={`w-5 h-5 rounded border-2 mr-3 flex items-center justify-center ${
-                  value.includes(option) ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+                  value.includes(option) ? 'border-[#E88B7A] bg-[#E88B7A]' : 'border-gray-300'
                 }`}
               >
                 {value.includes(option) && (
@@ -695,7 +772,7 @@ function ScaleQuestion({
               onClick={() => onChange(num)}
               className={`w-16 h-16 rounded-full font-bold text-xl transition-all ${
                 value === num
-                  ? 'bg-gradient-to-br from-blue-500 to-purple-500 text-white shadow-lg'
+                  ? 'bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white shadow-lg'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -738,7 +815,7 @@ function ContactForm({
               type="text"
               value={data.firstName || ''}
               onChange={(e) => onChange('firstName', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E88B7A] focus:border-transparent transition-all"
               placeholder="Jean"
             />
           </div>
@@ -750,7 +827,7 @@ function ContactForm({
               type="text"
               value={data.lastName || ''}
               onChange={(e) => onChange('lastName', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E88B7A] focus:border-transparent transition-all"
               placeholder="Dupont"
             />
           </div>
@@ -764,7 +841,7 @@ function ContactForm({
             type="email"
             value={data.email || ''}
             onChange={(e) => onChange('email', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E88B7A] focus:border-transparent transition-all"
             placeholder="jean.dupont@exemple.fr"
           />
         </div>
@@ -777,11 +854,63 @@ function ContactForm({
             type="tel"
             value={data.phone || ''}
             onChange={(e) => onChange('phone', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E88B7A] focus:border-transparent transition-all"
             placeholder="+33 6 12 34 56 78"
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+// Component for thank you screen (shown after submission)
+function ThankYouScreen() {
+  return (
+    <div className="text-center py-8">
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+        className="mb-6"
+      >
+        <div className="w-24 h-24 mx-auto bg-gradient-to-br from-[#4CAF50] to-[#66BB6A] rounded-full flex items-center justify-center text-5xl">
+          ✓
+        </div>
+      </motion.div>
+
+      <h2 className="text-4xl font-bold text-gray-900 mb-4">Merci !</h2>
+      <p className="text-xl text-gray-600 mb-6">
+        Votre diagnostic personnalisé arrive dans votre boîte mail dans quelques instants.
+      </p>
+
+      <div className="bg-[#F5EDE4] rounded-lg p-8 mb-8 text-left max-w-md mx-auto">
+        <h3 className="font-bold text-[#1E2A47] mb-4 text-lg">📧 Prochaines étapes</h3>
+        <div className="space-y-3 text-[#2D3E5F]">
+          <div className="flex items-start gap-3">
+            <span className="text-[#E88B7A] font-bold flex-shrink-0">1.</span>
+            <span>Consultez vos résultats dans votre email</span>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="text-[#E88B7A] font-bold flex-shrink-0">2.</span>
+            <span>Découvrez vos recommandations personnalisées</span>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="text-[#E88B7A] font-bold flex-shrink-0">3.</span>
+            <span>Réservez votre audit gratuit si vous souhaitez aller plus loin</span>
+          </div>
+        </div>
+      </div>
+
+      <a
+        href="/"
+        className="inline-block px-8 py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-lg font-medium text-lg hover:from-[#D97A69] hover:to-[#FFB8A3] transition-all transform hover:scale-105 active:scale-95"
+      >
+        Retour à l'accueil →
+      </a>
+
+      <p className="text-sm text-gray-500 mt-6">
+        Vous ne voyez pas l'email ? Vérifiez votre dossier spam ou contactez-nous.
+      </p>
     </div>
   );
 }
@@ -847,7 +976,7 @@ function EndScreen({
       actionDesc: '→ 12 tests prioritaires à lancer\n→ Checklist validation statistique\n→ Template tracking résultats',
       primaryCTA: 'Recevoir le framework →',
       secondaryCTA: 'Demander un audit (gratuit) →',
-      color: 'from-purple-500 to-blue-500',
+      color: 'from-[#1E2A47] to-[#E88B7A]',
     };
   };
 
