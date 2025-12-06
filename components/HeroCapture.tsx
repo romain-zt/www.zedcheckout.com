@@ -55,7 +55,7 @@ export default function HeroCapture() {
         {/* BOTTOM RIGHT: CTA */}
         <div className="hero-bottom-right">
           <div className="hero-cta-wrapper">
-            <a href="/quiz" target="_blank" rel="noopener noreferrer" className="hero-cta-z">
+            <a href="quiz" target="_blank" rel="noopener noreferrer" className="hero-cta-z">
               <span>{t('captureCTA')}</span>
               <span className="arrow">→</span>
             </a>

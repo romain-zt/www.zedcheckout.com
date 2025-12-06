@@ -39,7 +39,7 @@ export default function DevPricing() {
           </div>
 
           <div className="pricing-cta">
-            <a href="/quiz" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+            <a href="quiz" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
               {t('cta')}
             </a>
             <p className="pricing-note">{t('note')}</p>

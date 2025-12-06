@@ -22,7 +22,7 @@ export default function DevHero() {
           </p>
 
           <div className="hero-cta">
-            <a href="/quiz" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+            <a href="quiz" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
               {t('cta')}
             </a>
             <a href="#features" className="btn btn-secondary">
