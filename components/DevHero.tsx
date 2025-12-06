@@ -1,9 +1,12 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useLocale } from 'next-intl';
 
 export default function DevHero() {
   const t = useTranslations('devHero');
+  const locale = useLocale();
 
   return (
     <section className="hero dev-hero">
@@ -22,9 +25,9 @@ export default function DevHero() {
           </p>
 
           <div className="hero-cta">
-            <a href="quiz" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+            <Link href={`/${locale}/quiz`} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
               {t('cta')}
-            </a>
+            </Link>
             <a href="#features" className="btn btn-secondary">
               {t('ctaSecondary')}
             </a>

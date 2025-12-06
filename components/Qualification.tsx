@@ -1,9 +1,12 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import Link from 'next/link';
 
 export default function Qualification() {
   const t = useTranslations('qualification');
+  const locale = useLocale();
 
   return (
     <section className="qualification-section">
@@ -37,14 +40,14 @@ export default function Qualification() {
                 <p className="validation-text">
                   {t('validText')}
                 </p>
-                <a 
-                  href="quiz"
+                <Link 
+                  href={`/${locale}/quiz`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="qualification-cta"
                 >
                   {t('cta')}
-                </a>
+                </Link>
               </div>
             </div>
           </div>

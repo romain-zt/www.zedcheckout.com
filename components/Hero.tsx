@@ -1,10 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Hero() {
   const t = useTranslations('hero');
+  const locale = useLocale();
 
   return (
     <section className="hero">
@@ -57,9 +60,9 @@ export default function Hero() {
 
 
           <div className="hero-cta-z">
-            <a href="quiz" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+            <Link href={`/${locale}/quiz`} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
               {t('cta')}
-            </a>
+            </Link>
             <a href="#roi" className="btn btn-secondary">
               {t('ctaSecondary')}
             </a>

@@ -1,9 +1,12 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import Link from 'next/link';
 
 export default function DevPricing() {
   const t = useTranslations('devPricing');
+  const locale = useLocale();
 
   return (
     <section id="pricing" className="dev-pricing-section">
@@ -39,9 +42,9 @@ export default function DevPricing() {
           </div>
 
           <div className="pricing-cta">
-            <a href="quiz" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+            <Link href={`/${locale}/quiz`} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
               {t('cta')}
-            </a>
+            </Link>
             <p className="pricing-note">{t('note')}</p>
           </div>
         </div>

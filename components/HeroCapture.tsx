@@ -1,10 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import Link from 'next/link';
 import Image from 'next/image';
 
 export default function HeroCapture() {
   const t = useTranslations('hero');
+  const locale = useLocale();
 
   return (
     <section className="hero-capture">
@@ -55,10 +58,10 @@ export default function HeroCapture() {
         {/* BOTTOM RIGHT: CTA */}
         <div className="hero-bottom-right">
           <div className="hero-cta-wrapper">
-            <a href="quiz" target="_blank" rel="noopener noreferrer" className="hero-cta-z">
+            <Link href={`/${locale}/quiz`} target="_blank" rel="noopener noreferrer" className="hero-cta-z">
               <span>{t('captureCTA')}</span>
               <span className="arrow">→</span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

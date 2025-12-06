@@ -1,9 +1,12 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import Link from 'next/link';
 
 export default function Story() {
   const t = useTranslations('story');
+  const locale = useLocale();
 
   return (
     <section id="story" className="story-section">
@@ -54,9 +57,9 @@ export default function Story() {
           <div className="behind-scenes-cta">
             <h3 className="behind-scenes-title">{t('behindScenesTitle')}</h3>
             <p className="behind-scenes-text">{t('behindScenesText')}</p>
-            <a href="quiz" target="_blank" rel="noopener noreferrer" className="behind-scenes-button">
+            <Link href={`/${locale}/quiz`} target="_blank" rel="noopener noreferrer" className="behind-scenes-button">
               {t('behindScenesCta')} →
-            </a>
+            </Link>
           </div>
 
           {/* Disclaimer Box - Commented out for now (will revisit later) */}
