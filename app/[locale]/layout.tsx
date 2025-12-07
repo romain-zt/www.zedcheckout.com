@@ -119,7 +119,7 @@ export default async function LocaleLayout({
       <body className={inter.className}>
         {/* Google Analytics & Ads Tracking */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-GQXSFE1MBK"
+          src="https://www.googletagmanager.com/gtag/js?id=GT-MBLB23X4"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -127,7 +127,7 @@ export default async function LocaleLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-GQXSFE1MBK');
+            gtag('config', 'GT-MBLB23X4');
             gtag('config', 'AW-17670223006');
           `}
         </Script>
