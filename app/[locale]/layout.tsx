@@ -132,7 +132,7 @@ export default async function LocaleLayout({
           <ClarityAnalytics />
           {/* Google Analytics & Ads Tracking */}
           <Script
-            src="https://www.googletagmanager.com/gtag/js?id=GT-MBLB23X4"
+            src="https://www.googletagmanager.com/gtag/js?id=G-VX38MCH7Y2"
             strategy="afterInteractive"
           />
           <Script id="google-analytics" strategy="afterInteractive">
@@ -140,7 +140,7 @@ export default async function LocaleLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'GT-MBLB23X4');
+            gtag('config', 'G-VX38MCH7Y2');
             gtag('config', 'AW-17670223006');
           `}
           </Script>
