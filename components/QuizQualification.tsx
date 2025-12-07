@@ -224,6 +224,13 @@ const quizQuestions: Question[] = [
     description: 'Dernière étape pour recevoir:\n→ Votre score d\'optimisation checkout\n→ Vos recommandations prioritaires\n→ Le lead magnet adapté à votre niveau',
     required: true,
   },
+  {
+    id: 'end',
+    type: 'end',
+    title: 'Merci !',
+    description: 'Votre diagnostic est en route',
+    required: false,
+  },
 ];
 
 // Scoring and segmentation logic
