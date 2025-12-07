@@ -30,6 +30,10 @@ interface Question {
     condition: (value: any) => boolean;
     question: string;
   };
+  educationalTip?: {
+    condition: (value: any) => boolean;
+    message: string;
+  };
   sectionNumber?: number;
   sectionTitle?: string;
   sectionIcon?: string;
@@ -76,15 +80,20 @@ const quizQuestions: Question[] = [
   {
     id: 'q2',
     type: 'multiple',
-    title: 'Faites-vous régulièrement des A/B tests sur votre checkout ?',
+    title: 'Dernière fois que vous avez TESTÉ une amélioration checkout ?',
     options: [
-      'Oui, au moins 1 test/mois',
-      'Parfois (1-2 tests/an)',
-      'J\'ai déjà essayé mais c\'est compliqué',
-      'Non, car je n\'y suis pas parvenu',
-      'Non, car je ne m\'y suis jamais intéressé',
+      'Ce mois-ci (je teste régulièrement)',
+      'Il y a 3-6 mois',
+      'Il y a + de 6 mois',
+      'J\'ai essayé mais ma plateforme bloque',
+      'Jamais testé (pas su comment faire)',
+      'Jamais testé (pas prioritaire)',
     ],
     required: true,
+    educationalTip: {
+      condition: (value: string) => value?.includes('ma plateforme bloque'),
+      message: "💡 C'est exactement le goulot que ZedTech résout. La plupart des plateformes bloquent les tests checkout pour des raisons techniques."
+    }
   },
   {
     id: 'q3',
@@ -100,16 +109,19 @@ const quizQuestions: Question[] = [
   },
   {
     id: 'q4',
-    type: 'checkbox',
-    title: 'Quels événements de conversion trackez-vous actuellement ?',
+    type: 'multiple',
+    title: 'Savez-vous PRÉCISÉMENT où vous perdez vos clients dans le checkout ?',
     options: [
-      'Début de processus d\'achat (initiate_checkout)',
-      'Abandon de processus d\'achat (abandon_cart)',
-      'Achat finalisé (purchase)',
-      'Aucun, car je ne sais pas comment faire',
-      'Aucun, car je ne m\'y suis jamais intéressé',
+      'Oui, j\'ai les heatmaps + enregistrements sessions',
+      'Oui, je vois les abandons mais pas pourquoi',
+      'Non, j\'ai que le taux global d\'abandon',
+      'Non, je ne mesure rien de tout ça',
     ],
     required: true,
+    educationalTip: {
+      condition: (value: string) => value?.includes('ne mesure rien'),
+      message: "💡 Normal. 73% des e-commerçants ne trackent pas les abandons par étape. Résultat : ils optimisent la page produit alors que le problème est au checkout."
+    }
   },
   // BLOC 2 - FRUSTRATIONS SPÉCIFIQUES
   {
@@ -124,13 +136,18 @@ const quizQuestions: Question[] = [
   },
   {
     id: 'q5',
-    type: 'scale',
-    title: 'Sur une échelle de 1 à 5, êtes-vous satisfait des capacités de personnalisation checkout de votre plateforme actuelle ?',
-    scaleLabels: { min: 'Très frustré 😤', max: 'Très satisfait 😊' },
+    type: 'multiple',
+    title: 'Avez-vous déjà voulu changer quelque chose dans votre checkout et n\'avez pas pu ?',
+    options: [
+      'Oui, plusieurs fois (très frustrant)',
+      'Oui, une fois',
+      'Non, jamais essayé',
+      'Non, je peux tout customiser',
+    ],
     required: true,
     followUp: {
-      condition: (value: number) => value <= 3,
-      question: 'Quelle est votre principale limitation en ce moment ?',
+      condition: (value: string) => value?.includes('Oui'),
+      question: 'Exemple concret de ce que vous vouliez faire ?',
     },
   },
   {
@@ -147,6 +164,10 @@ const quizQuestions: Question[] = [
       'Autre',
     ],
     required: true,
+    educationalTip: {
+      condition: (value: string[]) => value?.includes('Je n\'ai pas encore analysé ça'),
+      message: "💡 80% des pertes se passent entre le panier et la validation finale. Sans tracking précis, vous optimisez peut-être le mauvais endroit."
+    }
   },
   {
     id: 'q7',
@@ -175,30 +196,17 @@ const quizQuestions: Question[] = [
   {
     id: 'q8',
     type: 'multiple',
-    title: 'Connaissez-vous votre taux de conversion actuel ?',
+    title: 'Que savez-vous de votre performance checkout ?',
     options: [
-      'Oui, il est inférieur à 2%',
-      'Oui, il est entre 2% et 4%',
-      'Oui, il est supérieur à 4%',
-      'Non, car je ne le mesure pas',
+      'Je connais mon taux global + où je perds mes clients',
+      'Je connais mon taux global (mais pas où je les perds)',
+      'Je sais que j\'ai des abandons mais pas les chiffres',
+      'Je ne mesure pas ça',
     ],
     required: true,
   },
   {
     id: 'q9',
-    type: 'multiple',
-    title: 'Quel est votre GMV annuel ?',
-    options: [
-      'Moins de €50K/an',
-      '€50K à €200K/an',
-      '€200K à €500K/an',
-      '€500K à €800K/an',
-      'Plus de €800K/an',
-    ],
-    required: true,
-  },
-  {
-    id: 'q10',
     type: 'multiple',
     title: 'Quelle plateforme e-commerce utilisez-vous ?',
     options: [
@@ -207,6 +215,19 @@ const quizQuestions: Question[] = [
       'PrestaShop',
       'Magento',
       'Custom / Autre',
+    ],
+    required: true,
+  },
+  {
+    id: 'q10',
+    type: 'multiple',
+    title: 'Quel est votre GMV annuel ?',
+    options: [
+      'Moins de €50K/an',
+      '€50K à €200K/an',
+      '€200K à €500K/an',
+      '€500K à €800K/an',
+      'Plus de €800K/an',
     ],
     required: true,
   },
@@ -231,27 +252,28 @@ function analyzeQuizData(data: QuizData) {
   // Expertise level
   const hasTools = Array.isArray(data.q1) && !data.q1.includes('Aucun de ces outils') && !data.q1.includes('Je ne sais pas');
   const toolCount = hasTools ? data.q1.length : 0;
-  const hasTracking = Array.isArray(data.q4) && !data.q4.includes('Je ne tracke pas ces événements') && !data.q4.includes('Je ne sais pas comment faire ça');
-  const doesABTesting = data.q2?.includes('Oui, au moins 1 test/mois');
+  const hasDeepTracking = data.q4?.includes('heatmaps + enregistrements sessions');
+  const doesRegularTesting = data.q2?.includes('Ce mois-ci');
   
   let expertiseLevel: 'debutant' | 'intermediaire' | 'avance';
-  if (!hasTools || !hasTracking) {
+  if (!hasTools || data.q4?.includes('ne mesure rien')) {
     expertiseLevel = 'debutant';
-  } else if (toolCount >= 3 && doesABTesting) {
+  } else if (toolCount >= 3 && hasDeepTracking && doesRegularTesting) {
     expertiseLevel = 'avance';
   } else {
     expertiseLevel = 'intermediaire';
   }
 
   // Frustration score
-  const satisfactionScore = data.q5 || 5;
-  const frictionCount = Array.isArray(data.q6) ? data.q6.length : 0;
-  const platformBlocked = data.q2?.includes('Non, ma plateforme ne le permet pas');
+  const highFrustration = data.q5?.includes('plusieurs fois');
+  const platformBlocked = data.q2?.includes('ma plateforme bloque');
+  const mediumFrustration = data.q5?.includes('Oui, une fois');
+  const noTracking = data.q4?.includes('ne mesure rien');
   
   let frustrationLevel: 'hot_hot_hot' | 'hot' | 'warm';
-  if (satisfactionScore <= 2 || platformBlocked) {
+  if (highFrustration || platformBlocked) {
     frustrationLevel = 'hot_hot_hot';
-  } else if (satisfactionScore === 3 || frictionCount >= 3) {
+  } else if (mediumFrustration || noTracking) {
     frustrationLevel = 'hot';
   } else {
     frustrationLevel = 'warm';
@@ -259,15 +281,16 @@ function analyzeQuizData(data: QuizData) {
 
   // Fit score
   const complexityCount = Array.isArray(data.q7) ? data.q7.filter((v: string) => v !== 'Rien de spécifique (vente simple)').length : 0;
-  const revenue = data.q9 || '';
-  const isShopify = data.q10?.includes('Shopify');
+  const revenue = data.q10 || ''; // Note: swapped, q10 is now revenue
+  const isShopify = data.q9?.includes('Shopify'); // Note: swapped, q9 is now platform
+  const hasAttemptedChange = data.q5?.includes('Oui');
   
   let fitScore: 'golden_lead' | 'perfect_fit' | 'good_fit' | 'low_fit';
-  if (isShopify && satisfactionScore <= 2 && complexityCount >= 2 && (revenue.includes('€200K') || revenue.includes('€500K') || revenue.includes('Plus de €800K'))) {
+  if (isShopify && highFrustration && (revenue.includes('€200K') || revenue.includes('€500K') || revenue.includes('Plus de €800K'))) {
     fitScore = 'golden_lead';
-  } else if (complexityCount >= 2 && satisfactionScore <= 3 && (revenue.includes('€100K') || revenue.includes('€200K') || revenue.includes('€500K') || revenue.includes('Plus de €800K'))) {
+  } else if (hasAttemptedChange && complexityCount >= 2 && (revenue.includes('€50K à €200K') || revenue.includes('€200K') || revenue.includes('€500K') || revenue.includes('Plus de €800K'))) {
     fitScore = 'perfect_fit';
-  } else if (complexityCount >= 1 && !revenue.includes('Moins de €50K')) {
+  } else if (hasAttemptedChange && !revenue.includes('Moins de €50K')) {
     fitScore = 'good_fit';
   } else {
     fitScore = 'low_fit';
@@ -276,11 +299,23 @@ function analyzeQuizData(data: QuizData) {
   // Calculate score
   let score = 0;
   if (hasTools) score += 20;
-  if (hasTracking) score += 20;
-  if (doesABTesting) score += 15;
-  if (satisfactionScore >= 4) score += 20;
+  if (hasDeepTracking) score += 20;
+  if (doesRegularTesting) score += 15;
+  if (!highFrustration && !mediumFrustration) score += 20; // Satisfied = higher score
   if (complexityCount >= 2) score += 15;
-  if (data.q8 && !data.q8.includes('Non, je ne le mesure pas')) score += 10;
+  if (data.q8 && !data.q8.includes('Je ne mesure pas ça')) score += 10;
+
+  // Map Q5 response to a satisfaction score for backwards compatibility
+  let satisfactionScore = 5;
+  if (data.q5?.includes('plusieurs fois')) {
+    satisfactionScore = 1;
+  } else if (data.q5?.includes('Oui, une fois')) {
+    satisfactionScore = 2;
+  } else if (data.q5?.includes('jamais essayé')) {
+    satisfactionScore = 3;
+  } else if (data.q5?.includes('tout customiser')) {
+    satisfactionScore = 5;
+  }
 
   return {
     expertiseLevel,
@@ -372,7 +407,7 @@ export default function QuizQualification() {
     setDirection(1);
     
     // Check if we should skip to end screen for low revenue
-    if (currentQuestion.id === 'q9' && quizData.q9?.includes('Moins de €50K')) {
+    if (currentQuestion.id === 'q10' && quizData.q10?.includes('Moins de €50K')) {
       // Skip to end
       setCurrentStep(quizQuestions.length - 1);
       return;
@@ -471,19 +506,50 @@ export default function QuizQualification() {
               )}
 
               {currentQuestion.type === 'multiple' && (
-                <MultipleChoiceQuestion
-                  question={currentQuestion}
-                  value={quizData[currentQuestion.id]}
-                  onChange={(value) => handleAnswer(currentQuestion.id, value)}
-                />
+                <>
+                  <MultipleChoiceQuestion
+                    question={currentQuestion}
+                    value={quizData[currentQuestion.id]}
+                    onChange={(value) => handleAnswer(currentQuestion.id, value)}
+                  />
+                  {currentQuestion.educationalTip && 
+                   currentQuestion.educationalTip.condition(quizData[currentQuestion.id]) && (
+                    <EducationalTip message={currentQuestion.educationalTip.message} />
+                  )}
+                  {showFollowUp && currentQuestion.followUp && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-6"
+                    >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {currentQuestion.followUp.question}
+                      </label>
+                      <textarea
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E88B7A] focus:border-transparent transition-all"
+                        rows={3}
+                        maxLength={100}
+                        value={quizData[`${currentQuestion.id}_followup`] || ''}
+                        onChange={(e) => handleAnswer(`${currentQuestion.id}_followup`, e.target.value)}
+                        placeholder="Décrivez votre principale limitation..."
+                      />
+                    </motion.div>
+                  )}
+                </>
               )}
 
               {currentQuestion.type === 'checkbox' && (
-                <CheckboxQuestion
-                  question={currentQuestion}
-                  value={quizData[currentQuestion.id] || []}
-                  onChange={(value) => handleAnswer(currentQuestion.id, value)}
-                />
+                <>
+                  <CheckboxQuestion
+                    question={currentQuestion}
+                    value={quizData[currentQuestion.id] || []}
+                    onChange={(value) => handleAnswer(currentQuestion.id, value)}
+                  />
+                  {currentQuestion.educationalTip && 
+                   currentQuestion.educationalTip.condition(quizData[currentQuestion.id]) && (
+                    <EducationalTip message={currentQuestion.educationalTip.message} />
+                  )}
+                </>
               )}
 
               {currentQuestion.type === 'scale' && (
@@ -915,6 +981,20 @@ function ThankYouScreen() {
   );
 }
 
+// Component for educational tip
+function EducationalTip({ message }: { message: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="mt-4 bg-[#FFF5F0] border-l-4 border-[#E88B7A] p-4 rounded text-sm text-gray-700"
+    >
+      {message}
+    </motion.div>
+  );
+}
+
 // Component for end screen
 function EndScreen({
   data,
@@ -924,7 +1004,7 @@ function EndScreen({
   analysis: ReturnType<typeof analyzeQuizData>;
 }) {
   const getEndScreenContent = () => {
-    if (data.q9?.includes('Moins de €50K')) {
+    if (data.q10?.includes('Moins de €50K')) {
       return {
         emoji: '🎯',
         title: 'Votre score: Débutant (20/100)',
