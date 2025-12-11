@@ -295,7 +295,7 @@ interface TrollScore {
 function scoreTrollBehavior(
   message: string,
   conversationHistory: ChatMessage[],
-  context: ConversationContext
+  context?: ConversationContext | { messageCount?: number; sessionStarted?: string }
 ): TrollScore {
   let score = 0;
   const reasons: string[] = [];
@@ -355,13 +355,18 @@ function scoreTrollBehavior(
   }
   
   // Pattern 6: Rapid fire messages (many messages in short time)
-  if (context.metadata.messageCount > 5) {
-    const timeSinceStart = Date.now() - new Date(context.metadata.sessionStarted).getTime();
-    const messagesPerMinute = (context.metadata.messageCount / timeSinceStart) * 60000;
+  if (context) {
+    const messageCount = 'metadata' in context ? context.metadata.messageCount : context.messageCount;
+    const sessionStarted = 'metadata' in context ? context.metadata.sessionStarted : context.sessionStarted;
     
-    if (messagesPerMinute > 10) {
-      score += 20;
-      reasons.push('rapid_fire');
+    if (messageCount && messageCount > 5 && sessionStarted) {
+      const timeSinceStart = Date.now() - new Date(sessionStarted).getTime();
+      const messagesPerMinute = (messageCount / timeSinceStart) * 60000;
+      
+      if (messagesPerMinute > 10) {
+        score += 20;
+        reasons.push('rapid_fire');
+      }
     }
   }
   
