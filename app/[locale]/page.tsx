@@ -1,8 +1,11 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ZedHero from '@/components/ZedHero';
+import WhyNow from '@/components/WhyNow';
+import ComparisonTable from '@/components/ComparisonTable';
 import ZedProblem from '@/components/ZedProblem';
 import ZedSolution from '@/components/ZedSolution';
+import ForWho from '@/components/ForWho';
 import ZedFilter from '@/components/ZedFilter';
 import ZedProcess from '@/components/ZedProcess';
 import ZedFAQ from '@/components/ZedFAQ';
@@ -15,8 +18,11 @@ export default function LandingPage() {
       <Header />
       <main>
         <ZedHero />
+        <WhyNow />
+        <ComparisonTable />
         <ZedProblem />
         <ZedSolution />
+        <ForWho />
         <ZedFilter />
         <ZedProcess />
         <ZedFAQ />

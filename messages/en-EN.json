@@ -205,6 +205,11 @@
   },
   "zedcheckout": {
     "hero": {
+      "title": "The conversational checkout you control.",
+      "subtitle": "(Not Amazon. Not ChatGPT. Not Google.)",
+      "description": "ZedCheckout brings modern conversational intelligence directly to YOUR site — with your branding, your customers, your data.",
+      "cta_primary": "See how it works",
+      "cta_secondary": "3 reasons to stay independent",
       "h1": "68% of your customers abandon at checkout.",
       "h1Secondary": "Transform this friction into conversation.",
       "subhead": "ZedCheckout replaces rigid forms with a conversational experience that guides, reassures, and converts.",
@@ -213,6 +218,108 @@
         "item1": "Installation handled for you",
         "item2": "E-commerce compatible",
         "item3": "10 spots January 2026"
+      }
+    },
+    "why_now": {
+      "title": "2025: The year tech giants want to capture your customers",
+      "events": [
+        {
+          "icon": "✅",
+          "text": "ChatGPT launches Instant Checkout (buying in ChatGPT)"
+        },
+        {
+          "icon": "✅",
+          "text": "Google launches Agentic Checkout (buying in Google)"
+        },
+        {
+          "icon": "✅",
+          "text": "Amazon intensifies expansion"
+        },
+        {
+          "icon": "✅",
+          "text": "Shopify pushes Shop App (15% commission)"
+        }
+      ],
+      "message": "The message is clear: \"Give us your customers, we'll handle the rest.\"",
+      "positioning": {
+        "for_commodities": "For commodity sellers, maybe.",
+        "for_transformation": "For you selling transformation? It's commercial suicide."
+      }
+    },
+    "comparison_table": {
+      "title": "Centralized marketplace vs Direct relationship",
+      "columns": [
+        "ChatGPT Instant Checkout",
+        "Shop App (Shopify)",
+        "ZedCheckout"
+      ],
+      "rows": [
+        {
+          "criteria": "Where does purchase happen?",
+          "chatgpt": "❌ In ChatGPT",
+          "shop_app": "❌ In Shop app",
+          "zedcheckout": "✅ On YOUR site"
+        },
+        {
+          "criteria": "Branding",
+          "chatgpt": "❌ Zero",
+          "shop_app": "❌ Minimal logo",
+          "zedcheckout": "✅ 100% yours"
+        },
+        {
+          "criteria": "UX Control",
+          "chatgpt": "❌ None",
+          "shop_app": "❌ Shopify template",
+          "zedcheckout": "✅ Full"
+        },
+        {
+          "criteria": "Customer data",
+          "chatgpt": "❌ OpenAI owned",
+          "shop_app": "⚠️ Shared Shopify",
+          "zedcheckout": "✅ 100% yours"
+        },
+        {
+          "criteria": "Commission",
+          "chatgpt": "? (TBD)",
+          "shop_app": "15% on Shop purchases",
+          "zedcheckout": "✅ 2% only"
+        },
+        {
+          "criteria": "Storytelling",
+          "chatgpt": "❌ Impossible",
+          "shop_app": "❌ Limited",
+          "zedcheckout": "✅ Customized"
+        }
+      ]
+    },
+    "for_who": {
+      "title": "ZedCheckout is for you if:",
+      "qualified": [
+        {
+          "icon": "✅",
+          "text": "You sell value, not interchangeable products"
+        },
+        {
+          "icon": "✅",
+          "text": "Your differentiation relies on your brand and story"
+        },
+        {
+          "icon": "✅",
+          "text": "Your customers need to UNDERSTAND your offer before buying (not just click)"
+        },
+        {
+          "icon": "✅",
+          "text": "You refuse to become \"just another item\" in a giant catalog"
+        },
+        {
+          "icon": "✅",
+          "text": "You want AI benefits without losing independence"
+        }
+      ],
+      "disqualified": {
+        "icon": "❌",
+        "title": "You're not a fit if:",
+        "text": "You sell generic products where price is the only differentiator (in that case, marketplaces are perfect for you)"
       }
     },
     "problem": {

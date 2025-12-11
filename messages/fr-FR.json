@@ -205,6 +205,11 @@
   },
   "zedcheckout": {
     "hero": {
+      "title": "Le checkout conversationnel que vous contrôlez.",
+      "subtitle": "(Pas Amazon. Pas ChatGPT. Pas Google.)",
+      "description": "ZedCheckout apporte l'intelligence conversationnelle moderne directement sur VOTRE site — avec votre branding, vos clients, votre data.",
+      "cta_primary": "Voir comment ça marche",
+      "cta_secondary": "Les 3 raisons de rester indépendant",
       "h1": "68% de vos clients abandonnent au checkout.",
       "h1Secondary": "Transformez cette friction en conversation.",
       "subhead": "ZedCheckout remplace les formulaires rigides par une expérience conversationnelle qui guide, rassure, et convertit.",
@@ -213,6 +218,108 @@
         "item1": "Installation gérée pour vous",
         "item2": "Compatible e-commerce",
         "item3": "10 places janvier 2026"
+      }
+    },
+    "why_now": {
+      "title": "2025 : L'année où les géants tech veulent capturer vos clients",
+      "events": [
+        {
+          "icon": "✅",
+          "text": "ChatGPT lance Instant Checkout (achats dans ChatGPT)"
+        },
+        {
+          "icon": "✅",
+          "text": "Google lance Agentic Checkout (achats dans Google)"
+        },
+        {
+          "icon": "✅",
+          "text": "Amazon intensifie son expansion"
+        },
+        {
+          "icon": "✅",
+          "text": "Shopify pousse Shop App (15% commission)"
+        }
+      ],
+      "message": "Le message est clair : \"Donnez-nous vos clients, on s'occupe du reste.\"",
+      "positioning": {
+        "for_commodities": "Pour les vendeurs de commodités, peut-être.",
+        "for_transformation": "Pour vous qui vendez de la transformation ? C'est un suicide commercial."
+      }
+    },
+    "comparison_table": {
+      "title": "Marketplace centralisée vs Relation directe",
+      "columns": [
+        "ChatGPT Instant Checkout",
+        "Shop App (Shopify)",
+        "ZedCheckout"
+      ],
+      "rows": [
+        {
+          "criteria": "Où se passe l'achat ?",
+          "chatgpt": "❌ Dans ChatGPT",
+          "shop_app": "❌ Dans l'app Shop",
+          "zedcheckout": "✅ Sur VOTRE site"
+        },
+        {
+          "criteria": "Branding",
+          "chatgpt": "❌ Zero",
+          "shop_app": "❌ Logo minimal",
+          "zedcheckout": "✅ 100% vôtre"
+        },
+        {
+          "criteria": "Contrôle UX",
+          "chatgpt": "❌ Aucun",
+          "shop_app": "❌ Template Shopify",
+          "zedcheckout": "✅ Total"
+        },
+        {
+          "criteria": "Data client",
+          "chatgpt": "❌ Propriété OpenAI",
+          "shop_app": "⚠️ Partagé Shopify",
+          "zedcheckout": "✅ 100% vôtre"
+        },
+        {
+          "criteria": "Commission",
+          "chatgpt": "? (à venir)",
+          "shop_app": "15% sur achats Shop",
+          "zedcheckout": "✅ 2% uniquement"
+        },
+        {
+          "criteria": "Storytelling",
+          "chatgpt": "❌ Impossible",
+          "shop_app": "❌ Limité",
+          "zedcheckout": "✅ Personnalisé"
+        }
+      ]
+    },
+    "for_who": {
+      "title": "ZedCheckout est fait pour vous si :",
+      "qualified": [
+        {
+          "icon": "✅",
+          "text": "Vous vendez de la valeur, pas des produits interchangeables"
+        },
+        {
+          "icon": "✅",
+          "text": "Votre différenciation repose sur votre marque et votre histoire"
+        },
+        {
+          "icon": "✅",
+          "text": "Vos clients doivent COMPRENDRE votre offre avant d'acheter (pas juste cliquer)"
+        },
+        {
+          "icon": "✅",
+          "text": "Vous refusez de devenir \"un item de plus\" dans un catalogue géant"
+        },
+        {
+          "icon": "✅",
+          "text": "Vous voulez les bénéfices de l'IA sans perdre votre indépendance"
+        }
+      ],
+      "disqualified": {
+        "icon": "❌",
+        "title": "Vous ne correspondez pas si :",
+        "text": "Vous vendez des produits génériques où le prix est le seul différenciateur (dans ce cas, les marketplaces sont parfaites pour vous)"
       }
     },
     "problem": {

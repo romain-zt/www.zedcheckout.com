@@ -28,39 +28,37 @@ export default function ZedHero() {
           {/* LEFT: Content */}
           <div className="space-y-6 sm:space-y-8">
             
-            {/* Headline */}
+            {/* Title */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="space-y-3 sm:space-y-4"
+              className="space-y-2 sm:space-y-3"
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight text-[#1E2A47]">
-                {t('h1')}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-[#1E2A47]">
+                {t('title')}
               </h1>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-black leading-[1.15] tracking-tight">
-                <span className="bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] bg-clip-text text-transparent">
-                  {t('h1Secondary')}
-                </span>
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal leading-[1.2] tracking-tight text-[#FFC9B9] italic">
+                {t('subtitle')}
               </h2>
             </motion.div>
 
-            {/* Subhead */}
+            {/* Description */}
             <motion.p 
-              className="text-base sm:text-lg lg:text-2xl font-medium leading-relaxed text-[#1E2A47]/80"
+              className="text-base sm:text-lg lg:text-xl font-normal leading-relaxed text-[#1E2A47]/80"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              {t('subhead')}
+              {t('description')}
             </motion.p>
 
-            {/* CTA */}
+            {/* CTAs */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="pt-2"
+              className="pt-2 flex flex-col sm:flex-row gap-4"
             >
               <button
                 onClick={() => {
@@ -70,31 +68,15 @@ export default function ZedHero() {
                   });
                   window.dispatchEvent(event);
                 }}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl shadow-xl hover:shadow-2xl active:scale-95 sm:hover:scale-105 transition-all duration-300"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-[#1E2A47] text-[#F5EDE4] rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl hover:shadow-2xl active:scale-95 sm:hover:scale-105 transition-all duration-300"
               >
-                {t('cta')}
-                {/* Arrow: right on desktop, down on mobile */}
+                {t('cta_primary')}
                 <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6 block sm:hidden"
+                  className="w-5 h-5 sm:w-6 sm:h-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  {/* Down arrow for mobile */}
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 17l4 4m0 0l4-4m-4 4V3"
-                  />
-                </svg>
-                <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6 hidden sm:block"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  {/* Right arrow for desktop */}
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -102,6 +84,17 @@ export default function ZedHero() {
                     d="M17 8l4 4m0 0l-4 4m4-4H3"
                   />
                 </svg>
+              </button>
+              <button
+                onClick={() => {
+                  const whyNowSection = document.getElementById('why-now');
+                  if (whyNowSection) {
+                    whyNowSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-[#F5EDE4] text-[#1E2A47] rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg border-2 border-[#1E2A47] hover:bg-[#1E2A47] hover:text-[#F5EDE4] active:scale-95 sm:hover:scale-105 transition-all duration-300"
+              >
+                {t('cta_secondary')}
               </button>
             </motion.div>
 
