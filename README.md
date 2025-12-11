@@ -1,5 +1,6 @@
 # ZED TECH - Checkout Booster Website
 
+
 Modern, SEO-optimized landing page built with Next.js 14+, Tailwind CSS, and next-intl for internationalization.
 
 ## 🚀 Features
