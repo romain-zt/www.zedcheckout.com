@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     keywords: meta.keywords || 'Shopify, checkout, conversion, e-commerce, optimization',
     authors: [{ name: 'Romain Piveteau' }],
     creator: 'Romain Piveteau',
-    publisher: 'ZedTech Lab',
+    publisher: 'ZedCheckout',
     formatDetection: {
       email: false,
       address: false,
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       type: 'website',
       locale: locale,
       url: `https://www.zedcheckout.com/${locale}`,
-      siteName: 'ZedTech Lab',
+      siteName: 'ZedCheckout',
       images: [
         {
           url: `https://www.zedcheckout.com/${locale}/opengraph-image`,
@@ -193,10 +193,10 @@ export default async function LocaleLayout({
         '@type': 'WebSite',
         '@id': 'https://www.zedcheckout.com/#website',
         url: 'https://www.zedcheckout.com',
-        name: 'ZED TECH',
+        name: 'ZedCheckout',
         description: locale === 'fr-FR'
-          ? 'Lab de recherche e-commerce indépendant. Recherche comment l\'IA peut réhumaniser l\'expérience d\'achat en ligne.'
-          : 'Independent e-commerce research lab. Researching how AI can rehumanize the online shopping experience.',
+          ? 'Checkout conversationnel qui transforme le paiement en expérience. Par ZED TECH, lab de recherche e-commerce indépendant.'
+          : 'Conversational checkout that transforms payment into an experience. By ZED TECH, independent e-commerce research lab.',
         publisher: {
           '@id': 'https://www.zedcheckout.com/#organization',
         },
@@ -250,12 +250,12 @@ export default async function LocaleLayout({
         mainEntity: [
           {
             '@type': 'Question',
-            name: locale === 'fr-FR' ? 'Qu\'est-ce que ZedTech ?' : 'What is ZedTech?',
+            name: locale === 'fr-FR' ? 'Qu\'est-ce que ZedCheckout ?' : 'What is ZedCheckout?',
             acceptedAnswer: {
               '@type': 'Answer',
               text: locale === 'fr-FR'
-                ? 'ZedTech est un laboratoire de recherche e-commerce indépendant fondé par Romain Piveteau. Mission : redonner sa chaleur humaine au e-commerce. 10,950h de R&D documentées. Premier produit : ZedCheckout (checkout conversationnel, +40% conversions validées).'
-                : 'ZedTech is an independent e-commerce research lab founded by Romain Piveteau. Mission: bringing human warmth back to e-commerce. 10,950 documented R&D hours. First product: ZedCheckout (conversational checkout, +40% validated conversions).',
+                ? 'ZedCheckout est un checkout conversationnel qui transforme le paiement en conversation WhatsApp/SMS. Créé par ZED TECH (lab de recherche e-commerce indépendant). +40% conversions validées. Setup 9 jours. Prix : €2,990 one-time OU 2% transaction.'
+                : 'ZedCheckout is a conversational checkout that transforms payment into WhatsApp/SMS conversations. Created by ZED TECH (independent e-commerce research lab). +40% validated conversions. 9-day setup. Price: €2,990 one-time OR 2% transaction fee.',
             },
           },
           {

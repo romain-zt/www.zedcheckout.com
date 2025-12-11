@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ZedHero from '@/components/ZedHero';
-import WhyNow from '@/components/WhyNow';
+import WhyStay from '@/components/WhyStay';
 import ComparisonTable from '@/components/ComparisonTable';
 import ZedProblem from '@/components/ZedProblem';
 import ZedSolution from '@/components/ZedSolution';
@@ -18,7 +18,7 @@ export default function LandingPage() {
       <Header />
       <main>
         <ZedHero />
-        <WhyNow />
+        <WhyStay />
         <ComparisonTable />
         <ZedProblem />
         <ZedSolution />

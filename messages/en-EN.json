@@ -1,17 +1,17 @@
 {
   "meta": {
-    "title": "ZedTech · Bringing human warmth back to e-commerce",
-    "description": "Because your products deserve better than a cold catalog. I research how to bring life and human warmth back to e-commerce. Independent R&D lab, 10,950h documented.",
-    "keywords": "human warmth e-commerce, conversational checkout, emotional e-commerce optimization, ZedTech Lab, e-commerce research, cold Shopify alternative",
+    "title": "ZedCheckout · Conversational Checkout for E-commerce",
+    "description": "Transform your checkout into a conversation. Replace cold forms with natural WhatsApp/SMS conversations guided by AI. +23% validated conversions. By ZED TECH, independent e-commerce research lab.",
+    "keywords": "conversational checkout, WhatsApp checkout, SMS checkout, e-commerce optimization, checkout conversion, ZedCheckout, Shopify alternative",
     "og": {
-      "title": "ZedTech · Making e-commerce human again",
-      "description": "Independent research: how to transform cold catalogs into warm experiences. 10,950h R&D. First product: ZedCheckout (+23% validated conversions)."
+      "title": "ZedCheckout · Making checkout human again",
+      "description": "Conversational checkout that replaces cold forms with natural conversations. +23% validated conversions. 10,950h R&D by ZED TECH lab."
     },
     "twitter": {
-      "title": "ZedTech · E-commerce + Human Warmth",
-      "description": "R&D lab seeking to rehumanize e-commerce. Measured results, no bullshit."
+      "title": "ZedCheckout · Conversational Checkout",
+      "description": "Transform payment into conversation. Measured results, no bullshit."
     },
-    "aiSummary": "ZedTech is an independent e-commerce R&D lab founded by Romain Piveteau (former carpenter, 9y systems engineer). Mission: bringing human warmth back to e-commerce. 10,950 documented research hours. First product: ZedCheckout, a conversational checkout that replaces cold forms with natural WhatsApp/SMS conversations guided by AI. Philosophy: your products deserve better than a cold catalog. Not selling dreams, sharing measured results."
+    "aiSummary": "ZedCheckout is a conversational checkout solution created by ZED TECH, an independent e-commerce R&D lab founded by Romain Piveteau (former carpenter, 9y systems engineer). ZedCheckout replaces cold checkout forms with natural WhatsApp/SMS conversations guided by AI. 10,950 documented research hours. +23% validated conversions. Philosophy: payment should be an experience, not a cold form. Not selling dreams, sharing measured results."
   },
   "header": {
     "cta": "Contact",
@@ -205,11 +205,11 @@
   },
   "zedcheckout": {
     "hero": {
-      "title": "The conversational checkout you control.",
-      "subtitle": "(Not Amazon. Not ChatGPT. Not Google.)",
-      "description": "ZedCheckout brings modern conversational intelligence directly to YOUR site — with your branding, your customers, your data.",
+      "title": "The conversational checkout that stays on your store.",
+      "subtitle": "Yes to marketplace visibility. No to losing your customers.",
+      "description": "ZedCheckout brings modern conversational intelligence directly to YOUR site — while ChatGPT, Amazon and Shop want to take them elsewhere.",
       "cta_primary": "See how it works",
-      "cta_secondary": "3 reasons to stay independent",
+      "cta_secondary": "Why stay on your site",
       "h1": "68% of your customers abandon at checkout.",
       "h1Secondary": "Transform this friction into conversation.",
       "subhead": "ZedCheckout replaces rigid forms with a conversational experience that guides, reassures, and converts.",
@@ -220,106 +220,100 @@
         "item3": "10 spots January 2026"
       }
     },
-    "why_now": {
-      "title": "2025: The year tech giants want to capture your customers",
-      "events": [
+    "why_stay": {
+      "title": "2025: Marketplaces want your customers",
+      "intro": "Tech giants are building centralized catalogs where your products become... products among many others.",
+      "marketplaces": [
         {
-          "icon": "✅",
-          "text": "ChatGPT launches Instant Checkout (buying in ChatGPT)"
+          "name": "ChatGPT Instant Checkout",
+          "benefit": "✅ Visibility to millions of users",
+          "cost": "❌ Your customer buys in ChatGPT, not on your site"
         },
         {
-          "icon": "✅",
-          "text": "Google launches Agentic Checkout (buying in Google)"
+          "name": "Shop App (Shopify)",
+          "benefit": "✅ Additional acquisition channel",
+          "cost": "❌ 15% commission + zero experience control"
         },
         {
-          "icon": "✅",
-          "text": "Amazon intensifies expansion"
-        },
-        {
-          "icon": "✅",
-          "text": "Shopify pushes Shop App (15% commission)"
+          "name": "Amazon",
+          "benefit": "✅ Guaranteed massive traffic",
+          "cost": "❌ Your brand becomes invisible, price = only differentiator"
         }
       ],
-      "message": "The message is clear: \"Give us your customers, we'll handle the rest.\"",
-      "positioning": {
-        "for_commodities": "For commodity sellers, maybe.",
-        "for_transformation": "For you selling transformation? It's commercial suicide."
+      "conclusion": {
+        "title": "For generic products? Maybe.",
+        "subtitle": "For your premium positioning? It's diluting your brand in an ocean of competitors.",
+        "cta": "Modernize your store, keep your customers"
       }
     },
     "comparison_table": {
-      "title": "Centralized marketplace vs Direct relationship",
+      "title": "Marketplace vs Your modernized store",
+      "subtitle": "Both approaches have their place. Here are the differences.",
       "columns": [
-        "ChatGPT Instant Checkout",
-        "Shop App (Shopify)",
-        "ZedCheckout"
+        "Marketplaces (ChatGPT, Shop, Amazon)",
+        "Your store (with ZedCheckout)"
       ],
       "rows": [
         {
-          "criteria": "Where does purchase happen?",
-          "chatgpt": "❌ In ChatGPT",
-          "shop_app": "❌ In Shop app",
-          "zedcheckout": "✅ On YOUR site"
+          "criteria": "Visibility",
+          "marketplace": "✅ Access to their massive audience",
+          "your_store": "⚠️ Depends on your existing traffic"
         },
         {
-          "criteria": "Branding",
-          "chatgpt": "❌ Zero",
-          "shop_app": "❌ Minimal logo",
-          "zedcheckout": "✅ 100% yours"
+          "criteria": "Brand control",
+          "marketplace": "❌ Standardized template, minimal logo",
+          "your_store": "✅ 100% your visual identity"
         },
         {
-          "criteria": "UX Control",
-          "chatgpt": "❌ None",
-          "shop_app": "❌ Shopify template",
-          "zedcheckout": "✅ Full"
+          "criteria": "Customer experience",
+          "marketplace": "❌ Generic experience (catalog)",
+          "your_store": "✅ Personalized journey, storytelling"
         },
         {
-          "criteria": "Customer data",
-          "chatgpt": "❌ OpenAI owned",
-          "shop_app": "⚠️ Shared Shopify",
-          "zedcheckout": "✅ 100% yours"
+          "criteria": "Proprietary data",
+          "marketplace": "❌ Shared with platform",
+          "your_store": "✅ 100% yours (CRM, analytics)"
         },
         {
-          "criteria": "Commission",
-          "chatgpt": "? (TBD)",
-          "shop_app": "15% on Shop purchases",
-          "zedcheckout": "✅ 2% only"
-        },
-        {
-          "criteria": "Storytelling",
-          "chatgpt": "❌ Impossible",
-          "shop_app": "❌ Limited",
-          "zedcheckout": "✅ Customized"
+          "criteria": "Economics",
+          "marketplace": "❌ 15-30% commissions",
+          "your_store": "✅ Standard tech fees (Shopify, payment)"
         }
-      ]
+      ],
+      "conclusion": "ZedCheckout doesn't replace marketplaces. It modernizes YOUR store so your customers don't need to go elsewhere."
     },
     "for_who": {
       "title": "ZedCheckout is for you if:",
       "qualified": [
         {
           "icon": "✅",
-          "text": "You sell value, not interchangeable products"
+          "text": "You already have a store (Shopify, WooCommerce, custom) that you love"
         },
         {
           "icon": "✅",
-          "text": "Your differentiation relies on your brand and story"
+          "text": "You want to modernize it without losing customers to marketplaces"
         },
         {
           "icon": "✅",
-          "text": "Your customers need to UNDERSTAND your offer before buying (not just click)"
+          "text": "Your differentiation comes from your brand, not just price"
         },
         {
           "icon": "✅",
-          "text": "You refuse to become \"just another item\" in a giant catalog"
+          "text": "Your customers need to UNDERSTAND your offer before buying"
         },
         {
           "icon": "✅",
-          "text": "You want AI benefits without losing independence"
+          "text": "You want conversational AI benefits without leaving your site"
         }
       ],
-      "disqualified": {
-        "icon": "❌",
-        "title": "You're not a fit if:",
-        "text": "You sell generic products where price is the only differentiator (in that case, marketplaces are perfect for you)"
+      "best_for": {
+        "title": "Especially suited for:",
+        "segments": [
+          "Training & coaching (€500-5000/client)",
+          "Premium e-commerce (margins >40%)",
+          "Custom services (personalized quotes)",
+          "Products with strong storytelling"
+        ]
       }
     },
     "problem": {

@@ -1,17 +1,17 @@
 {
   "meta": {
-    "title": "ZedTech · Redonner sa chaleur humaine au e-commerce",
-    "description": "Parce que vos produits méritent mieux qu'un catalogue glacial. Je recherche comment redonner vie et chaleur au e-commerce. Lab R&D indépendant, 10,950h documentées.",
-    "keywords": "e-commerce chaleur humaine, checkout conversationnel, optimisation e-commerce émotionnelle, ZedTech Lab, recherche e-commerce, alternative Shopify froide",
+    "title": "ZedCheckout · Checkout Conversationnel pour E-commerce",
+    "description": "Transformez votre checkout en conversation. Remplacez les formulaires froids par des conversations WhatsApp/SMS naturelles guidées par IA. +23% conversions validées. Par ZED TECH, lab de recherche e-commerce indépendant.",
+    "keywords": "checkout conversationnel, checkout WhatsApp, checkout SMS, optimisation e-commerce, conversion checkout, ZedCheckout, alternative Shopify",
     "og": {
-      "title": "ZedTech · Pour que l'e-commerce redevienne humain",
-      "description": "Recherche indépendante : comment transformer les catalogues glacials en expériences chaleureuses. 10,950h R&D. Premier produit : ZedCheckout (+23% conversions validées)."
+      "title": "ZedCheckout · Pour que le checkout redevienne humain",
+      "description": "Checkout conversationnel qui remplace les formulaires froids par des conversations naturelles. +23% conversions validées. 10,950h R&D par le lab ZED TECH."
     },
     "twitter": {
-      "title": "ZedTech · E-commerce + Chaleur Humaine",
-      "description": "Lab R&D qui cherche à réhumaniser l'e-commerce. Résultats mesurés, pas de bullshit."
+      "title": "ZedCheckout · Checkout Conversationnel",
+      "description": "Transformez le paiement en conversation. Résultats mesurés, pas de bullshit."
     },
-    "aiSummary": "ZedTech est un laboratoire de recherche e-commerce indépendant fondé par Romain Piveteau (ancien charpentier, 9 ans ingénieur systèmes). Mission : redonner sa chaleur humaine au e-commerce. 10,950h R&D documentées. Premier produit : ZedCheckout, checkout conversationnel qui remplace les formulaires froids par des conversations WhatsApp/SMS naturelles guidées par IA. Philosophie : vos produits méritent mieux qu'un catalogue glacial. Pas de vente de rêve, partage de résultats mesurés."
+    "aiSummary": "ZedCheckout est une solution de checkout conversationnel créée par ZED TECH, laboratoire de recherche e-commerce indépendant fondé par Romain Piveteau (ancien charpentier, 9 ans ingénieur systèmes). ZedCheckout remplace les formulaires de checkout froids par des conversations WhatsApp/SMS naturelles guidées par IA. 10,950h R&D documentées. +23% conversions validées. Philosophie : le paiement doit être une expérience, pas un formulaire froid. Pas de vente de rêve, partage de résultats mesurés."
   },
   "header": {
     "cta": "Contact",
@@ -205,11 +205,11 @@
   },
   "zedcheckout": {
     "hero": {
-      "title": "Le checkout conversationnel que vous contrôlez.",
-      "subtitle": "(Pas Amazon. Pas ChatGPT. Pas Google.)",
-      "description": "ZedCheckout apporte l'intelligence conversationnelle moderne directement sur VOTRE site — avec votre branding, vos clients, votre data.",
+      "title": "Le checkout conversationnel qui reste sur votre boutique.",
+      "subtitle": "Oui pour la visibilité des marketplaces. Non pour perdre vos clients.",
+      "description": "ZedCheckout apporte l'intelligence conversationnelle moderne directement sur VOTRE site — pendant que ChatGPT, Amazon et Shop veulent les emmener ailleurs.",
       "cta_primary": "Voir comment ça marche",
-      "cta_secondary": "Les 3 raisons de rester indépendant",
+      "cta_secondary": "Pourquoi rester chez vous",
       "h1": "68% de vos clients abandonnent au checkout.",
       "h1Secondary": "Transformez cette friction en conversation.",
       "subhead": "ZedCheckout remplace les formulaires rigides par une expérience conversationnelle qui guide, rassure, et convertit.",
@@ -220,106 +220,100 @@
         "item3": "10 places janvier 2026"
       }
     },
-    "why_now": {
-      "title": "2025 : L'année où les géants tech veulent capturer vos clients",
-      "events": [
+    "why_stay": {
+      "title": "2025 : Les marketplaces veulent vos clients",
+      "intro": "Les géants tech construisent des catalogues centralisés où vos produits deviennent... des produits parmi tant d'autres.",
+      "marketplaces": [
         {
-          "icon": "✅",
-          "text": "ChatGPT lance Instant Checkout (achats dans ChatGPT)"
+          "name": "ChatGPT Instant Checkout",
+          "benefit": "✅ Visibilité auprès de millions d'utilisateurs",
+          "cost": "❌ Votre client achète dans ChatGPT, pas sur votre site"
         },
         {
-          "icon": "✅",
-          "text": "Google lance Agentic Checkout (achats dans Google)"
+          "name": "Shop App (Shopify)",
+          "benefit": "✅ Canal d'acquisition supplémentaire",
+          "cost": "❌ 15% commission + zéro contrôle de l'expérience"
         },
         {
-          "icon": "✅",
-          "text": "Amazon intensifie son expansion"
-        },
-        {
-          "icon": "✅",
-          "text": "Shopify pousse Shop App (15% commission)"
+          "name": "Amazon",
+          "benefit": "✅ Trafic énorme garanti",
+          "cost": "❌ Votre marque devient invisible, prix = seul différenciateur"
         }
       ],
-      "message": "Le message est clair : \"Donnez-nous vos clients, on s'occupe du reste.\"",
-      "positioning": {
-        "for_commodities": "Pour les vendeurs de commodités, peut-être.",
-        "for_transformation": "Pour vous qui vendez de la transformation ? C'est un suicide commercial."
+      "conclusion": {
+        "title": "Pour les produits génériques ? Peut-être.",
+        "subtitle": "Pour votre positionnement premium ? C'est diluer votre marque dans un océan de concurrents.",
+        "cta": "Modernisez votre boutique, gardez vos clients"
       }
     },
     "comparison_table": {
-      "title": "Marketplace centralisée vs Relation directe",
+      "title": "Marketplace vs Votre boutique modernisée",
+      "subtitle": "Les deux approches ont leur place. Voici les différences.",
       "columns": [
-        "ChatGPT Instant Checkout",
-        "Shop App (Shopify)",
-        "ZedCheckout"
+        "Marketplaces (ChatGPT, Shop, Amazon)",
+        "Votre boutique (avec ZedCheckout)"
       ],
       "rows": [
         {
-          "criteria": "Où se passe l'achat ?",
-          "chatgpt": "❌ Dans ChatGPT",
-          "shop_app": "❌ Dans l'app Shop",
-          "zedcheckout": "✅ Sur VOTRE site"
+          "criteria": "Visibilité",
+          "marketplace": "✅ Accès à leur audience massive",
+          "your_store": "⚠️ Dépend de votre trafic existant"
         },
         {
-          "criteria": "Branding",
-          "chatgpt": "❌ Zero",
-          "shop_app": "❌ Logo minimal",
-          "zedcheckout": "✅ 100% vôtre"
+          "criteria": "Contrôle de marque",
+          "marketplace": "❌ Template standardisé, logo minimal",
+          "your_store": "✅ 100% votre identité visuelle"
         },
         {
-          "criteria": "Contrôle UX",
-          "chatgpt": "❌ Aucun",
-          "shop_app": "❌ Template Shopify",
-          "zedcheckout": "✅ Total"
+          "criteria": "Expérience client",
+          "marketplace": "❌ Expérience générique (catalog)",
+          "your_store": "✅ Parcours personnalisé, storytelling"
         },
         {
-          "criteria": "Data client",
-          "chatgpt": "❌ Propriété OpenAI",
-          "shop_app": "⚠️ Partagé Shopify",
-          "zedcheckout": "✅ 100% vôtre"
+          "criteria": "Data propriétaire",
+          "marketplace": "❌ Partagée avec la plateforme",
+          "your_store": "✅ 100% vôtre (CRM, analytics)"
         },
         {
-          "criteria": "Commission",
-          "chatgpt": "? (à venir)",
-          "shop_app": "15% sur achats Shop",
-          "zedcheckout": "✅ 2% uniquement"
-        },
-        {
-          "criteria": "Storytelling",
-          "chatgpt": "❌ Impossible",
-          "shop_app": "❌ Limité",
-          "zedcheckout": "✅ Personnalisé"
+          "criteria": "Économie",
+          "marketplace": "❌ Commissions 15-30%",
+          "your_store": "✅ Frais techniques standards (Shopify, paiement)"
         }
-      ]
+      ],
+      "conclusion": "ZedCheckout ne remplace pas les marketplaces. Il modernise VOTRE boutique pour que vos clients n'aient plus besoin d'aller ailleurs."
     },
     "for_who": {
       "title": "ZedCheckout est fait pour vous si :",
       "qualified": [
         {
           "icon": "✅",
-          "text": "Vous vendez de la valeur, pas des produits interchangeables"
+          "text": "Vous avez déjà une boutique (Shopify, WooCommerce, custom) que vous aimez"
         },
         {
           "icon": "✅",
-          "text": "Votre différenciation repose sur votre marque et votre histoire"
+          "text": "Vous voulez la moderniser sans perdre vos clients sur des marketplaces"
         },
         {
           "icon": "✅",
-          "text": "Vos clients doivent COMPRENDRE votre offre avant d'acheter (pas juste cliquer)"
+          "text": "Votre différenciation vient de votre marque, pas juste du prix"
         },
         {
           "icon": "✅",
-          "text": "Vous refusez de devenir \"un item de plus\" dans un catalogue géant"
+          "text": "Vos clients ont besoin de COMPRENDRE votre offre avant d'acheter"
         },
         {
           "icon": "✅",
-          "text": "Vous voulez les bénéfices de l'IA sans perdre votre indépendance"
+          "text": "Vous voulez les avantages de l'IA conversationnelle sans quitter votre site"
         }
       ],
-      "disqualified": {
-        "icon": "❌",
-        "title": "Vous ne correspondez pas si :",
-        "text": "Vous vendez des produits génériques où le prix est le seul différenciateur (dans ce cas, les marketplaces sont parfaites pour vous)"
+      "best_for": {
+        "title": "Particulièrement adapté pour :",
+        "segments": [
+          "Formations & coaching (€500-5000/client)",
+          "E-commerce premium (marges >40%)",
+          "Services sur-mesure (devis personnalisés)",
+          "Produits à storytelling fort"
+        ]
       }
     },
     "problem": {

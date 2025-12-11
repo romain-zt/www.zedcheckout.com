@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Accélérez votre croissance vers Plus | ZED TECH",
+  title: "Accélérez votre croissance vers Plus | ZedCheckout",
   description: "Optimisez votre checkout  pendant votre phase de croissance. Solution bridge pour préparer votre passage à Plus. +20% conversions validées.",
 };
 

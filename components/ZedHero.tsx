@@ -33,12 +33,12 @@ export default function ZedHero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="space-y-2 sm:space-y-3"
+              className="space-y-3 sm:space-y-4"
             >
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-[#1E2A47]">
                 {t('title')}
               </h1>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal leading-[1.2] tracking-tight text-[#FFC9B9] italic">
+              <h2 className="inline-block bg-[#FFC9B9] text-[#1E2A47] text-lg sm:text-xl md:text-2xl font-semibold leading-[1.2] tracking-tight px-4 py-2 rounded-lg">
                 {t('subtitle')}
               </h2>
             </motion.div>
@@ -87,9 +87,9 @@ export default function ZedHero() {
               </button>
               <button
                 onClick={() => {
-                  const whyNowSection = document.getElementById('why-now');
-                  if (whyNowSection) {
-                    whyNowSection.scrollIntoView({ behavior: 'smooth' });
+                  const whyStaySection = document.getElementById('why-stay');
+                  if (whyStaySection) {
+                    whyStaySection.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-[#F5EDE4] text-[#1E2A47] rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg border-2 border-[#1E2A47] hover:bg-[#1E2A47] hover:text-[#F5EDE4] active:scale-95 sm:hover:scale-105 transition-all duration-300"

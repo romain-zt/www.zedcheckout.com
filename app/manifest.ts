@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Zedtech - Checkout Booster',
-    short_name: 'Zedtech',
-    description: 'Accélérez votre croissance vers Plus',
+    name: 'ZedCheckout - Conversational Checkout',
+    short_name: 'ZedCheckout',
+    description: 'Transformez votre checkout en conversation',
     start_url: '/fr-FR',
     display: 'standalone',
     background_color: '#ffffff',
