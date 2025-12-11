@@ -238,7 +238,7 @@ export default function ChatWidget() {
           >
             <div className="relative group">
               {/* Visible glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full opacity-40 group-hover:opacity-60 blur-xl transition-opacity duration-500 animate-pulse" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full opacity-50 group-hover:opacity-70 blur-xl transition-opacity duration-500 animate-pulse" />
               
               {/* Input field with button */}
               <div className="relative">
@@ -247,7 +247,7 @@ export default function ChatWidget() {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="Demandez ce que vous voulez..."
-                  className="relative w-full px-5 py-3.5 pr-14 sm:px-6 sm:py-4 sm:pr-16 rounded-full backdrop-blur-xl bg-white/30 border border-white/40 shadow-2xl text-white placeholder-white/70 outline-none transition-all duration-300 focus:bg-white/40 focus:border-white/50 focus:shadow-[0_20px_60px_rgba(232,139,122,0.3)] group-hover:bg-white/40 group-hover:border-white/50"
+                  className="relative w-full px-5 py-3.5 pr-14 sm:px-6 sm:py-4 sm:pr-16 rounded-full backdrop-blur-2xl bg-white/80 border-2 border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.12)] text-gray-900 placeholder-gray-500 outline-none transition-all duration-300 focus:bg-white/90 focus:border-[#E88B7A]/60 focus:shadow-[0_20px_60px_rgba(232,139,122,0.3)] group-hover:bg-white/90 group-hover:border-white/70"
                 />
                 <button
                   type="submit"
