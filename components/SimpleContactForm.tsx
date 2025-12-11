@@ -179,7 +179,7 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                     id="stakeholderType"
                     value={formData.stakeholderType}
                     onChange={(e) => handleChange('stakeholderType', e.target.value)}
-                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
+                    className={`w-full min-h-[44px] px-3 py-3 text-base rounded-lg border ${
                       errors.stakeholderType
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
@@ -209,7 +209,7 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
-                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
+                    className={`w-full min-h-[44px] px-3 py-3 text-base rounded-lg border ${
                       errors.firstName
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
@@ -233,7 +233,7 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                     autoComplete="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
+                    className={`w-full min-h-[44px] px-3 py-3 text-base rounded-lg border ${
                       errors.email
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
@@ -258,7 +258,7 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                     value={formData.phone}
                     onChange={(e) => handleChange('phone', e.target.value)}
                     placeholder="+33 6 12 34 56 78"
-                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
+                    className={`w-full min-h-[44px] px-3 py-3 text-base rounded-lg border ${
                       errors.phone
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
@@ -283,7 +283,7 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                     value={formData.website}
                     onChange={(e) => handleChange('website', e.target.value)}
                     placeholder="https://example.com"
-                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
+                    className={`w-full min-h-[44px] px-3 py-3 text-base rounded-lg border ${
                       errors.website
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
@@ -305,7 +305,7 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3 sm:py-3.5 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white font-bold text-[15px] sm:text-base rounded-lg shadow-lg active:scale-[0.98] sm:hover:shadow-xl sm:hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                    className="w-full min-h-[44px] py-3 sm:py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white font-bold text-base sm:text-lg rounded-lg shadow-lg active:scale-[0.98] sm:hover:shadow-xl sm:hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
                   >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">

@@ -68,7 +68,7 @@ export default function ZedHero() {
                   });
                   window.dispatchEvent(event);
                 }}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-[#1E2A47] text-[#F5EDE4] rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl hover:shadow-2xl active:scale-95 sm:hover:scale-105 transition-all duration-300"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 min-h-[44px] bg-[#1E2A47] text-[#F5EDE4] rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl hover:shadow-2xl active:scale-95 sm:hover:scale-105 transition-all duration-300"
               >
                 {t('cta_primary')}
                 <svg
@@ -92,7 +92,7 @@ export default function ZedHero() {
                     whyStaySection.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-[#F5EDE4] text-[#1E2A47] rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg border-2 border-[#1E2A47] hover:bg-[#1E2A47] hover:text-[#F5EDE4] active:scale-95 sm:hover:scale-105 transition-all duration-300"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 min-h-[44px] bg-[#F5EDE4] text-[#1E2A47] rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg border-2 border-[#1E2A47] hover:bg-[#1E2A47] hover:text-[#F5EDE4] active:scale-95 sm:hover:scale-105 transition-all duration-300"
               >
                 {t('cta_secondary')}
               </button>

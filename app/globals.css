@@ -5,15 +5,38 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-white text-[#1A1A1A] antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Mobile-first base styles */
+  * {
+    box-sizing: border-box;
   }
 
   html {
     @apply scroll-smooth;
     overflow-x: hidden;
     scroll-padding-top: 80px; /* Account for fixed header */
+    font-size: 16px; /* Base font size - prevents iOS zoom */
+    -webkit-text-size-adjust: 100%; /* Prevent iOS text size adjust */
+  }
+
+  body {
+    @apply bg-white text-[#1A1A1A] antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+
+  /* Ensure images are responsive by default */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Touch targets minimum size (Apple HIG + Material Design) */
+  button,
+  a[href],
+  input[type="submit"],
+  input[type="button"],
+  [role="button"] {
+    min-height: 44px;
   }
 
   /* Custom scrollbar */
@@ -32,6 +55,19 @@
 
   ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(to bottom, #FFC9B9, #E88B7A);
+  }
+}
+
+/* Prevent zoom on input focus (iOS) */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevents iOS zoom */
   }
 }
 

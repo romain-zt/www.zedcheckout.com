@@ -78,20 +78,20 @@ export default function Hero() {
             
             {/* Lab Positioning Badge */}
             <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm border border-[#1E2A47]/20 rounded-full shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 min-h-[44px] bg-white/60 backdrop-blur-sm border border-[#1E2A47]/20 rounded-full shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
             >
-              <span className="text-2xl">🔬</span>
-              <span className="text-sm md:text-base font-semibold text-[#1E2A47]">
+              <span className="text-xl sm:text-2xl">🔬</span>
+              <span className="text-sm sm:text-base md:text-lg font-semibold text-[#1E2A47]">
                 {t('labPositioning')}
               </span>
             </motion.div>
 
             {/* Headline */}
             <motion.h1
-              className="text-5xl lg:text-7xl font-black leading-tight lg:leading-none tracking-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight tracking-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -143,7 +143,7 @@ export default function Hero() {
               {/* Primary CTA Button */}
               <button
                 onClick={() => setIsFormOpen(true)}
-                className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 min-h-[44px] bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
               >
                 {t('cta.button')}
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -154,7 +154,7 @@ export default function Hero() {
               {/* Secondary CTA - Stakeholder Link */}
               <a
                 href="#stakeholders"
-                className="block text-center text-sm lg:text-base text-[#1E2A47]/80 font-semibold hover:text-[#E88B7A] transition-colors duration-300 group"
+                className="block text-center text-sm sm:text-base lg:text-lg text-[#1E2A47]/80 font-semibold hover:text-[#E88B7A] transition-colors duration-300 group min-h-[44px] flex items-center justify-center"
               >
                 <span className="inline-flex items-center gap-2">
                   {t('ctaSecondary')}

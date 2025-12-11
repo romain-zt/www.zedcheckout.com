@@ -317,8 +317,8 @@
       }
     },
     "problem": {
-      "h2": "Vous vendez de la transformation.",
-      "h2Secondary": "Votre checkout vend des produits.",
+      "h2": "Vous vendez quelque chose d'unique.",
+      "h2Secondary": "Votre checkout vend le SKU #1230927.",
       "card1": {
         "title": "Ils ont des questions",
         "question1": "Ce programme est-il pour moi ?",

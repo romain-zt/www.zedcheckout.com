@@ -125,7 +125,7 @@ export default function ZedSolution() {
               </p>
               <button
                 onClick={() => setIsFormOpen(true)}
-                className="inline-flex items-center gap-2 text-[#E88B7A] font-semibold hover:gap-3 active:scale-95 transition-all text-sm sm:text-base"
+                className="inline-flex items-center gap-2 min-h-[44px] px-4 text-[#E88B7A] font-semibold hover:gap-3 active:scale-95 transition-all text-sm sm:text-base"
               >
                 En savoir plus
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

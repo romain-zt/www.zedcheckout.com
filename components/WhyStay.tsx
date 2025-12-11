@@ -34,7 +34,7 @@ export default function WhyStay() {
         </motion.p>
 
         {/* Marketplaces Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12 lg:mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 lg:mb-16">
           {marketplaces.map((marketplace, index) => (
             <motion.div
               key={index}
@@ -80,7 +80,7 @@ export default function WhyStay() {
                 comparisonSection.scrollIntoView({ behavior: 'smooth' });
               }
             }}
-            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#FFC9B9] text-[#1E2A47] rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 mt-4"
+            className="inline-flex items-center justify-center gap-3 px-8 py-4 min-h-[44px] bg-[#FFC9B9] text-[#1E2A47] rounded-xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 mt-4"
           >
             {conclusion.cta}
             <svg

@@ -45,7 +45,7 @@ export default function About() {
     <section 
       ref={sectionRef} 
       id="apropos" 
-      className="relative bg-gradient-to-br from-[#0F172A] via-[#1E2A47] to-[#2D3E5F] py-32 md:py-40 px-6 overflow-hidden"
+      className="relative bg-gradient-to-br from-[#0F172A] via-[#1E2A47] to-[#2D3E5F] py-20 sm:py-24 md:py-32 lg:py-40 px-6 overflow-hidden"
     >
       {/* Animated background elements */}
       <div className="absolute top-40 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-[#E88B7A]/20 to-transparent rounded-full blur-[120px] animate-pulse" />
@@ -70,8 +70,8 @@ export default function About() {
               {/* Image container with glassmorphism frame */}
               <div className="relative aspect-square">
                 {/* Decorative corner elements */}
-                <div className="absolute -top-4 -left-4 w-24 h-24 border-t-4 border-l-4 border-[#FFC9B9] rounded-tl-3xl" />
-                <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b-4 border-r-4 border-[#E88B7A] rounded-br-3xl" />
+                <div className="absolute -top-4 -left-4 w-16 h-16 sm:w-24 sm:h-24 border-t-2 sm:border-t-4 border-l-2 sm:border-l-4 border-[#FFC9B9] rounded-tl-2xl sm:rounded-tl-3xl" />
+                <div className="absolute -bottom-4 -right-4 w-16 h-16 sm:w-24 sm:h-24 border-b-2 sm:border-b-4 border-r-2 sm:border-r-4 border-[#E88B7A] rounded-br-2xl sm:rounded-br-3xl" />
                 
                 {/* Main image with enhanced effects */}
                 <div className="relative rounded-3xl overflow-hidden backdrop-blur-sm bg-white/10 border-2 border-white/20 shadow-2xl group">
@@ -105,7 +105,7 @@ export default function About() {
               <div className="flex flex-col space-y-6">
                 {/* H2 */}
                 <motion.h2
-                  className="text-4xl md:text-6xl font-black text-white tracking-tight leading-tight"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight"
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                   transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}

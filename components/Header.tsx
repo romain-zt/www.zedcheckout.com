@@ -56,7 +56,7 @@ export default function Header() {
           {/* Logo */}
           <a
             href={`/${locale}`}
-            className="text-2xl font-bold bg-gradient-to-r from-[#1E2A47] to-[#E88B7A] bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+            className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#1E2A47] to-[#E88B7A] bg-clip-text text-transparent hover:opacity-80 transition-opacity"
           >
             ZedCheckout
           </a>
@@ -90,7 +90,7 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsFormOpen(true)}
-              className="bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white px-6 py-2.5 rounded-full font-semibold text-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
+              className="bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white px-6 py-3 min-h-[44px] rounded-full font-semibold text-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
             >
               {t('cta')}
             </button>
@@ -98,7 +98,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-[#1E2A47] hover:text-[#E88B7A] transition-colors"
+              className="md:hidden text-[#1E2A47] hover:text-[#E88B7A] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Toggle menu"
             >
               <div className="relative w-6 h-6">
@@ -127,7 +127,7 @@ export default function Header() {
             <a
               href="#recherches"
               onClick={(e) => scrollToSection(e, '#recherches')}
-              className={`text-lg text-[#1E2A47]/70 hover:text-[#E88B7A] transition-all duration-300 font-medium transform ${
+              className={`text-lg text-[#1E2A47]/70 hover:text-[#E88B7A] transition-all duration-300 font-medium transform min-h-[44px] flex items-center ${
                 isMobileMenuOpen ? 'translate-x-0 opacity-100 delay-100' : 'translate-x-4 opacity-0'
               }`}
             >
@@ -136,7 +136,7 @@ export default function Header() {
             <a
               href="#produits"
               onClick={(e) => scrollToSection(e, '#produits')}
-              className={`text-lg text-[#1E2A47]/70 hover:text-[#E88B7A] transition-all duration-300 font-medium transform ${
+              className={`text-lg text-[#1E2A47]/70 hover:text-[#E88B7A] transition-all duration-300 font-medium transform min-h-[44px] flex items-center ${
                 isMobileMenuOpen ? 'translate-x-0 opacity-100 delay-200' : 'translate-x-4 opacity-0'
               }`}
             >
@@ -145,7 +145,7 @@ export default function Header() {
             <a
               href="#apropos"
               onClick={(e) => scrollToSection(e, '#apropos')}
-              className={`text-lg text-[#1E2A47]/70 hover:text-[#E88B7A] transition-all duration-300 font-medium transform ${
+              className={`text-lg text-[#1E2A47]/70 hover:text-[#E88B7A] transition-all duration-300 font-medium transform min-h-[44px] flex items-center ${
                 isMobileMenuOpen ? 'translate-x-0 opacity-100 delay-300' : 'translate-x-4 opacity-0'
               }`}
             >

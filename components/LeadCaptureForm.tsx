@@ -129,7 +129,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     required
                     value={formData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
-                    className="w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors"
+                    className="w-full min-h-[44px] px-3 py-3 text-base rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors"
                     disabled={isLoading}
                   />
                 </div>
@@ -146,7 +146,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     autoComplete="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors"
+                    className="w-full min-h-[44px] px-3 py-3 text-base rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors"
                     disabled={isLoading}
                   />
                 </div>
@@ -164,7 +164,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     value={formData.website}
                     onChange={(e) => handleChange('website', e.target.value)}
                     placeholder="https://example.com"
-                    className="w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors"
+                    className="w-full min-h-[44px] px-3 py-3 text-base rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors"
                     disabled={isLoading}
                   />
                   <p className="mt-0.5 text-[11px] text-[#1E2A47]/50">
@@ -181,7 +181,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     required
                     value={formData.platform}
                     onChange={(e) => handleChange('platform', e.target.value)}
-                    className="w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
+                    className="w-full min-h-[44px] px-3 py-3 text-base rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
                     disabled={isLoading}
                   >
                     <option value="">{t('platformPlaceholder')}</option>
@@ -200,7 +200,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     required
                     value={formData.sector}
                     onChange={(e) => handleChange('sector', e.target.value)}
-                    className="w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
+                    className="w-full min-h-[44px] px-3 py-3 text-base rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
                     disabled={isLoading}
                   >
                     <option value="">{t('sectorPlaceholder')}</option>
@@ -218,7 +218,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                   <select
                     value={formData.revenue}
                     onChange={(e) => handleChange('revenue', e.target.value)}
-                    className="w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
+                    className="w-full min-h-[44px] px-3 py-3 text-base rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
                     disabled={isLoading}
                   >
                     <option value="">{t('revenuePlaceholder')}</option>
@@ -239,7 +239,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     onChange={(e) => handleChange('challenge', e.target.value)}
                     placeholder={t('challengePlaceholder')}
                     rows={3}
-                    className="w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors resize-none"
+                    className="w-full min-h-[44px] px-3 py-3 text-base rounded-lg border border-[#1E2A47]/20 focus:border-[#E88B7A] focus:ring-1 focus:ring-[#E88B7A]/20 focus:outline-none transition-colors resize-none"
                     disabled={isLoading}
                   />
                 </div>
@@ -264,7 +264,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                   <button
                     type="submit"
                     disabled={isLoading || !formData.consent}
-                    className="w-full py-3 sm:py-3.5 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white font-bold text-[15px] sm:text-base rounded-lg shadow-lg active:scale-[0.98] sm:hover:shadow-xl sm:hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                    className="w-full min-h-[44px] py-3 sm:py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white font-bold text-base sm:text-lg rounded-lg shadow-lg active:scale-[0.98] sm:hover:shadow-xl sm:hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
                   >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">

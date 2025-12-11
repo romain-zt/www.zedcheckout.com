@@ -317,8 +317,8 @@
       }
     },
     "problem": {
-      "h2": "You sell transformation.",
-      "h2Secondary": "Your checkout sells products.",
+      "h2": "You sell something unique.",
+      "h2Secondary": "Your checkout sells SKU #1230927.",
       "card1": {
         "title": "They have questions",
         "question1": "Is this program for me?",

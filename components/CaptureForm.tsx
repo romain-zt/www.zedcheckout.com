@@ -74,20 +74,24 @@ export default function CaptureForm() {
   };
 
   return (
-    <div className="capture-form-wrapper">
-      <div className="capture-form-container">
-        <h3 className="capture-form-title">{t('title')}</h3>
-        <p className="capture-form-subtitle">{t('subtitle')}</p>
+    <section className="w-full flex justify-center py-12 px-4 sm:py-16 sm:px-6 md:py-20 bg-gradient-to-br from-[#F5EDE4] to-white">
+      <div className="max-w-md sm:max-w-lg w-full bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-xl">
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#1E2A47] mb-3 sm:mb-4 text-center">
+          {t('title')}
+        </h3>
+        <p className="text-sm sm:text-base text-[#5A5A5A] mb-6 sm:mb-8 text-center">
+          {t('subtitle')}
+        </p>
 
-        <form onSubmit={handleSubmit} className="capture-form">
-          <div className="form-fields">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             <input
               type="text"
               placeholder={t('firstNamePlaceholder')}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
-              className="form-input"
+              className="w-full min-h-[44px] py-3 px-4 sm:px-5 text-base border-2 border-gray-200 rounded-lg outline-none transition-all duration-200 font-sans focus:border-[#E88B7A] focus:ring-2 focus:ring-[#E88B7A]/10 disabled:bg-gray-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             />
             <input
@@ -96,7 +100,7 @@ export default function CaptureForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="form-input"
+              className="w-full min-h-[44px] py-3 px-4 sm:px-5 text-base border-2 border-gray-200 rounded-lg outline-none transition-all duration-200 font-sans focus:border-[#E88B7A] focus:ring-2 focus:ring-[#E88B7A]/10 disabled:bg-gray-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             />
           </div>
@@ -104,11 +108,11 @@ export default function CaptureForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="form-submit"
+            className="w-full min-h-[44px] sm:min-h-[52px] py-3 sm:py-4 bg-[#E88B7A] text-white text-base sm:text-lg font-semibold border-none rounded-lg cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 hover:bg-[#D97A69] hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
           >
             {isSubmitting ? (
               <>
-                <span className="spinner"></span>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 {t('submitting')}
               </>
             ) : (
@@ -116,154 +120,18 @@ export default function CaptureForm() {
             )}
           </button>
 
-          {error && <p className="form-error">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-2">
+              {error}
+            </p>
+          )}
 
-          <p className="form-privacy">{t('privacy')}</p>
+          <p className="text-gray-400 text-xs sm:text-sm mt-2 text-center">
+            {t('privacy')}
+          </p>
         </form>
       </div>
-
-      <style jsx>{`
-        .capture-form-wrapper {
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          padding: 60px 20px;
-          background: linear-gradient(135deg, #F5EDE4 0%, #FFFFFF 100%);
-        }
-
-        .capture-form-container {
-          max-width: 500px;
-          width: 100%;
-          background: #FFFFFF;
-          padding: 40px;
-          border-radius: 16px;
-          box-shadow: 0 10px 40px rgba(30, 42, 71, 0.1);
-        }
-
-        .capture-form-title {
-          font-size: 28px;
-          font-weight: 700;
-          color: #1E2A47;
-          margin: 0 0 12px 0;
-          text-align: center;
-        }
-
-        .capture-form-subtitle {
-          font-size: 16px;
-          color: #5A5A5A;
-          margin: 0 0 32px 0;
-          text-align: center;
-        }
-
-        .capture-form {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .form-fields {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .form-input {
-          height: 50px;
-          padding: 0 20px;
-          font-size: 16px;
-          border: 2px solid #E5E7EB;
-          border-radius: 10px;
-          outline: none;
-          transition: all 0.2s;
-          font-family: inherit;
-        }
-
-        .form-input:focus {
-          border-color: #E88B7A;
-          box-shadow: 0 0 0 3px rgba(232, 139, 122, 0.1);
-        }
-
-        .form-input:disabled {
-          background: #F9FAFB;
-          cursor: not-allowed;
-        }
-
-        .form-submit {
-          height: 56px;
-          background: #E88B7A;
-          color: #FFFFFF;
-          font-size: 18px;
-          font-weight: 600;
-          border: none;
-          border-radius: 10px;
-          cursor: pointer;
-          transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
-
-        .form-submit:hover:not(:disabled) {
-          background: #D97A69;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(232, 139, 122, 0.3);
-        }
-
-        .form-submit:disabled {
-          background: #D1D5DB;
-          cursor: not-allowed;
-          transform: none;
-        }
-
-        .spinner {
-          width: 16px;
-          height: 16px;
-          border: 2px solid #FFFFFF;
-          border-top-color: transparent;
-          border-radius: 50%;
-          animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        .form-error {
-          color: #EF4444;
-          font-size: 14px;
-          margin: 0;
-          text-align: center;
-        }
-
-        .form-privacy {
-          color: #9CA3AF;
-          font-size: 13px;
-          margin: 8px 0 0 0;
-          text-align: center;
-        }
-
-        @media (max-width: 768px) {
-          .capture-form-container {
-            padding: 24px;
-          }
-
-          .capture-form-title {
-            font-size: 24px;
-          }
-
-          .capture-form-subtitle {
-            font-size: 15px;
-          }
-
-          .form-submit {
-            width: 100%;
-          }
-        }
-      `}</style>
-    </div>
+    </section>
   );
 }
 

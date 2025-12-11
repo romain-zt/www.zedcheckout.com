@@ -49,7 +49,7 @@ export default function ZedFinalCTA() {
         >
           <button
             onClick={() => setIsFormOpen(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-8 sm:px-10 py-4 sm:py-6 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl lg:text-2xl shadow-2xl hover:shadow-[0_20px_60px_rgba(232,139,122,0.4)] active:scale-95 sm:hover:scale-105 transition-all duration-300"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-8 sm:px-10 py-4 sm:py-6 min-h-[44px] bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl lg:text-2xl shadow-2xl hover:shadow-[0_20px_60px_rgba(232,139,122,0.4)] active:scale-95 sm:hover:scale-105 transition-all duration-300"
           >
             {t('cta')}
             <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
