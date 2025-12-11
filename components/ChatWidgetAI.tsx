@@ -65,6 +65,8 @@ export default function ChatWidgetAI() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const greetingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const userHasTyped = useRef<boolean>(false);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -146,25 +148,62 @@ export default function ChatWidgetAI() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
+  // Natural greeting: wait 3s, cancel if user types
   useEffect(() => {
     if (isOpen && !hasGreeted) {
       trackEvent('chat_opened');
+      userHasTyped.current = false;
       
-      setTimeout(() => {
-        const greetingMessage = "Salut ! 👋\n\nJe suis l'assistant ZedCheckout. Je vois que tu t'intéresses à notre solution de checkout conversationnel.\n\nComment tu t'appelles ?";
-        addBotMessage(greetingMessage, ["Je m'appelle...", "C'est quoi ZedCheckout ?"]);
-        
-        // Add to conversation history
-        setConversationHistory([
-          {
-            role: 'assistant',
-            content: greetingMessage,
-          },
-        ]);
-        
-        setHasGreeted(true);
-      }, 800);
+      // Start 3-second timer for greeting
+      greetingTimeoutRef.current = setTimeout(async () => {
+        if (!userHasTyped.current && !hasGreeted) {
+          // Use AI to generate a short, natural greeting
+          try {
+            const response = await fetch('/api/chat-ai', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: '[SYSTEM: Generate a very short greeting (max 2 sentences) to welcome the user and ask their name. Be casual and friendly.]',
+                conversationHistory: [],
+                leadData: {},
+              }),
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success && data.response) {
+                const greetingMessage = data.response.message;
+                addBotMessage(greetingMessage, data.response.suggestedReplies || ["Je m'appelle...", "C'est quoi ZedCheckout ?"]);
+                
+                setConversationHistory([{
+                  role: 'assistant',
+                  content: greetingMessage,
+                }]);
+                
+                setHasGreeted(true);
+              }
+            }
+          } catch (error) {
+            // Fallback to simple greeting if AI fails
+            const fallbackGreeting = "Salut ! 👋 Comment tu t'appelles ?";
+            addBotMessage(fallbackGreeting, ["Je m'appelle...", "C'est quoi ZedCheckout ?"]);
+            setConversationHistory([{
+              role: 'assistant',
+              content: fallbackGreeting,
+            }]);
+            setHasGreeted(true);
+          }
+        }
+      }, 3000);
     }
+    
+    // Cleanup timeout on unmount or when chat closes
+    return () => {
+      if (greetingTimeoutRef.current) {
+        clearTimeout(greetingTimeoutRef.current);
+        greetingTimeoutRef.current = null;
+      }
+    };
   }, [isOpen, hasGreeted]);
 
   const addBotMessage = (text: string, suggestedReplies?: string[]) => {
@@ -490,7 +529,17 @@ export default function ChatWidgetAI() {
                 <input
                   type="text"
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                    // Cancel greeting if user starts typing
+                    if (!hasGreeted && e.target.value.length > 0) {
+                      userHasTyped.current = true;
+                      if (greetingTimeoutRef.current) {
+                        clearTimeout(greetingTimeoutRef.current);
+                        greetingTimeoutRef.current = null;
+                      }
+                    }
+                  }}
                   placeholder={SECTION_PLACEHOLDERS[currentSection] || SECTION_PLACEHOLDERS.default}
                   key={currentSection}
                   autoComplete="off"
@@ -683,7 +732,17 @@ export default function ChatWidgetAI() {
                         ref={inputRef}
                         type="text"
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
+                        onChange={(e) => {
+                          setInputValue(e.target.value);
+                          // Cancel greeting if user starts typing
+                          if (!hasGreeted && e.target.value.length > 0) {
+                            userHasTyped.current = true;
+                            if (greetingTimeoutRef.current) {
+                              clearTimeout(greetingTimeoutRef.current);
+                              greetingTimeoutRef.current = null;
+                            }
+                          }
+                        }}
                         disabled={isTyping}
                         placeholder="Tapez votre réponse..."
                         className="w-full px-5 py-3 pr-12 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200 focus:border-[#E88B7A] focus:ring-2 focus:ring-[#E88B7A]/20 outline-none transition-all duration-300 text-gray-800 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
