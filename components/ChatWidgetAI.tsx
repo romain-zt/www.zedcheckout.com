@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface Message {
@@ -8,6 +8,7 @@ interface Message {
   text: string;
   sender: 'bot' | 'user';
   timestamp: Date;
+  suggestedReplies?: string[];
 }
 
 interface LeadData {
@@ -26,6 +27,28 @@ interface ConversationMessage {
   content: string;
 }
 
+// Section-specific placeholder messages
+const SECTION_PLACEHOLDERS: Record<string, string> = {
+  'zed-hero': "Comment ZedCheckout peut transformer votre checkout ?",
+  'zed-problem': "Votre checkout vous fait perdre des clients ?",
+  'zed-solution': "Comment fonctionne l'IA conversationnelle ?",
+  'zed-filter': "ZedCheckout est-il fait pour vous ?",
+  'zed-process': "Comment se passe la mise en place ?",
+  'zed-faq': "Une question sur ZedCheckout ?",
+  'zed-cta': "Prêt à augmenter vos conversions ?",
+  'default': "Demandez ce que vous voulez...",
+};
+
+// Analytics helper
+const trackEvent = (eventName: string, properties?: any) => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', eventName, properties);
+  }
+  console.log('📊 Event:', eventName, properties);
+};
+
+const STORAGE_KEY = 'zed_chat_state';
+
 export default function ChatWidgetAI() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -35,9 +58,63 @@ export default function ChatWidgetAI() {
   const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
   const [isComplete, setIsComplete] = useState(false);
   const [hasGreeted, setHasGreeted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [currentSection, setCurrentSection] = useState<string>('default');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Load state from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const state = JSON.parse(saved);
+          // Only restore if not complete and recent (within 24h)
+          const savedTime = new Date(state.timestamp).getTime();
+          const now = new Date().getTime();
+          const hoursDiff = (now - savedTime) / (1000 * 60 * 60);
+          
+          if (!state.isComplete && hoursDiff < 24) {
+            setMessages(state.messages?.map((m: any) => ({
+              ...m,
+              timestamp: new Date(m.timestamp)
+            })) || []);
+            setLeadData(state.leadData || {});
+            setConversationHistory(state.conversationHistory || []);
+            setHasGreeted(state.hasGreeted || false);
+            setIsComplete(state.isComplete || false);
+            
+            trackEvent('chat_restored', { messageCount: state.messages?.length || 0 });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to restore chat state:', err);
+      }
+    }
+  }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (messages.length > 0 || hasGreeted)) {
+      try {
+        const state = {
+          messages,
+          leadData,
+          conversationHistory,
+          hasGreeted,
+          isComplete,
+          timestamp: new Date().toISOString(),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        console.error('Failed to save chat state:', err);
+      }
+    }
+  }, [messages, leadData, conversationHistory, hasGreeted, isComplete]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -47,11 +124,35 @@ export default function ChatWidgetAI() {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  // Focus input when chat opens
+  useEffect(() => {
+    if (isOpen && inputRef.current && !isComplete) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen, isComplete]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+        trackEvent('chat_closed_keyboard');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen && !hasGreeted) {
+      trackEvent('chat_opened');
+      
       setTimeout(() => {
-        const greetingMessage = "👋 Salut ! Je suis l'assistant ZedCheckout.\n\nJe vois que tu t'intéresses à notre solution de checkout conversationnel.\n\nComment tu t'appelles ?";
-        addBotMessage(greetingMessage);
+        const greetingMessage = "Salut ! 👋\n\nJe suis l'assistant ZedCheckout. Je vois que tu t'intéresses à notre solution de checkout conversationnel.\n\nComment tu t'appelles ?";
+        addBotMessage(greetingMessage, ["Je m'appelle...", "C'est quoi ZedCheckout ?"]);
         
         // Add to conversation history
         setConversationHistory([
@@ -66,13 +167,23 @@ export default function ChatWidgetAI() {
     }
   }, [isOpen, hasGreeted]);
 
-  const addBotMessage = (text: string) => {
+  const addBotMessage = (text: string, suggestedReplies?: string[]) => {
     setIsTyping(true);
+    setError(null); // Clear any previous errors
     
-    // Simulate typing delay based on message length
-    const typingDelay = Math.min(text.length * 15, 1500);
+    // More natural typing delay: faster for short messages, slower for long ones
+    // Average reading speed: ~200 words per minute = ~3.3 words per second
+    const wordCount = text.split(/\s+/).length;
+    const baseDelay = Math.min(wordCount * 200, 2500); // 200ms per word, max 2.5s
+    const variance = Math.random() * 300; // Add 0-300ms randomness for naturalness
+    const typingDelay = baseDelay + variance;
     
-    setTimeout(() => {
+    // Clear any existing typing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    typingTimeoutRef.current = setTimeout(() => {
       setMessages(prev => [
         ...prev,
         {
@@ -80,9 +191,11 @@ export default function ChatWidgetAI() {
           text,
           sender: 'bot',
           timestamp: new Date(),
+          suggestedReplies,
         },
       ]);
       setIsTyping(false);
+      typingTimeoutRef.current = null;
     }, typingDelay);
   };
 
@@ -98,8 +211,16 @@ export default function ChatWidgetAI() {
     ]);
   };
 
-  const callAI = async (userMessage: string) => {
+  const callAI = async (userMessage: string, isRetry: boolean = false) => {
     try {
+      setError(null);
+      
+      trackEvent('message_sent', { 
+        messageLength: userMessage.length,
+        isRetry,
+        conversationLength: conversationHistory.length 
+      });
+      
       const response = await fetch('/api/chat-ai', {
         method: 'POST',
         headers: {
@@ -113,7 +234,13 @@ export default function ChatWidgetAI() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get AI response');
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 429) {
+          throw new Error('Trop de requêtes. Attends quelques secondes...');
+        }
+        
+        throw new Error(errorData.error || 'Erreur de connexion');
       }
 
       const data = await response.json();
@@ -121,8 +248,11 @@ export default function ChatWidgetAI() {
       if (data.success && data.response) {
         const aiResponse = data.response;
         
-        // Add AI message to UI
-        addBotMessage(aiResponse.message);
+        // Reset retry count on success
+        setRetryCount(0);
+        
+        // Add AI message to UI with suggested replies
+        addBotMessage(aiResponse.message, aiResponse.suggestedReplies);
         
         // Update conversation history
         setConversationHistory(prev => [
@@ -133,34 +263,84 @@ export default function ChatWidgetAI() {
         
         // Merge extracted data with existing lead data
         if (aiResponse.extractedData && Object.keys(aiResponse.extractedData).length > 0) {
-          setLeadData(prev => ({
-            ...prev,
-            ...aiResponse.extractedData,
-          }));
+          const newData = aiResponse.extractedData;
+          setLeadData(prev => {
+            const merged = { ...prev, ...newData };
+            
+            // Track data collection progress
+            const fieldsCollected = Object.keys(merged).length;
+            trackEvent('lead_data_updated', {
+              fieldsCollected,
+              newFields: Object.keys(newData),
+              confidence: aiResponse.confidence,
+            });
+            
+            return merged;
+          });
         }
         
         // Check if qualification is complete
         if (aiResponse.isQualificationComplete) {
+          trackEvent('qualification_complete', {
+            fieldsCollected: Object.keys(leadData).length,
+            conversationLength: conversationHistory.length,
+          });
+          
           setTimeout(() => {
             completeQualification();
           }, 2000);
         }
+        
+        trackEvent('ai_response_received', {
+          hasExtractedData: !!(aiResponse.extractedData && Object.keys(aiResponse.extractedData).length > 0),
+          hasSuggestions: !!(aiResponse.suggestedReplies && aiResponse.suggestedReplies.length > 0),
+          confidence: aiResponse.confidence,
+        });
       } else {
-        throw new Error('Invalid AI response format');
+        throw new Error('Réponse invalide du serveur');
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error calling AI:', error);
       
-      // Fallback message
-      addBotMessage(
-        "Désolé, j'ai un petit souci technique. 😅\n\nPeux-tu réessayer dans quelques secondes ?"
-      );
+      const errorMessage = error.message || 'Erreur inconnue';
+      setError(errorMessage);
+      
+      // Smart retry logic
+      if (retryCount < 2 && !isRetry) {
+        setRetryCount(prev => prev + 1);
+        
+        addBotMessage(
+          "Oups, petit bug... 😅 Je réessaie dans 2 secondes !",
+          []
+        );
+        
+        setTimeout(() => {
+          callAI(userMessage, true);
+        }, 2000);
+      } else {
+        // Final fallback after retries
+        addBotMessage(
+          "Désolé, j'ai un souci technique. 😅\n\nPeux-tu réessayer ton dernier message ? Ou clique ici pour continuer par email.",
+          ["Réessayer", "Continuer par email"]
+        );
+        
+        trackEvent('ai_error', {
+          error: errorMessage,
+          retryCount,
+          conversationLength: conversationHistory.length,
+        });
+      }
     }
   };
 
   const completeQualification = async () => {
     setIsComplete(true);
+    
+    trackEvent('qualification_completing', {
+      collectedFields: Object.keys(leadData),
+      totalMessages: messages.length,
+    });
     
     // Prepare summary message
     const summaryParts = [];
@@ -173,7 +353,7 @@ export default function ChatWidgetAI() {
     if (leadData.cartValue) summaryParts.push(`🛍️ Panier moyen: ${leadData.cartValue}`);
     
     const summaryMessage = summaryParts.length > 0
-      ? `Parfait ${leadData.firstName || ''} ! 🎉\n\nVoici ce que je retiens :\n\n${summaryParts.join('\n')}\n\nUn membre de notre équipe va analyser ton profil et te contacter rapidement à ${leadData.email || 'ton email'}.\n\nÀ très vite ! 👋`
+      ? `Parfait ${leadData.firstName || ''} ! 🎉\n\nVoici ce que je retiens :\n\n${summaryParts.join('\n')}\n\nUn membre de notre équipe va analyser ton profil et te contacter rapidement${leadData.email ? ` à ${leadData.email}` : ''}.\n\nÀ très vite ! 👋`
       : `Parfait ! 🎉\n\nMerci pour cet échange. Notre équipe va revenir vers toi rapidement.\n\nÀ très vite ! 👋`;
     
     addBotMessage(summaryMessage);
@@ -196,13 +376,66 @@ export default function ChatWidgetAI() {
           }),
         });
         
-        if (!response.ok) {
+        if (response.ok) {
+          const data = await response.json();
+          trackEvent('lead_submitted_success', {
+            qualified: data.qualified,
+            fieldsCount: Object.keys(leadData).length,
+          });
+        } else {
+          trackEvent('lead_submission_failed', {
+            status: response.status,
+          });
           console.error('Failed to send lead data');
         }
       } catch (error) {
+        trackEvent('lead_submission_error', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
         console.error('Error sending lead data:', error);
       }
     }, 500);
+  };
+
+  // Reset conversation (for development/testing)
+  const resetConversation = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    setMessages([]);
+    setLeadData({});
+    setConversationHistory([]);
+    setHasGreeted(false);
+    setIsComplete(false);
+    setError(null);
+    setRetryCount(0);
+    setInputValue('');
+    trackEvent('conversation_reset');
+  }, []);
+
+  const handleQuickReply = (reply: string) => {
+    if (isTyping || isComplete) return;
+    
+    if (reply === "Continuer par email") {
+      // Handle email fallback
+      window.location.href = "mailto:romain@zedcheckout.com?subject=Contact depuis le chat";
+      trackEvent('fallback_to_email');
+      return;
+    }
+    
+    if (reply === "Réessayer") {
+      // Retry last user message
+      const lastUserMessage = messages.filter(m => m.sender === 'user').pop();
+      if (lastUserMessage) {
+        callAI(lastUserMessage.text, false);
+        trackEvent('manual_retry');
+      }
+      return;
+    }
+    
+    addUserMessage(reply);
+    trackEvent('quick_reply_clicked', { reply });
+    callAI(reply);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -211,6 +444,12 @@ export default function ChatWidgetAI() {
     if (!inputValue.trim() || isTyping || isComplete) return;
 
     const userInput = inputValue.trim();
+    
+    // First message: open chat if not open
+    if (!isOpen) {
+      setIsOpen(true);
+    }
+    
     addUserMessage(userInput);
     setInputValue('');
 
@@ -227,63 +466,49 @@ export default function ChatWidgetAI() {
 
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Simple Input - Closed State */}
       <AnimatePresence>
         {!isOpen && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
+          <motion.form
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
             transition={{ 
               type: 'spring', 
-              stiffness: 260, 
-              damping: 20 
+              stiffness: 200, 
+              damping: 25 
             }}
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 group"
-            aria-label="Ouvrir le chat"
+            className="fixed bottom-4 left-0 right-0 z-50 px-4 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-2xl"
           >
-            {/* Glassmorphism Bar */}
-            <div className="relative">
-              {/* Glow effect */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full opacity-75 blur-lg group-hover:opacity-100 transition-opacity duration-300 animate-pulse" />
+            <div className="relative group">
+              {/* Visible glow */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full opacity-50 group-hover:opacity-70 blur-xl transition-opacity duration-500 animate-pulse" />
               
-              {/* Main bar */}
-              <div className="relative px-8 py-4 rounded-full backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl hover:shadow-[0_20px_60px_rgba(232,139,122,0.4)] transition-all duration-300 group-hover:scale-105">
-                <div className="flex items-center gap-4">
-                  {/* Avatar */}
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center shadow-lg">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                      </svg>
-                    </div>
-                    {/* Online indicator */}
-                    <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-white animate-pulse" />
-                  </div>
-
-                  {/* Text with vanish effect */}
-                  <div className="text-left">
-                    <div className="text-white font-semibold text-sm mb-0.5 group-hover:translate-x-1 transition-transform duration-300">
-                      Discutons de votre projet
-                    </div>
-                    <div className="text-white/70 text-xs group-hover:text-white/90 transition-colors duration-300">
-                      <span className="inline-block group-hover:translate-x-1 transition-transform duration-300 delay-75">
-                        Cliquez pour commencer
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Arrow icon */}
-                  <div className="ml-2 text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all duration-300">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </div>
-                </div>
+              {/* Input field with button */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder={SECTION_PLACEHOLDERS[currentSection] || SECTION_PLACEHOLDERS.default}
+                  key={currentSection}
+                  autoComplete="off"
+                  className="relative w-full px-5 py-3.5 pr-14 sm:px-6 sm:py-4 sm:pr-16 rounded-full backdrop-blur-2xl bg-white/80 border-2 border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.12)] text-gray-900 placeholder-gray-500 outline-none transition-all duration-500 focus:bg-white/90 focus:border-[#E88B7A]/60 focus:shadow-[0_20px_60px_rgba(232,139,122,0.3)] group-hover:bg-white/90 group-hover:border-white/70 placeholder:transition-opacity placeholder:duration-500"
+                />
+                <button
+                  type="submit"
+                  disabled={!inputValue.trim()}
+                  aria-label="Envoyer"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 active:scale-95"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
               </div>
             </div>
-          </motion.button>
+          </motion.form>
         )}
       </AnimatePresence>
 
@@ -299,7 +524,7 @@ export default function ChatWidgetAI() {
               stiffness: 300, 
               damping: 30 
             }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md mx-4"
+            className="fixed bottom-4 left-0 right-0 z-50 px-4 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg"
           >
             {/* Glass container */}
             <div className="relative">
@@ -311,8 +536,8 @@ export default function ChatWidgetAI() {
                 {/* Header */}
                 <div className="relative px-6 py-4 bg-gradient-to-r from-[#1E2A47] to-[#2D3E5F] border-b border-white/10">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="relative flex-shrink-0">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center">
                           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -322,7 +547,7 @@ export default function ChatWidgetAI() {
                       </div>
                       <div>
                         <div className="text-white font-semibold text-sm flex items-center gap-2">
-                          ZedCheckout Assistant
+                          <span>ZedCheckout Assistant</span>
                           <span className="px-2 py-0.5 text-[10px] bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] rounded-full">
                             AI
                           </span>
@@ -330,28 +555,50 @@ export default function ChatWidgetAI() {
                         <div className="text-white/70 text-xs">En ligne</div>
                       </div>
                     </div>
-                    <button
-                      onClick={() => setIsOpen(false)}
-                      className="text-white/70 hover:text-white transition-colors duration-200 hover:rotate-90 transition-transform"
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {/* Reset button (dev mode only) */}
+                      {process.env.NODE_ENV === 'development' && messages.length > 0 && (
+                        <button
+                          onClick={resetConversation}
+                          className="text-white/50 hover:text-white transition-colors duration-200 p-1"
+                          aria-label="Réinitialiser la conversation"
+                          title="Réinitialiser (dev only)"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setIsOpen(false);
+                          trackEvent('chat_closed', {
+                            messageCount: messages.length,
+                            hasLeadData: Object.keys(leadData).length > 0,
+                          });
+                        }}
+                        className="text-white/70 hover:text-white transition-all duration-200 hover:rotate-90"
+                        aria-label="Fermer le chat"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 {/* Messages */}
                 <div className="h-[400px] overflow-y-auto px-6 py-4 space-y-4 bg-gradient-to-b from-white/40 to-white/60">
-                  {messages.map((message) => (
+                  {messages.map((message, index) => (
                     <motion.div
                       key={message.id}
                       initial={{ opacity: 0, y: 20, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                      transition={{ duration: 0.3, delay: index === messages.length - 1 ? 0 : 0 }}
+                      className={`flex flex-col ${message.sender === 'user' ? 'items-end' : 'items-start'}`}
                     >
-                      <div className={`max-w-[80%] ${message.sender === 'user' ? 'order-2' : 'order-1'}`}>
+                      <div className={`max-w-[85%] sm:max-w-[80%]`}>
                         <div
                           className={`rounded-2xl px-4 py-3 shadow-lg whitespace-pre-wrap ${
                             message.sender === 'user'
@@ -364,6 +611,33 @@ export default function ChatWidgetAI() {
                         <div className={`text-xs text-gray-500 mt-1 px-2 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
                           {formatTime(message.timestamp)}
                         </div>
+                        
+                        {/* Quick reply buttons */}
+                        {message.sender === 'bot' && 
+                         message.suggestedReplies && 
+                         message.suggestedReplies.length > 0 && 
+                         index === messages.length - 1 && 
+                         !isTyping && 
+                         !isComplete && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="flex flex-wrap gap-2 mt-3"
+                          >
+                            {message.suggestedReplies.map((reply, idx) => (
+                              <motion.button
+                                key={idx}
+                                onClick={() => handleQuickReply(reply)}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-4 py-2 bg-white/90 hover:bg-white border border-gray-200 hover:border-[#E88B7A] rounded-full text-sm text-gray-700 hover:text-[#E88B7A] transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+                              >
+                                {reply}
+                              </motion.button>
+                            ))}
+                          </motion.div>
+                        )}
                       </div>
                     </motion.div>
                   ))}
@@ -385,6 +659,19 @@ export default function ChatWidgetAI() {
                     </motion.div>
                   )}
                   
+                  {/* Error state */}
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex justify-center"
+                    >
+                      <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-2 text-sm text-red-600">
+                        ⚠️ {error}
+                      </div>
+                    </motion.div>
+                  )}
+                  
                   <div ref={messagesEndRef} />
                 </div>
 
@@ -398,12 +685,14 @@ export default function ChatWidgetAI() {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         disabled={isTyping}
-                        placeholder="Tapez votre message..."
+                        placeholder="Tapez votre réponse..."
                         className="w-full px-5 py-3 pr-12 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200 focus:border-[#E88B7A] focus:ring-2 focus:ring-[#E88B7A]/20 outline-none transition-all duration-300 text-gray-800 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                        autoComplete="off"
                       />
                       <button
                         type="submit"
                         disabled={!inputValue.trim() || isTyping}
+                        aria-label="Envoyer"
                         className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

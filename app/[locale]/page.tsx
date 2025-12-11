@@ -7,7 +7,7 @@ import ZedFilter from '@/components/ZedFilter';
 import ZedProcess from '@/components/ZedProcess';
 import ZedFAQ from '@/components/ZedFAQ';
 import ZedFinalCTA from '@/components/ZedFinalCTA';
-import ChatWidget from '@/components/ChatWidget';
+import ChatWidgetAI from '@/components/ChatWidgetAI';
 
 export default function LandingPage() {
   return (
@@ -22,8 +22,7 @@ export default function LandingPage() {
         <ZedFAQ />
         <ZedFinalCTA />
         <Footer />
-        <ChatWidget />
-
+        <ChatWidgetAI />
       </main>
     </>
   );
