@@ -128,6 +128,8 @@ export default function ChatWidgetAI() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const greetingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const userHasTyped = useRef<boolean>(false);
+  const simulationTimeouts = useRef<NodeJS.Timeout[]>([]);
+  const isSimulating = useRef<boolean>(false);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -250,6 +252,72 @@ export default function ChatWidgetAI() {
       }
     }
   }, []);
+
+  // Typing simulation function
+  const simulateTyping = useCallback((text: string) => {
+    // Clear any existing simulation
+    simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
+    simulationTimeouts.current = [];
+    
+    isSimulating.current = true;
+    
+    // Focus the input (without opening chat)
+    inputRef.current?.focus();
+    
+    // Type character by character
+    let currentIndex = 0;
+    const typeNextChar = () => {
+      if (!isSimulating.current) return;
+      
+      if (currentIndex < text.length) {
+        setInputValue(text.substring(0, currentIndex + 1));
+        currentIndex++;
+        const timeout = setTimeout(typeNextChar, 80 + Math.random() * 40); // 80-120ms per char
+        simulationTimeouts.current.push(timeout);
+      } else {
+        // Finished typing, wait a moment then erase
+        const eraseTimeout = setTimeout(() => {
+          if (!isSimulating.current) return;
+          
+          // Erase character by character
+          const eraseNextChar = () => {
+            if (!isSimulating.current) return;
+            
+            setInputValue(prev => {
+              if (prev.length > 0) {
+                const timeout = setTimeout(eraseNextChar, 40 + Math.random() * 20); // 40-60ms per char (faster erase)
+                simulationTimeouts.current.push(timeout);
+                return prev.substring(0, prev.length - 1);
+              }
+              isSimulating.current = false;
+              return '';
+            });
+          };
+          
+          eraseNextChar();
+        }, 1500); // Wait 1.5s before erasing
+        simulationTimeouts.current.push(eraseTimeout);
+      }
+    };
+    
+    typeNextChar();
+  }, []);
+
+  // Listen for typing simulation trigger
+  useEffect(() => {
+    const handleSimulateTyping = (event: CustomEvent) => {
+      const textToType = event.detail?.text || "Demandez ce que vous voulez...";
+      simulateTyping(textToType);
+    };
+    
+    window.addEventListener('simulateTyping' as any, handleSimulateTyping as EventListener);
+    
+    return () => {
+      window.removeEventListener('simulateTyping' as any, handleSimulateTyping as EventListener);
+      // Clean up all simulation timeouts
+      simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
+    };
+  }, [simulateTyping]);
 
   // Natural greeting: wait 3s, cancel if user types
   useEffect(() => {
@@ -641,6 +709,13 @@ export default function ChatWidgetAI() {
                   type="text"
                   value={inputValue}
                   onChange={(e) => {
+                    // Stop simulation if user types
+                    if (isSimulating.current) {
+                      isSimulating.current = false;
+                      simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
+                      simulationTimeouts.current = [];
+                    }
+                    
                     setInputValue(e.target.value);
                     // Cancel greeting if user starts typing
                     if (!hasGreeted && e.target.value.length > 0) {
@@ -844,6 +919,13 @@ export default function ChatWidgetAI() {
                         type="text"
                         value={inputValue}
                         onChange={(e) => {
+                          // Stop simulation if user types
+                          if (isSimulating.current) {
+                            isSimulating.current = false;
+                            simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
+                            simulationTimeouts.current = [];
+                          }
+                          
                           setInputValue(e.target.value);
                           // Cancel greeting if user starts typing
                           if (!hasGreeted && e.target.value.length > 0) {

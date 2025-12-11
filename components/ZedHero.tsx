@@ -63,12 +63,44 @@ export default function ZedHero() {
               className="pt-2"
             >
               <button
-                onClick={() => setIsFormOpen(true)}
+                onClick={() => {
+                  // Trigger typing simulation in ChatWidgetAI
+                  const event = new CustomEvent('simulateTyping', {
+                    detail: { text: 'Demandez ce que vous voulez...' }
+                  });
+                  window.dispatchEvent(event);
+                }}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl shadow-xl hover:shadow-2xl active:scale-95 sm:hover:scale-105 transition-all duration-300"
               >
                 {t('cta')}
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                {/* Arrow: right on desktop, down on mobile */}
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6 block sm:hidden"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  {/* Down arrow for mobile */}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 17l4 4m0 0l4-4m-4 4V3"
+                  />
+                </svg>
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6 hidden sm:block"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  {/* Right arrow for desktop */}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
                 </svg>
               </button>
             </motion.div>
