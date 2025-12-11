@@ -563,10 +563,11 @@ async function processWithAgent(
     // Execute each tool
     const newToolResults: any[] = [];
     for (const toolUse of toolUseBlocks) {
-      const result = await executeTool(toolUse.name, toolUse.input, context);
+      const toolInput = toolUse.input as Record<string, any>;
+      const result = await executeTool(toolUse.name, toolInput, context);
       toolResults.push({
         name: toolUse.name,
-        parameters: toolUse.input,
+        parameters: toolInput,
         result
       });
       
