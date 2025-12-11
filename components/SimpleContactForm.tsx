@@ -161,36 +161,37 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 pointer-events-none overflow-y-auto">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 1, y: "100%" }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl pointer-events-auto"
+              exit={{ opacity: 0, scale: 1, y: "100%" }}
+              style={{scrollbarWidth: 'none'}}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative bg-white rounded-xl p-4 sm:p-8 w-full sm:max-w-md shadow-2xl pointer-events-auto max-h-[88vh] sm:max-h-[80vh] overflow-y-auto text-sm"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute top-6 right-6 text-[#1E2A47]/40 hover:text-[#1E2A47] transition-colors"
+                className="sticky top-0 ml-auto mb-2 sm:mb-0 sm:absolute sm:top-6 sm:right-6 w-9 h-9 flex items-center justify-center rounded-full bg-[#1E2A47]/5 sm:bg-transparent text-[#1E2A47]/60 hover:text-[#1E2A47] hover:bg-[#1E2A47]/10 active:scale-90 transition-all z-10"
                 aria-label="Close"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
               {/* Header */}
-              <div className="mb-8">
-                <h2 className="text-3xl font-bold text-[#1E2A47] mb-2">
+              <div className="mb-4 sm:mb-8 -mt-11 sm:mt-0 sm:pr-8">
+                <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#1E2A47] mb-1 leading-tight">
                   {t('title')}
                 </h2>
-                <p className="text-[#1E2A47]/60 text-sm">
+                <p className="text-[#1E2A47]/60 text-xs sm:text-sm">
                   {t('subtitle')}
                 </p>
               </div>
 
               {/* Intro Text */}
-              <p className="text-sm text-[#1E2A47]/70 mb-6">
+              <p className="text-[11px] sm:text-sm text-[#1E2A47]/70 mb-4 sm:mb-6">
                 {t('intro')}
               </p>
 
@@ -210,21 +211,21 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
               )}
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 {/* Stakeholder Type */}
                 <div>
-                  <label htmlFor="stakeholderType" className="block text-sm font-medium text-[#1E2A47] mb-2">
+                  <label htmlFor="stakeholderType" className="block text-xs sm:text-sm font-medium text-[#1E2A47] mb-1">
                     {t('fields.stakeholderType')} <span className="text-[#E88B7A]">*</span>
                   </label>
                   <select
                     id="stakeholderType"
                     value={formData.stakeholderType}
                     onChange={(e) => handleChange('stakeholderType', e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border ${
+                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
                       errors.stakeholderType
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
-                    } focus:outline-none focus:ring-2 focus:ring-[#E88B7A]/20 transition-colors bg-white`}
+                    } focus:outline-none focus:ring-1 focus:ring-[#E88B7A]/20 transition-colors bg-white appearance-none cursor-pointer`}
                     disabled={isLoading}
                   >
                     <option value="">{t('fields.stakeholderPlaceholder')}</option>
@@ -236,13 +237,13 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                     <option value="other">{t('fields.stakeholderOther')}</option>
                   </select>
                   {errors.stakeholderType && (
-                    <p className="mt-1.5 text-sm text-red-600">{errors.stakeholderType}</p>
+                    <p className="mt-0.5 text-[11px] text-red-600">{errors.stakeholderType}</p>
                   )}
                 </div>
 
                 {/* First Name */}
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-[#1E2A47] mb-2">
+                  <label htmlFor="firstName" className="block text-xs sm:text-sm font-medium text-[#1E2A47] mb-1">
                     {t('fields.firstName')}
                   </label>
                   <input
@@ -250,97 +251,104 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border ${
+                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
                       errors.firstName
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
-                    } focus:outline-none focus:ring-2 focus:ring-[#E88B7A]/20 transition-colors`}
+                    } focus:outline-none focus:ring-1 focus:ring-[#E88B7A]/20 transition-colors`}
                     disabled={isLoading}
                   />
                   {errors.firstName && (
-                    <p className="mt-1.5 text-sm text-red-600">{errors.firstName}</p>
+                    <p className="mt-0.5 text-[11px] text-red-600">{errors.firstName}</p>
                   )}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-[#1E2A47] mb-2">
+                  <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-[#1E2A47] mb-1">
                     {t('fields.email')}
                   </label>
                   <input
                     id="email"
                     type="email"
+                    inputMode="email"
+                    autoComplete="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border ${
+                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
                       errors.email
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
-                    } focus:outline-none focus:ring-2 focus:ring-[#E88B7A]/20 transition-colors`}
+                    } focus:outline-none focus:ring-1 focus:ring-[#E88B7A]/20 transition-colors`}
                     disabled={isLoading}
                   />
                   {errors.email && (
-                    <p className="mt-1.5 text-sm text-red-600">{errors.email}</p>
+                    <p className="mt-0.5 text-[11px] text-red-600">{errors.email}</p>
                   )}
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-[#1E2A47] mb-2">
+                  <label htmlFor="phone" className="block text-xs sm:text-sm font-medium text-[#1E2A47] mb-1">
                     {t('fields.phone')}
                   </label>
                   <input
                     id="phone"
                     type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     value={formData.phone}
                     onChange={(e) => handleChange('phone', e.target.value)}
                     placeholder="+33 6 12 34 56 78"
-                    className={`w-full px-4 py-3 rounded-xl border ${
+                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
                       errors.phone
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
-                    } focus:outline-none focus:ring-2 focus:ring-[#E88B7A]/20 transition-colors`}
+                    } focus:outline-none focus:ring-1 focus:ring-[#E88B7A]/20 transition-colors`}
                     disabled={isLoading}
                   />
                   {errors.phone && (
-                    <p className="mt-1.5 text-sm text-red-600">{errors.phone}</p>
+                    <p className="mt-0.5 text-[11px] text-red-600">{errors.phone}</p>
                   )}
                 </div>
 
-                                {/* Website */}
-                                <div>
-                  <label htmlFor="website" className="block text-sm font-medium text-[#1E2A47] mb-2">
+                {/* Website */}
+                <div>
+                  <label htmlFor="website" className="block text-xs sm:text-sm font-medium text-[#1E2A47] mb-1">
                     {t('fields.website')}
                   </label>
                   <input
                     id="website"
-                    type="text"
+                    type="url"
+                    inputMode="url"
+                    autoComplete="url"
                     value={formData.website}
                     onChange={(e) => handleChange('website', e.target.value)}
                     placeholder="https://example.com"
-                    className={`w-full px-4 py-3 rounded-xl border ${
+                    className={`w-full px-3 py-2 sm:py-2.5 text-[15px] rounded-lg border ${
                       errors.website
                         ? 'border-red-300 focus:border-red-500'
                         : 'border-[#1E2A47]/20 focus:border-[#E88B7A]'
-                    } focus:outline-none focus:ring-2 focus:ring-[#E88B7A]/20 transition-colors`}
+                    } focus:outline-none focus:ring-1 focus:ring-[#E88B7A]/20 transition-colors`}
                     disabled={isLoading}
                   />
                   {errors.website && (
-                    <p className="mt-1.5 text-sm text-red-600">{errors.website}</p>
+                    <p className="mt-0.5 text-[11px] text-red-600">{errors.website}</p>
                   )}
                 </div>
 
                 {/* Privacy Note */}
-                <div className="text-sm text-[#1E2A47]/60 text-center py-2">
+                <div className="text-[11px] sm:text-xs text-[#1E2A47]/60 text-center py-2">
                   {t('privacyNote')}
                 </div>
 
                 {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white font-bold text-lg rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
+                <div className="pt-3 sticky bottom-0 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 sm:py-0 bg-white sm:bg-transparent border-t sm:border-t-0 border-[#1E2A47]/10">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full py-3 sm:py-3.5 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white font-bold text-[15px] sm:text-base rounded-lg shadow-lg active:scale-[0.98] sm:hover:shadow-xl sm:hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                  >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
                       <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -365,6 +373,7 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                     t('submit')
                   )}
                 </button>
+                </div>
               </form>
             </motion.div>
           </div>
