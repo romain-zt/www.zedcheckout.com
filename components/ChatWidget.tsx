@@ -240,14 +240,25 @@ export default function ChatWidget() {
               {/* Visible glow */}
               <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full opacity-40 group-hover:opacity-60 blur-xl transition-opacity duration-500 animate-pulse" />
               
-              {/* Input field */}
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Demandez ce que vous voulez..."
-                className="relative w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-full backdrop-blur-xl bg-white/30 border border-white/40 shadow-2xl text-white placeholder-white/70 outline-none transition-all duration-300 focus:bg-white/40 focus:border-white/50 focus:shadow-[0_20px_60px_rgba(232,139,122,0.3)] group-hover:bg-white/40 group-hover:border-white/50"
-              />
+              {/* Input field with button */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Demandez ce que vous voulez..."
+                  className="relative w-full px-5 py-3.5 pr-14 sm:px-6 sm:py-4 sm:pr-16 rounded-full backdrop-blur-xl bg-white/30 border border-white/40 shadow-2xl text-white placeholder-white/70 outline-none transition-all duration-300 focus:bg-white/40 focus:border-white/50 focus:shadow-[0_20px_60px_rgba(232,139,122,0.3)] group-hover:bg-white/40 group-hover:border-white/50"
+                />
+                <button
+                  type="submit"
+                  disabled={!inputValue.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </motion.form>
         )}
