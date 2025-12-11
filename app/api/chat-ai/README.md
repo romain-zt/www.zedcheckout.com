@@ -1,0 +1,314 @@
+# AI Checkout Agent - Architecture
+
+## Vue d'ensemble
+
+Un vrai agent IA de checkout conversationnel, pas un simple chatbot. Utilise Claude 3.5 Sonnet avec tool calling pour orchestrer des conversations de checkout intelligentes.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    ChatWidget (Frontend)                │
+│  • Multi-message support                                │
+│  • Suggested replies                                    │
+│  • Context persistence                                  │
+└──────────────────┬──────────────────────────────────────┘
+                   │
+                   │ HTTP POST
+                   │
+┌──────────────────▼──────────────────────────────────────┐
+│               Agent Orchestrator (API)                  │
+│  ┌────────────────────────────────────────────────┐    │
+│  │  1. Build Context (state, cart, user info)    │    │
+│  │  2. Call Claude with Tools                     │    │
+│  │  3. Execute Tool Calls                         │    │
+│  │  4. Iterate until final response               │    │
+│  │  5. Update & return context                    │    │
+│  └────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
+
+## États de l'Agent
+
+L'agent suit une state machine :
+
+```
+greeting → discovery → product_selection → customization → checkout → completed
+```
+
+- **greeting** : Séquence de bienvenue multi-messages
+- **discovery** : Comprendre l'intention/besoins du client
+- **product_selection** : Aide au choix de produits
+- **customization** : Configuration produits/panier
+- **checkout** : Finalisation de la commande
+- **completed** : Commande passée
+
+## Outils Disponibles
+
+L'agent peut appeler ces outils de manière autonome :
+
+### 1. `add_to_cart`
+Ajoute un produit au panier.
+
+**Paramètres :**
+- `product_name` (string, required)
+- `quantity` (number, optional, default: 1)
+- `options` (object, optional) - taille, couleur, etc.
+
+**Exemple d'utilisation par l'IA :**
+```
+User: "Je veux 2 t-shirts"
+→ AI appelle: add_to_cart({ product_name: "T-shirt", quantity: 2 })
+→ AI répond: "Parfait ! 2 t-shirts ajoutés 👕"
+```
+
+### 2. `remove_from_cart`
+Retire un article du panier.
+
+**Paramètres :**
+- `item_index` (number) - Index de l'article (0-based)
+
+### 3. `update_cart_quantity`
+Modifie la quantité d'un article.
+
+**Paramètres :**
+- `item_index` (number)
+- `new_quantity` (number)
+
+### 4. `get_cart_summary`
+Récupère le contenu du panier et le total.
+
+**Pas de paramètres.**
+
+### 5. `capture_customer_info`
+Enregistre les infos client.
+
+**Paramètres :**
+- `name` (string, optional)
+- `email` (string, optional)
+- `phone` (string, optional)
+- `address` (object, optional)
+
+### 6. `apply_discount_code`
+Applique un code promo.
+
+**Paramètres :**
+- `code` (string)
+
+### 7. `finalize_checkout`
+Finalise la commande.
+
+**Paramètres :**
+- `payment_method` (string, optional)
+
+## Contexte de Conversation
+
+Chaque conversation maintient un contexte :
+
+```typescript
+{
+  state: AgentState,
+  cart: CartItem[],
+  userInfo: {
+    name?: string,
+    email?: string,
+    phone?: string,
+    shippingAddress?: any
+  },
+  metadata: {
+    sessionStarted: string,
+    lastInteraction: string,
+    messageCount: number,
+    intentHistory: string[]
+  }
+}
+```
+
+Ce contexte est :
+- Maintenu côté frontend (persistant)
+- Envoyé à chaque requête
+- Enrichi par l'agent via les tool calls
+- Utilisé pour construire le system prompt
+
+## Séquence de Greeting
+
+Première interaction = séquence multi-messages automatique :
+
+```typescript
+[
+  { text: "Bonjour, je suis ZedCheckout.", delay: 0 },
+  { text: "Une IA, mais pas tout à fait comme les autres.", delay: 500 },
+  { 
+    text: "Je ne suis pas là pour bavarder...",
+    delay: 500,
+    suggestedReplies: [...]
+  }
+]
+```
+
+Chaque message s'affiche avec un délai (max 500ms entre chaque).
+
+## Ajouter un Nouvel Outil
+
+### 1. Définir le tool dans `AGENT_TOOLS`
+
+```typescript
+const AGENT_TOOLS: Anthropic.Tool[] = [
+  // ... existing tools
+  {
+    name: 'check_inventory',
+    description: 'Check product inventory availability',
+    input_schema: {
+      type: 'object',
+      properties: {
+        product_id: {
+          type: 'string',
+          description: 'Product ID to check'
+        }
+      },
+      required: ['product_id']
+    }
+  }
+];
+```
+
+### 2. Implémenter l'exécution dans `executeTool`
+
+```typescript
+async function executeTool(
+  toolName: string,
+  parameters: Record<string, any>,
+  context: ConversationContext
+): Promise<any> {
+  
+  switch (toolName) {
+    // ... existing cases
+    
+    case 'check_inventory': {
+      const { product_id } = parameters;
+      // Appel API, BDD, etc.
+      const available = await checkInventoryAPI(product_id);
+      return {
+        success: true,
+        available,
+        message: available ? 'En stock' : 'Rupture de stock'
+      };
+    }
+  }
+}
+```
+
+### 3. L'IA l'utilise automatiquement
+
+L'agent comprend quand utiliser ce nouvel outil grâce à :
+- La description du tool
+- Le system prompt
+- Le contexte de conversation
+
+## Ajouter un Nouvel État
+
+### 1. Ajouter à `AgentState`
+
+```typescript
+type AgentState = 
+  | 'greeting'
+  | 'discovery'
+  | 'product_selection'
+  | 'customization'
+  | 'upsell'  // ← NOUVEAU
+  | 'checkout'
+  | 'completed';
+```
+
+### 2. Documenter dans le System Prompt
+
+Ajouter une section dans `SYSTEM_PROMPT` expliquant :
+- Quand passer à cet état
+- Que faire dans cet état
+- Comment en sortir
+
+### 3. L'agent gère la transition
+
+L'agent décide quand transitionner via le champ `state` dans sa réponse JSON.
+
+## Performance & Scaling
+
+### Modèle utilisé
+- **claude-3-5-sonnet-20241022** : Optimal pour raisonnement + tool calling
+- max_tokens: 1024 (suffisant pour réponses concises + tool calls)
+- temperature: 0.7 (équilibre créativité/cohérence)
+
+### Optimisations possibles
+1. **Caching** : Mettre en cache le system prompt (feature Claude)
+2. **Streaming** : Stream les réponses pour meilleure UX
+3. **Rate limiting** : Implémenter backoff sur 429
+4. **Context pruning** : Limiter l'historique aux N derniers messages
+
+### Coût moyen par conversation
+~5-10 messages × ~1000 tokens = ~10K tokens total
+≈ $0.03-0.05 par conversation complète
+
+## Monitoring & Debugging
+
+### Logs importants
+- Tool calls exécutés
+- Context state transitions
+- Erreurs de parsing
+- Token usage
+
+### Métriques à tracker
+- Taux de complétion checkout
+- Nombre moyen de messages
+- Tool calls par conversation
+- Temps de réponse
+
+## Tests
+
+### Scénarios à tester
+
+**Happy path :**
+```
+User: "Je veux acheter un t-shirt"
+→ Tool: add_to_cart
+→ AI demande taille
+User: "L"
+→ Tool: update_cart_quantity ou add options
+→ AI propose checkout
+User: "OK"
+→ Tool: capture_customer_info (email)
+→ Tool: finalize_checkout
+```
+
+**Edge cases :**
+- Panier vide au checkout
+- Code promo invalide
+- Infos client incomplètes
+- Messages hors sujet
+- Abandon en milieu de flow
+
+## Prochaines Améliorations
+
+### Court terme
+- [ ] Intégration réelle catalogue produits
+- [ ] Calcul prix réel avec taxes/shipping
+- [ ] Validation email/téléphone
+- [ ] Multi-langue (détection auto)
+
+### Moyen terme
+- [ ] Intégration Stripe/payment
+- [ ] Upsell intelligent (ML-based)
+- [ ] A/B testing messages
+- [ ] Analytics avancés
+
+### Long terme
+- [ ] Voice mode (speech-to-text)
+- [ ] Image recognition (product photos)
+- [ ] Personnalisation avancée
+- [ ] Multi-agent orchestration
+
+## Support & Questions
+
+Pour toute question sur l'architecture ou l'extension de l'agent, référez-vous à :
+- Code : `app/api/chat-ai/route.ts`
+- Frontend : `components/ChatWidget.tsx`
+- System prompt : Dans `route.ts`, variable `SYSTEM_PROMPT`

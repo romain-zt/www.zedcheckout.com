@@ -8,80 +8,42 @@ interface Message {
   text: string;
   sender: 'bot' | 'user';
   timestamp: Date;
+  suggestedReplies?: string[];
 }
 
-interface LeadData {
-  name?: string;
-  email?: string;
-  company?: string;
-  platform?: string;
-  monthlyRevenue?: string;
-  cartValue?: string;
-  challenge?: string;
+interface ConversationContext {
+  state: string;
+  cart: any[];
+  userInfo: Record<string, any>;
+  metadata: {
+    sessionStarted: string;
+    lastInteraction: string;
+    messageCount: number;
+    intentHistory: string[];
+  };
 }
-
-type QuestionKey = keyof LeadData;
 
 // Section-specific placeholder messages
 const SECTION_PLACEHOLDERS: Record<string, string> = {
-  'zed-hero': "Comment ZedCheckout peut transformer votre checkout ?",
-  'zed-problem': "Votre checkout vous fait perdre des clients ?",
-  'zed-solution': "Comment fonctionne l'IA conversationnelle ?",
-  'zed-filter': "ZedCheckout est-il fait pour vous ?",
-  'zed-process': "Comment se passe la mise en place ?",
-  'zed-faq': "Une question sur ZedCheckout ?",
-  'zed-cta': "Prêt à augmenter vos conversions ?",
-  'default': "Demandez ce que vous voulez...",
+  'zed-hero': "Que puis-je faire pour vous ?",
+  'zed-problem': "Un problème avec votre checkout ?",
+  'zed-solution': "Comment puis-je vous aider ?",
+  'zed-filter': "Une question ?",
+  'zed-process': "Besoin d'aide ?",
+  'zed-faq': "Posez votre question...",
+  'zed-cta': "Prêt à passer commande ?",
+  'default': "Écrivez votre message...",
 };
-
-const QUALIFICATION_FLOW: Array<{
-  key: QuestionKey;
-  question: string;
-  validator?: (value: string) => boolean;
-  errorMessage?: string;
-}> = [
-  {
-    key: 'name',
-    question: "Pour commencer, comment vous appelez-vous ? 😊",
-  },
-  {
-    key: 'email',
-    question: "Parfait {name} ! Quel est votre email professionnel ?",
-    validator: (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
-    errorMessage: "Hmm, cet email ne semble pas valide. Pouvez-vous vérifier ?",
-  },
-  {
-    key: 'company',
-    question: "Super ! Quel est le nom de votre entreprise ou marque ?",
-  },
-  {
-    key: 'platform',
-    question: "Sur quelle plateforme e-commerce êtes-vous actuellement ? (Shopify, WooCommerce, Custom...)",
-  },
-  {
-    key: 'monthlyRevenue',
-    question: "Et quel est votre CA mensuel approximatif ? (ex: 10K, 50K, 100K+...)",
-  },
-  {
-    key: 'cartValue',
-    question: "Quel est votre panier moyen ? 🛒",
-  },
-  {
-    key: 'challenge',
-    question: "Dernière question : quel est votre plus grand défi avec votre checkout actuellement ? 🎯",
-  },
-];
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [leadData, setLeadData] = useState<LeadData>({});
-  const [isComplete, setIsComplete] = useState(false);
-  const [hasGreeted, setHasGreeted] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const [currentSection, setCurrentSection] = useState<string>('default');
+  const [context, setContext] = useState<ConversationContext | null>(null);
+  const [conversationHistory, setConversationHistory] = useState<any[]>([]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -95,7 +57,6 @@ export default function ChatWidget() {
   }, [messages, isTyping]);
 
   useEffect(() => {
-    // Focus input when chat opens
     if (isOpen && inputRef.current) {
       setTimeout(() => {
         inputRef.current?.focus();
@@ -107,7 +68,7 @@ export default function ChatWidget() {
   useEffect(() => {
     const observerOptions = {
       root: null,
-      rootMargin: '-20% 0px -60% 0px', // Section is "active" when it's in the middle third of viewport
+      rootMargin: '-20% 0px -60% 0px',
       threshold: 0,
     };
 
@@ -123,8 +84,6 @@ export default function ChatWidget() {
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    // Observe all sections with IDs matching our placeholders
     const sections = document.querySelectorAll('[id^="zed-"]');
     sections.forEach((section) => observer.observe(section));
 
@@ -133,31 +92,34 @@ export default function ChatWidget() {
     };
   }, []);
 
-  const addBotMessage = (text: string) => {
-    setIsTyping(true);
-    
-    // Simulate typing delay based on message length
-    const typingDelay = Math.min(text.length * 20, 2000);
-    
+  // Add bot message with typing simulation
+  const addBotMessage = (text: string, suggestedReplies?: string[], delay: number = 0) => {
     setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          text,
-          sender: 'bot',
-          timestamp: new Date(),
-        },
-      ]);
-      setIsTyping(false);
-    }, typingDelay);
+      setIsTyping(true);
+      
+      const typingDelay = Math.min(text.length * 15, 1500);
+      
+      setTimeout(() => {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: `${Date.now()}_${Math.random()}`,
+            text,
+            sender: 'bot',
+            timestamp: new Date(),
+            suggestedReplies
+          },
+        ]);
+        setIsTyping(false);
+      }, typingDelay);
+    }, delay);
   };
 
   const addUserMessage = (text: string) => {
     setMessages(prev => [
       ...prev,
       {
-        id: Date.now().toString(),
+        id: `${Date.now()}_${Math.random()}`,
         text,
         sender: 'user',
         timestamp: new Date(),
@@ -165,94 +127,141 @@ export default function ChatWidget() {
     ]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handle greeting sequence (multi-message)
+  const handleGreetingSequence = async (firstUserMessage: string) => {
+    try {
+      setIsTyping(true);
+      
+      const response = await fetch('/api/chat-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: firstUserMessage,
+          isFirstMessage: true,
+          conversationHistory: []
+        })
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      const data = await response.json();
+      
+      if (data.isGreeting && data.messages) {
+        // Display greeting sequence with delays
+        let cumulativeDelay = 0;
+        data.messages.forEach((msg: any, index: number) => {
+          const messageDelay = index === 0 ? 500 : (msg.delay || 500);
+          cumulativeDelay += messageDelay;
+          
+          addBotMessage(
+            msg.text, 
+            msg.suggestedReplies,
+            cumulativeDelay
+          );
+        });
+
+        // Update context
+        setContext(data.context);
+        
+        // Update conversation history
+        setConversationHistory([
+          { role: 'user', content: firstUserMessage }
+        ]);
+      }
+
+      setIsTyping(false);
+    } catch (error) {
+      console.error('Error during greeting:', error);
+      setIsTyping(false);
+      addBotMessage(
+        "Désolé, une erreur s'est produite. Pouvez-vous réessayer ?",
+        undefined,
+        500
+      );
+    }
+  };
+
+  // Send message to AI agent
+  const sendToAgent = async (userMessage: string) => {
+    try {
+      setIsTyping(true);
+
+      const response = await fetch('/api/chat-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          conversationHistory,
+          context,
+          isFirstMessage: false
+        })
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      const data = await response.json();
+
+      // Update context
+      if (data.context) {
+        setContext(data.context);
+      }
+
+      // Update conversation history
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'user', content: userMessage },
+        { role: 'assistant', content: data.messages[0]?.text || '' }
+      ]);
+
+      // Display response messages
+      if (data.messages && data.messages.length > 0) {
+        let cumulativeDelay = 800;
+        data.messages.forEach((msg: any, index: number) => {
+          if (index > 0) {
+            cumulativeDelay += msg.delay || 500;
+          }
+          
+          addBotMessage(
+            msg.text,
+            msg.suggestedReplies,
+            index === 0 ? 800 : cumulativeDelay
+          );
+        });
+      }
+
+      setIsTyping(false);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setIsTyping(false);
+      addBotMessage(
+        "Désolé, une erreur s'est produite. Pouvez-vous réessayer ?",
+        undefined,
+        500
+      );
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent, quickReply?: string) => {
     e.preventDefault();
     
-    if (!inputValue.trim() || isTyping || isComplete) return;
-
-    const userInput = inputValue.trim();
+    const userInput = quickReply || inputValue.trim();
     
-    // First message: open chat, add user message, send greeting and start qualification
-    if (!hasGreeted) {
+    if (!userInput || isTyping) return;
+
+    // First message: start greeting sequence
+    if (!hasStarted) {
       setIsOpen(true);
+      setHasStarted(true);
       addUserMessage(userInput);
       setInputValue('');
-      setHasGreeted(true);
-      setTimeout(() => {
-        addBotMessage(
-          "👋 Salut ! Je suis l'assistant ZedCheckout.\n\nJe vois que vous êtes intéressé par notre solution de checkout conversationnel.\n\nJ'ai quelques questions rapides pour mieux comprendre votre situation. Ça vous va ?"
-        );
-        setTimeout(() => {
-          addBotMessage(QUALIFICATION_FLOW[0].question);
-        }, 1500);
-      }, 800);
+      await handleGreetingSequence(userInput);
       return;
     }
 
+    // Subsequent messages: send to agent
     addUserMessage(userInput);
     setInputValue('');
-
-    // Validate input if validator exists
-    const currentQuestion = QUALIFICATION_FLOW[currentQuestionIndex];
-    if (currentQuestion.validator && !currentQuestion.validator(userInput)) {
-      setTimeout(() => {
-        addBotMessage(currentQuestion.errorMessage || "Désolé, cette réponse n'est pas valide.");
-      }, 500);
-      return;
-    }
-
-    // Save lead data
-    const updatedLeadData = {
-      ...leadData,
-      [currentQuestion.key]: userInput,
-    };
-    setLeadData(updatedLeadData);
-
-    // Move to next question or complete
-    if (currentQuestionIndex < QUALIFICATION_FLOW.length - 1) {
-      const nextIndex = currentQuestionIndex + 1;
-      setCurrentQuestionIndex(nextIndex);
-      
-      setTimeout(() => {
-        let nextQuestion = QUALIFICATION_FLOW[nextIndex].question;
-        // Replace placeholders
-        nextQuestion = nextQuestion.replace('{name}', updatedLeadData.name || '');
-        addBotMessage(nextQuestion);
-      }, 800);
-    } else {
-      // Complete the qualification
-      setIsComplete(true);
-      
-      setTimeout(() => {
-        addBotMessage(
-          `Parfait ${updatedLeadData.name} ! 🎉\n\nMerci d'avoir pris le temps de répondre. Voici ce que je retiens :\n\n` +
-          `• Entreprise : ${updatedLeadData.company}\n` +
-          `• Plateforme : ${updatedLeadData.platform}\n` +
-          `• CA mensuel : ${updatedLeadData.monthlyRevenue}\n` +
-          `• Panier moyen : ${updatedLeadData.cartValue}\n` +
-          `• Défi principal : ${updatedLeadData.challenge}\n\n` +
-          `Un membre de notre équipe va analyser votre profil et vous contacter sous 24h à ${updatedLeadData.email}.\n\n` +
-          `En attendant, vous pouvez consulter notre démo interactive ci-dessous ! 👇`
-        );
-      }, 1000);
-
-      // Send lead data to server
-      setTimeout(async () => {
-        try {
-          const response = await fetch('/api/chat-lead', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedLeadData),
-          });
-          
-          if (!response.ok) {
-            console.error('Failed to send lead data');
-          }
-        } catch (error) {
-          console.error('Error sending lead data:', error);
-        }
-      }, 500);
-    }
+    await sendToAgent(userInput);
   };
 
   const formatTime = (date: Date) => {
@@ -338,14 +347,16 @@ export default function ChatWidget() {
                       <div className="relative">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center">
                           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </div>
                         <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-[#1E2A47]" />
                       </div>
                       <div>
-                        <div className="text-white font-semibold text-sm">ZedCheckout Assistant</div>
-                        <div className="text-white/70 text-xs">En ligne</div>
+                        <div className="text-white font-semibold text-sm">ZedCheckout AI</div>
+                        <div className="text-white/70 text-xs">
+                          {context?.state ? `${context.state}` : 'En ligne'}
+                        </div>
                       </div>
                     </div>
                     <button
@@ -360,16 +371,16 @@ export default function ChatWidget() {
                 </div>
 
                 {/* Messages */}
-                <div className="h-[400px] overflow-y-auto px-6 py-4 space-y-4 bg-gradient-to-b from-white/40 to-white/60">
+                <div className="h-[450px] overflow-y-auto px-6 py-4 space-y-4 bg-gradient-to-b from-white/40 to-white/60">
                   {messages.map((message) => (
                     <motion.div
                       key={message.id}
                       initial={{ opacity: 0, y: 20, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.3 }}
-                      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                      className={`flex flex-col ${message.sender === 'user' ? 'items-end' : 'items-start'}`}
                     >
-                      <div className={`max-w-[80%] ${message.sender === 'user' ? 'order-2' : 'order-1'}`}>
+                      <div className={`max-w-[85%]`}>
                         <div
                           className={`rounded-2xl px-4 py-3 shadow-lg whitespace-pre-wrap ${
                             message.sender === 'user'
@@ -379,6 +390,23 @@ export default function ChatWidget() {
                         >
                           <div className="text-sm leading-relaxed">{message.text}</div>
                         </div>
+                        
+                        {/* Suggested replies */}
+                        {message.sender === 'bot' && message.suggestedReplies && message.suggestedReplies.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {message.suggestedReplies.map((reply, idx) => (
+                              <button
+                                key={idx}
+                                onClick={(e) => handleSubmit(e, reply)}
+                                disabled={isTyping}
+                                className="text-xs px-3 py-1.5 rounded-full bg-white/60 backdrop-blur-sm border border-gray-200 text-gray-700 hover:bg-white/90 hover:border-[#E88B7A] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {reply}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        
                         <div className={`text-xs text-gray-500 mt-1 px-2 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
                           {formatTime(message.timestamp)}
                         </div>
@@ -407,45 +435,38 @@ export default function ChatWidget() {
                 </div>
 
                 {/* Input */}
-                {!isComplete && (
-                  <form onSubmit={handleSubmit} className="relative p-4 bg-white/60 backdrop-blur-sm border-t border-gray-100">
-                    <div className="relative">
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        disabled={isTyping}
-                        placeholder="Tapez votre réponse..."
-                        className="w-full px-5 py-3 pr-12 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200 focus:border-[#E88B7A] focus:ring-2 focus:ring-[#E88B7A]/20 outline-none transition-all duration-300 text-gray-800 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
-                      <button
-                        type="submit"
-                        disabled={!inputValue.trim() || isTyping}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-                {/* Completion state */}
-                {isComplete && (
-                  <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-t border-green-100">
-                    <div className="text-center">
-                      <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
-                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div className="text-lg font-semibold text-gray-800 mb-1">Merci !</div>
-                      <div className="text-sm text-gray-600">Nous revenons vers vous très vite</div>
-                    </div>
+                <form onSubmit={handleSubmit} className="relative p-4 bg-white/60 backdrop-blur-sm border-t border-gray-100">
+                  <div className="relative">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      disabled={isTyping}
+                      placeholder="Tapez votre message..."
+                      className="w-full px-5 py-3 pr-12 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200 focus:border-[#E88B7A] focus:ring-2 focus:ring-[#E88B7A]/20 outline-none transition-all duration-300 text-gray-800 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!inputValue.trim() || isTyping}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                    </button>
                   </div>
-                )}
+                  
+                  {/* Cart indicator (if cart has items) */}
+                  {context && context.cart.length > 0 && (
+                    <div className="mt-2 text-xs text-gray-600 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      {context.cart.length} article{context.cart.length > 1 ? 's' : ''} au panier
+                    </div>
+                  )}
+                </form>
               </div>
             </div>
           </motion.div>
