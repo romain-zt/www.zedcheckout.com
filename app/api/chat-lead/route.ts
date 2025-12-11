@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
 export async function POST(request: NextRequest) {
+  console.log('📨 [chat-lead] Received lead submission');
+  
   try {
     const leadData = await request.json();
+    console.log('📋 [chat-lead] Lead data:', {
+      name: leadData.name,
+      email: leadData.email,
+      company: leadData.company,
+      platform: leadData.platform,
+    });
 
     const {
       name,
@@ -17,13 +25,29 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!name || !email || !company || !platform) {
+      console.error('❌ [chat-lead] Missing required fields');
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
+    // Check environment variables
+    if (!process.env.CONTACT_MAIL_ADDRESS || !process.env.CONTACT_MAIL_PASSWORD) {
+      console.error('❌ [chat-lead] Missing email configuration in environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    console.log('📧 [chat-lead] Email config:', {
+      address: process.env.CONTACT_MAIL_ADDRESS,
+      passwordSet: !!process.env.CONTACT_MAIL_PASSWORD,
+    });
+
     // Create transporter
+    console.log('🔌 [chat-lead] Creating email transporter...');
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -31,6 +55,7 @@ export async function POST(request: NextRequest) {
         pass: process.env.CONTACT_MAIL_PASSWORD,
       },
     });
+    console.log('✅ [chat-lead] Transporter created');
 
     // Determine if lead is qualified (Shopify)
     const isQualified = platform.toLowerCase().includes('shopify');
@@ -194,10 +219,13 @@ export async function POST(request: NextRequest) {
     };
 
     // Send admin email
+    console.log('📤 [chat-lead] Sending admin email...');
     await transporter.sendMail(adminMailOptions);
+    console.log('✅ [chat-lead] Admin email sent successfully');
 
     // Send auto-response to non-qualified leads
     if (!isQualified) {
+      console.log('📤 [chat-lead] Sending auto-response to non-qualified lead...');
       const userMailOptions = {
         from: process.env.CONTACT_MAIL_ADDRESS,
         to: email,
@@ -299,8 +327,10 @@ export async function POST(request: NextRequest) {
       };
 
       await transporter.sendMail(userMailOptions);
+      console.log('✅ [chat-lead] Auto-response email sent successfully');
     }
 
+    console.log('🎉 [chat-lead] Lead processed successfully!');
     return NextResponse.json({ 
       success: true,
       qualified: isQualified,
@@ -310,9 +340,13 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error processing chat lead:', error);
+    console.error('❌ [chat-lead] Error processing chat lead:', error);
+    console.error('❌ [chat-lead] Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
