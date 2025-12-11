@@ -259,7 +259,7 @@
       "callout": {
         "emoji": "💡",
         "title": "How do we do this technically?",
-        "description": "We explain our approach during a private conversation. Some optimizations require specific configuration that we handle for you."
+        "description": "The ZedCheckout channel is added through a tag on your store. We explain our approach during a private conversation."
       }
     },
     "filter": {

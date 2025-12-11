@@ -74,7 +74,7 @@ export default function ZedProcess() {
         </div>
 
         {/* Callout */}
-        <motion.div
+        {/* <motion.div
           className="bg-white/80 backdrop-blur-sm p-6 sm:p-8 rounded-2xl sm:rounded-3xl border-2 border-[#E88B7A]/20 shadow-lg"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -87,7 +87,7 @@ export default function ZedProcess() {
               {callout.text}
             </p>
           </div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );

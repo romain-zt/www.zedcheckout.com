@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { X } from 'lucide-react';
 import { submitContactForm } from '@/app/actions/contact';
+import Modal from './Modal';
 
 interface SimpleContactFormProps {
   isOpen: boolean;
@@ -33,17 +33,6 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
       setFeedback(null);
     }
   }, [isOpen]);
-
-  // Handle ESC key
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [isOpen, onClose]);
 
   // Auto-focus first field on open
   useEffect(() => {
@@ -147,41 +136,10 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Overlay */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-            onClick={onClose}
-          />
-
-          {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 pointer-events-none overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 1, y: "100%" }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1, y: "100%" }}
-              style={{scrollbarWidth: 'none'}}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="relative bg-white rounded-xl p-4 sm:p-8 w-full sm:max-w-md shadow-2xl pointer-events-auto max-h-[88vh] sm:max-h-[80vh] overflow-y-auto text-sm"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close button */}
-              <button
-                onClick={onClose}
-                className="sticky top-0 ml-auto mb-2 sm:mb-0 sm:absolute sm:top-6 sm:right-6 w-9 h-9 flex items-center justify-center rounded-full bg-[#1E2A47]/5 sm:bg-transparent text-[#1E2A47]/60 hover:text-[#1E2A47] hover:bg-[#1E2A47]/10 active:scale-90 transition-all z-10"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5 sm:w-6 sm:h-6" />
-              </button>
-
-              {/* Header */}
-              <div className="mb-4 sm:mb-8 -mt-11 sm:mt-0 sm:pr-8">
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="md">
+      <div className="-mt-11 sm:mt-0">
+        {/* Header */}
+        <div className="mb-4 sm:mb-8 sm:pr-8">
                 <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#1E2A47] mb-1 leading-tight">
                   {t('title')}
                 </h2>
@@ -375,10 +333,7 @@ export default function SimpleContactForm({ isOpen, onClose }: SimpleContactForm
                 </button>
                 </div>
               </form>
-            </motion.div>
-          </div>
-        </>
-      )}
-    </AnimatePresence>
+      </div>
+    </Modal>
   );
 }
