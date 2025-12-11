@@ -58,7 +58,7 @@ export default function Header() {
             href={`/${locale}`}
             className="text-2xl font-bold bg-gradient-to-r from-[#1E2A47] to-[#E88B7A] bg-clip-text text-transparent hover:opacity-80 transition-opacity"
           >
-            ZedTech
+            ZedCheckout
           </a>
 
           {/* Desktop Navigation */}

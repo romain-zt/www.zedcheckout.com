@@ -117,27 +117,27 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-0 sm:p-4 pointer-events-none overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl pointer-events-auto my-8"
+              className="relative bg-white rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl pointer-events-auto my-0 sm:my-8 min-h-screen sm:min-h-0"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute top-6 right-6 text-[#1E2A47]/40 hover:text-[#1E2A47] transition-colors"
+                className="absolute top-4 right-4 sm:top-6 sm:right-6 text-[#1E2A47]/40 hover:text-[#1E2A47] active:scale-90 transition-all z-10"
                 aria-label="Close"
               >
                 <X className="w-6 h-6" />
               </button>
 
               {/* Header */}
-              <div className="mb-8">
-                <h2 className="text-3xl lg:text-4xl font-bold text-[#1E2A47] mb-2">
+              <div className="mb-6 sm:mb-8 pr-8">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1E2A47] mb-2 leading-tight">
                   {t('h2')}
                 </h2>
               </div>
@@ -158,7 +158,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
               )}
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
                 
                 {/* First Name */}
                 <div>
@@ -170,7 +170,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     required
                     value={formData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors"
+                    className="w-full px-4 py-3.5 text-base rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors"
                     disabled={isLoading}
                   />
                 </div>
@@ -183,9 +183,11 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                   <input
                     type="email"
                     required
+                    inputMode="email"
+                    autoComplete="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors"
+                    className="w-full px-4 py-3.5 text-base rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors"
                     disabled={isLoading}
                   />
                 </div>
@@ -198,10 +200,12 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                   <input
                     type="url"
                     required
+                    inputMode="url"
+                    autoComplete="url"
                     value={formData.website}
                     onChange={(e) => handleChange('website', e.target.value)}
                     placeholder="https://example.com"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors"
+                    className="w-full px-4 py-3.5 text-base rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors"
                     disabled={isLoading}
                   />
                   <p className="mt-1.5 text-xs text-[#1E2A47]/50">
@@ -218,7 +222,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     required
                     value={formData.platform}
                     onChange={(e) => handleChange('platform', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors bg-white"
+                    className="w-full px-4 py-3.5 text-base rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
                     disabled={isLoading}
                   >
                     <option value="">{t('platformPlaceholder')}</option>
@@ -237,7 +241,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     required
                     value={formData.sector}
                     onChange={(e) => handleChange('sector', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors bg-white"
+                    className="w-full px-4 py-3.5 text-base rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
                     disabled={isLoading}
                   >
                     <option value="">{t('sectorPlaceholder')}</option>
@@ -255,7 +259,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                   <select
                     value={formData.revenue}
                     onChange={(e) => handleChange('revenue', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors bg-white"
+                    className="w-full px-4 py-3.5 text-base rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors bg-white appearance-none cursor-pointer"
                     disabled={isLoading}
                   >
                     <option value="">{t('revenuePlaceholder')}</option>
@@ -276,32 +280,33 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     onChange={(e) => handleChange('challenge', e.target.value)}
                     placeholder={t('challengePlaceholder')}
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors resize-none"
+                    className="w-full px-4 py-3.5 text-base rounded-xl border-2 border-[#1E2A47]/20 focus:border-[#E88B7A] focus:outline-none transition-colors resize-none"
                     disabled={isLoading}
                   />
                 </div>
 
                 {/* Consent */}
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3 pt-2">
                   <input
                     type="checkbox"
                     id="consent"
                     checked={formData.consent}
                     onChange={(e) => handleChange('consent', e.target.checked)}
-                    className="mt-1 w-5 h-5 text-[#E88B7A] border-2 border-[#1E2A47]/20 rounded focus:ring-2 focus:ring-[#E88B7A]/20"
+                    className="mt-0.5 w-5 h-5 text-[#E88B7A] border-2 border-[#1E2A47]/20 rounded focus:ring-2 focus:ring-[#E88B7A]/20 cursor-pointer"
                     disabled={isLoading}
                   />
-                  <label htmlFor="consent" className="text-sm text-[#1E2A47]/70">
+                  <label htmlFor="consent" className="text-sm text-[#1E2A47]/70 leading-snug cursor-pointer">
                     {t('consent')}
                   </label>
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isLoading || !formData.consent}
-                  className="w-full py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white font-bold text-lg rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
+                {/* Submit Button - avec min-h pour éviter le shift sur mobile */}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isLoading || !formData.consent}
+                    className="w-full py-4 min-h-[56px] bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white font-bold text-lg rounded-xl shadow-lg active:scale-[0.98] sm:hover:shadow-xl sm:hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                  >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
                       <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -326,6 +331,7 @@ export default function LeadCaptureForm({ isOpen, onClose }: LeadCaptureFormProp
                     t('submit')
                   )}
                 </button>
+                </div>
               </form>
             </motion.div>
           </div>

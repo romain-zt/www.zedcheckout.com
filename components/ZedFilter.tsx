@@ -18,12 +18,12 @@ export default function ZedFilter() {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   return (
-    <section className="relative py-24 px-6 bg-white">
+    <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white">
       <div className="max-w-4xl mx-auto">
         
         {/* Headline */}
         <motion.h2
-          className="text-3xl lg:text-5xl font-black text-[#1E2A47] text-center mb-16"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#1E2A47] text-center mb-12 sm:mb-16 leading-tight px-2"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -34,21 +34,21 @@ export default function ZedFilter() {
 
         {/* Checklist */}
         <motion.div
-          className="space-y-6 mb-12"
+          className="space-y-4 sm:space-y-6 mb-10 sm:mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           {criteria.map((criterion, i) => (
-            <div key={i} className="flex items-start gap-4 p-6 bg-[#F5EDE4] rounded-2xl">
-              <CheckCircle className="w-6 h-6 text-[#E88B7A] flex-shrink-0 mt-1" />
+            <div key={i} className="flex items-start gap-3 sm:gap-4 p-5 sm:p-6 bg-[#F5EDE4] rounded-xl sm:rounded-2xl">
+              <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-[#E88B7A] flex-shrink-0 mt-0.5 sm:mt-1" />
               <div>
-                <p className="text-lg font-semibold text-[#1E2A47] mb-1">
+                <p className="text-base sm:text-lg font-semibold text-[#1E2A47] mb-1">
                   {criterion.text}
                 </p>
                 {criterion.detail && (
-                  <p className="text-sm text-[#1E2A47]/60">
+                  <p className="text-xs sm:text-sm text-[#1E2A47]/60">
                     {criterion.detail}
                   </p>
                 )}
@@ -59,18 +59,18 @@ export default function ZedFilter() {
 
         {/* Callout */}
         <motion.div
-          className="bg-gradient-to-r from-[#E88B7A]/10 to-[#FFC9B9]/10 p-8 rounded-3xl border-2 border-[#E88B7A]/20 text-center mb-8"
+          className="bg-gradient-to-r from-[#E88B7A]/10 to-[#FFC9B9]/10 p-6 sm:p-8 rounded-2xl sm:rounded-3xl border-2 border-[#E88B7A]/20 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <p className="text-xl lg:text-2xl font-semibold text-[#1E2A47] mb-6">
+          <p className="text-lg sm:text-xl lg:text-2xl font-semibold text-[#1E2A47] mb-5 sm:mb-6 leading-snug px-2">
             {t('callout')}
           </p>
           <button
             onClick={() => setIsFormOpen(true)}
-            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl active:scale-95 sm:hover:scale-105 transition-all duration-300"
           >
             {t('cta')}
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

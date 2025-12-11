@@ -18,12 +18,12 @@ export default function ZedFAQ() {
   ];
 
   return (
-    <section className="relative py-24 px-6 bg-white">
+    <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white">
       <div className="max-w-3xl mx-auto">
         
         {/* Headline */}
         <motion.h2
-          className="text-4xl lg:text-5xl font-black text-[#1E2A47] text-center mb-16"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#1E2A47] text-center mb-12 sm:mb-16 leading-tight px-2"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -33,11 +33,11 @@ export default function ZedFAQ() {
         </motion.h2>
 
         {/* FAQ Items */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {faqs.map((faq, index) => (
             <motion.div
               key={index}
-              className="bg-[#F5EDE4] rounded-2xl overflow-hidden border-2 border-transparent hover:border-[#E88B7A]/30 transition-all"
+              className="bg-[#F5EDE4] rounded-xl sm:rounded-2xl overflow-hidden border-2 border-transparent hover:border-[#E88B7A]/30 transition-all"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -45,13 +45,13 @@ export default function ZedFAQ() {
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between gap-4 p-6 text-left"
+                className="w-full flex items-center justify-between gap-3 sm:gap-4 p-5 sm:p-6 text-left active:bg-[#E88B7A]/5 transition-colors"
               >
-                <span className="text-lg font-bold text-[#1E2A47]">
+                <span className="text-base sm:text-lg font-bold text-[#1E2A47] leading-snug pr-2">
                   {faq.q}
                 </span>
                 <ChevronDown
-                  className={`w-6 h-6 text-[#E88B7A] flex-shrink-0 transition-transform duration-300 ${
+                  className={`w-5 h-5 sm:w-6 sm:h-6 text-[#E88B7A] flex-shrink-0 transition-transform duration-300 ${
                     openIndex === index ? 'rotate-180' : ''
                   }`}
                 />
@@ -63,9 +63,9 @@ export default function ZedFAQ() {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="px-6 pb-6"
+                  className="px-5 sm:px-6 pb-5 sm:pb-6"
                 >
-                  <p className="text-[#1E2A47]/70 leading-relaxed whitespace-pre-line">
+                  <p className="text-sm sm:text-base text-[#1E2A47]/70 leading-relaxed whitespace-pre-line">
                     {faq.a}
                   </p>
                 </motion.div>
