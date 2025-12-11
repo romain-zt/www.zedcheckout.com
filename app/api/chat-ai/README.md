@@ -11,6 +11,8 @@ L'API supporte **deux modes** pour rétrocompatibilité :
 ### 1. Legacy Mode (ChatWidgetAI.tsx)
 **Détection** : Présence de `leadData` et absence de `context` dans la requête
 
+**Troll detection** : ✅ **ACTIVÉ** (scoring calculé à chaque message)
+
 **Requête** :
 ```typescript
 {
@@ -39,6 +41,8 @@ L'API supporte **deux modes** pour rétrocompatibilité :
 
 ### 2. Agent Mode (ChatWidget.tsx)
 **Détection** : Présence de `context` ou `isFirstMessage: true`
+
+**Troll detection** : ✅ **ACTIVÉ** (scoring persistant dans context)
 
 **Requête** :
 ```typescript

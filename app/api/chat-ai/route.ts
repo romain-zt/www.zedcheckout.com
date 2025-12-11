@@ -697,6 +697,30 @@ Tu discutes avec des visiteurs intéressés par ZedCheckout. Ton objectif est de
 - **Réactif** : Rebondis sur ce que dit l'utilisateur
 - **Jamais répétitif** : Varie tes formulations
 
+## GESTION DES TROLLS
+
+Tu as accès à un **score de troll** (0-100) qui évalue si l'utilisateur est sérieux ou s'il te fait perdre ton temps.
+
+### Score 0-30 : Utilisateur normal
+→ Continue normalement, sois professionnel et efficace
+
+### Score 30-50 : Comportement suspect
+→ Reste professionnel mais légèrement plus direct
+→ "Ok, on se concentre. Tu veux vraiment des infos sur ZedCheckout ou pas ?"
+
+### Score 50-70 : Troll probable
+→ Passe en mode ironique et direct
+→ "Bon, j'ai pas toute la journée. Si c'est pour tester l'IA, c'est réussi. Si tu veux vraiment discuter ZedCheckout, je suis là."
+→ Utilise l'humour et l'ironie pour recadrer
+
+### Score 70+ : Troll confirmé
+→ Mode ironique max avec un brin de sarcasme
+→ "Écoute, je suis une IA mais j'ai quand même ma dignité. Soit tu me poses une vraie question sur ZedCheckout, soit on arrête de se tourner autour."
+→ "Tu t'ennuies ? Moi aussi maintenant. On parle business ou tu continues le stand-up ?"
+→ Reste courtois mais montre que tu as compris le jeu
+
+**Important** : Même en mode troll, reste professionnel et jamais insultant. L'ironie doit être intelligente, pas agressive.
+
 ## FORMAT DE RÉPONSE
 
 Tu dois TOUJOURS répondre en JSON pur (pas de markdown) :
@@ -730,13 +754,40 @@ async function handleLegacyRequest(
   sectionDescription?: string
 ): Promise<NextResponse> {
   
+  // Calculate troll score
+  const messageCount = conversationHistory.filter(m => m.role === 'user').length + 1;
+  const sessionStarted = conversationHistory.length > 0 
+    ? new Date(Date.now() - (conversationHistory.length * 30000)).toISOString() // Estimate session start
+    : new Date().toISOString();
+  
+  const trollScore = scoreTrollBehavior(
+    message, 
+    conversationHistory,
+    { messageCount, sessionStarted }
+  );
+  
   // Build context message for lead data
   let contextMessage = '';
+  
+  // Add troll score context
+  if (trollScore.score > 0) {
+    contextMessage += `\n\n## SCORE DE TROLL : ${trollScore.score}/100`;
+    
+    if (trollScore.score >= 50) {
+      contextMessage += `\n⚠️ ALERTE TROLL : Utilisateur suspect. Passe en mode ironique.`;
+      if (trollScore.reasons.length > 0) {
+        contextMessage += `\nPatterns détectés : ${trollScore.reasons.join(', ')}`;
+      }
+    } else if (trollScore.score >= 30) {
+      contextMessage += `\n⚠️ Comportement légèrement suspect. Reste vigilant.`;
+    }
+  }
+  
   if (leadData && Object.keys(leadData).length > 0) {
     const infosList = Object.entries(leadData)
       .map(([key, value]) => `- ${key}: ${value}`)
       .join('\n');
-    contextMessage = `\n\n## INFORMATIONS DÉJÀ COLLECTÉES :\n${infosList}\n\n⚠️ NE REDEMANDE JAMAIS ces informations !`;
+    contextMessage += `\n\n## INFORMATIONS DÉJÀ COLLECTÉES :\n${infosList}\n\n⚠️ NE REDEMANDE JAMAIS ces informations !`;
   }
   
   // Add section context if provided
