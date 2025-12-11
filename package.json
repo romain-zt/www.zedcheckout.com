@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/romain-zt/www.zedcheckout.com#readme",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
     "@microsoft/clarity": "^1.0.2",
     "@types/node": "^24.10.1",
     "@types/nodemailer": "^7.0.4",
