@@ -82,18 +82,13 @@ export default function ChatWidget() {
   }, [messages, isTyping]);
 
   useEffect(() => {
-    if (isOpen && !hasGreeted) {
+    // Focus input when chat opens
+    if (isOpen && inputRef.current) {
       setTimeout(() => {
-        addBotMessage(
-          "👋 Salut ! Je suis l'assistant ZedCheckout.\n\nJe vois que vous êtes intéressé par notre solution de checkout conversationnel.\n\nJ'ai quelques questions rapides pour mieux comprendre votre situation. Ça vous va ?"
-        );
-        setHasGreeted(true);
-        setTimeout(() => {
-          addBotMessage(QUALIFICATION_FLOW[0].question);
-        }, 1500);
-      }, 800);
+        inputRef.current?.focus();
+      }, 100);
     }
-  }, [isOpen, hasGreeted]);
+  }, [isOpen]);
 
   const addBotMessage = (text: string) => {
     setIsTyping(true);
@@ -133,6 +128,24 @@ export default function ChatWidget() {
     if (!inputValue.trim() || isTyping || isComplete) return;
 
     const userInput = inputValue.trim();
+    
+    // First message: open chat, add user message, send greeting and start qualification
+    if (!hasGreeted) {
+      setIsOpen(true);
+      addUserMessage(userInput);
+      setInputValue('');
+      setHasGreeted(true);
+      setTimeout(() => {
+        addBotMessage(
+          "👋 Salut ! Je suis l'assistant ZedCheckout.\n\nJe vois que vous êtes intéressé par notre solution de checkout conversationnel.\n\nJ'ai quelques questions rapides pour mieux comprendre votre situation. Ça vous va ?"
+        );
+        setTimeout(() => {
+          addBotMessage(QUALIFICATION_FLOW[0].question);
+        }, 1500);
+      }, 800);
+      return;
+    }
+
     addUserMessage(userInput);
     setInputValue('');
 
@@ -208,63 +221,35 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Simple Input - Closed State */}
       <AnimatePresence>
         {!isOpen && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
+          <motion.form
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
             transition={{ 
               type: 'spring', 
-              stiffness: 260, 
-              damping: 20 
+              stiffness: 200, 
+              damping: 25 
             }}
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 group"
-            aria-label="Ouvrir le chat"
+            className="fixed bottom-4 left-0 right-0 z-50 px-4 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-2xl"
           >
-            {/* Glassmorphism Bar */}
-            <div className="relative">
-              {/* Glow effect */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full opacity-75 blur-lg group-hover:opacity-100 transition-opacity duration-300 animate-pulse" />
+            <div className="relative group">
+              {/* Visible glow */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full opacity-40 group-hover:opacity-60 blur-xl transition-opacity duration-500 animate-pulse" />
               
-              {/* Main bar */}
-              <div className="relative px-8 py-4 rounded-full backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl hover:shadow-[0_20px_60px_rgba(232,139,122,0.4)] transition-all duration-300 group-hover:scale-105">
-                <div className="flex items-center gap-4">
-                  {/* Avatar */}
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center shadow-lg">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                      </svg>
-                    </div>
-                    {/* Online indicator */}
-                    <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-white animate-pulse" />
-                  </div>
-
-                  {/* Text with vanish effect */}
-                  <div className="text-left">
-                    <div className="text-white font-semibold text-sm mb-0.5 group-hover:translate-x-1 transition-transform duration-300">
-                      Discutons de votre projet
-                    </div>
-                    <div className="text-white/70 text-xs group-hover:text-white/90 transition-colors duration-300">
-                      <span className="inline-block group-hover:translate-x-1 transition-transform duration-300 delay-75">
-                        Cliquez pour commencer
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Arrow icon */}
-                  <div className="ml-2 text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all duration-300">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
+              {/* Input field */}
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Demandez ce que vous voulez..."
+                className="relative w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-full backdrop-blur-xl bg-white/30 border border-white/40 shadow-2xl text-white placeholder-white/70 outline-none transition-all duration-300 focus:bg-white/40 focus:border-white/50 focus:shadow-[0_20px_60px_rgba(232,139,122,0.3)] group-hover:bg-white/40 group-hover:border-white/50"
+              />
             </div>
-          </motion.button>
+          </motion.form>
         )}
       </AnimatePresence>
 
@@ -272,15 +257,15 @@ export default function ChatWidget() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 100, scale: 0.8 }}
+            initial={{ opacity: 0, y: 100, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 100, scale: 0.8 }}
+            exit={{ opacity: 0, y: 100, scale: 0.9 }}
             transition={{ 
               type: 'spring', 
               stiffness: 300, 
               damping: 30 
             }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md mx-4"
+            className="fixed bottom-4 left-0 right-0 z-50 px-4 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg"
           >
             {/* Glass container */}
             <div className="relative">
