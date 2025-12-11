@@ -12,21 +12,31 @@ export default function ClarityAnalytics() {
       return;
     }
 
-    // Wait for the page to be fully loaded including styles
-    const initClarity = () => {
-      if (document.readyState === 'complete') {
-        // Add a small delay to ensure CSS is fully applied
+    const initClarity = async () => {
+      // Wait for fonts to be ready (Google Fonts, etc.)
+      if ('fonts' in document) {
+        try {
+          await (document as any).fonts.ready;
+        } catch (e) {
+          console.warn('Font loading check failed, proceeding anyway');
+        }
+      }
+
+      // Then wait for complete page load and rendering
+      const startClarity = () => {
+        // Force reflow to ensure CSS is applied
+        void document.documentElement.offsetHeight;
+        
         setTimeout(() => {
           Clarity.init(clarityProjectId);
-          console.log('Microsoft Clarity initialized with project ID:', clarityProjectId);
-        }, 100);
+          console.log('Microsoft Clarity initialized with fonts and CSS ready');
+        }, 500);
+      };
+
+      if (document.readyState === 'complete') {
+        startClarity();
       } else {
-        window.addEventListener('load', () => {
-          setTimeout(() => {
-            Clarity.init(clarityProjectId);
-            console.log('Microsoft Clarity initialized with project ID:', clarityProjectId);
-          }, 100);
-        });
+        window.addEventListener('load', startClarity);
       }
     };
 

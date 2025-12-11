@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Accélérez votre croissance - Options & ROI | ZED TECH',
-  description: 'Découvrez les 2 options disponibles. +20% conversions validées. Revenus supplémentaires pour financer votre futur plan Plus. Calculez votre ROI.',
-  keywords: 'Shopify checkout, ROI, pricing, options, croissance e-commerce, calculateur ROI, préparation Plus',
+  title: 'zedcheckout.com - Lab R&D E-commerce Indépendant | Romain Piveteau',
+  description: 'Lab R&D indépendant. 10,950h recherche e-commerce. Chercheur-développeur solo. Transparence totale, anti-vente radicale. Audits checkout gratuits.',
+  keywords: 'e-commerce, checkout, conversion, R&D, recherche, Shopify, optimisation, lab indépendant',
   openGraph: {
-    title: 'Accélérez votre croissance - ROI Calculé',
-    description: '+20% conversions validées · Auto-financez votre futur plan Plus',
+    title: 'zedcheckout.com - Lab R&D E-commerce Indépendant',
+    description: '10,950h R&D documentées · 47 migrations · Transparence totale · Anti-vente radicale',
     type: 'website',
   },
 };

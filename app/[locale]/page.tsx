@@ -1,19 +1,28 @@
-import Hero from '@/components/Hero';
-import Qualification from '@/components/Qualification';
-import Story from '@/components/Story';
-import Offers from '@/components/Offers';
-import Waitlist from '@/components/Waitlist';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import ZedHero from '@/components/ZedHero';
+import ZedProblem from '@/components/ZedProblem';
+import ZedSolution from '@/components/ZedSolution';
+import ZedFilter from '@/components/ZedFilter';
+import ZedProcess from '@/components/ZedProcess';
+import ZedFAQ from '@/components/ZedFAQ';
+import ZedFinalCTA from '@/components/ZedFinalCTA';
 
-export default function HomePage() {
+export default function LandingPage() {
   return (
-    <main>
-      <Hero />
-      <Qualification />
-      <Story />
-      <Offers />
-      <Waitlist pageSource="main" />
-      <Footer />
-    </main>
+    <>
+      <Header />
+      <main>
+        <ZedHero />
+        <ZedProblem />
+        <ZedSolution />
+        <ZedFilter />
+        <ZedProcess />
+        <ZedFAQ />
+        <ZedFinalCTA />
+        <Footer />
+      </main>
+    </>
   );
 }
+

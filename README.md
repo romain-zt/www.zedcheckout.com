@@ -168,6 +168,6 @@ ISC
 ## 👤 Author
 
 Romain Piveteau
-- Email: romain@zedtech.fr
+- Email: romain@zedcheckout.com
 - LinkedIn: https://linkedin.com/in/romain-piveteau
 - Portfolio: https://piveteau.digital

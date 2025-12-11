@@ -1,80 +1,26 @@
 import { MetadataRoute } from 'next';
+import { locales } from '@/i18n';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.zedcheckout.com';
   
-  return [
-    {
-      url: `${baseUrl}/fr-FR`,
+  // Routes principales du site
+  const routes = [''];
+  
+  // Génération des entrées pour chaque locale et route
+  const sitemapEntries: MetadataRoute.Sitemap = locales.flatMap((locale) =>
+    routes.map((route) => ({
+      url: `${baseUrl}/${locale}${route}`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
+      changeFrequency: 'weekly' as const,
+      priority: 1.0,
       alternates: {
-        languages: {
-          'fr-FR': `${baseUrl}/fr-FR`,
-          'en-EN': `${baseUrl}/en-EN`,
-        },
+        languages: Object.fromEntries(
+          locales.map((l) => [l, `${baseUrl}/${l}${route}`])
+        ),
       },
-    },
-    {
-      url: `${baseUrl}/en-EN`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-      alternates: {
-        languages: {
-          'fr-FR': `${baseUrl}/fr-FR`,
-          'en-EN': `${baseUrl}/en-EN`,
-        },
-      },
-    },
-    {
-      url: `${baseUrl}/fr-FR/landing`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-      alternates: {
-        languages: {
-          'fr-FR': `${baseUrl}/fr-FR/landing`,
-          'en-EN': `${baseUrl}/en-EN/landing`,
-        },
-      },
-    },
-    {
-      url: `${baseUrl}/en-EN/landing`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-      alternates: {
-        languages: {
-          'fr-FR': `${baseUrl}/fr-FR/landing`,
-          'en-EN': `${baseUrl}/en-EN/landing`,
-        },
-      },
-    },
-    {
-      url: `${baseUrl}/fr-FR/sales`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-      alternates: {
-        languages: {
-          'fr-FR': `${baseUrl}/fr-FR/sales`,
-          'en-EN': `${baseUrl}/en-EN/sales`,
-        },
-      },
-    },
-    {
-      url: `${baseUrl}/en-EN/sales`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-      alternates: {
-        languages: {
-          'fr-FR': `${baseUrl}/fr-FR/sales`,
-          'en-EN': `${baseUrl}/en-EN/sales`,
-        },
-      },
-    },
-  ];
+    }))
+  );
+  
+  return sitemapEntries;
 }

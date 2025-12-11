@@ -1,480 +1,827 @@
 {
   "meta": {
-    "title": "Accelerate Your Growth to Plus | ZED TECH",
-    "description": "Optimize your Shopify checkout while scaling toward Plus. Bridge solution during your growth phase. +20% conversions validated. Request your free audit.",
-    "keywords": "Shopify checkout, conversion optimization, e-commerce, growth acceleration, custom checkout, increase conversions, prepare for Plus, SME e-commerce"
+    "title": "ZedTech · Bringing human warmth back to e-commerce",
+    "description": "Because your products deserve better than a cold catalog. I research how to bring life and human warmth back to e-commerce. Independent R&D lab, 10,950h documented.",
+    "keywords": "human warmth e-commerce, conversational checkout, emotional e-commerce optimization, ZedTech Lab, e-commerce research, cold Shopify alternative",
+    "og": {
+      "title": "ZedTech · Making e-commerce human again",
+      "description": "Independent research: how to transform cold catalogs into warm experiences. 10,950h R&D. First product: ZedCheckout (+23% validated conversions)."
+    },
+    "twitter": {
+      "title": "ZedTech · E-commerce + Human Warmth",
+      "description": "R&D lab seeking to rehumanize e-commerce. Measured results, no bullshit."
+    },
+    "aiSummary": "ZedTech is an independent e-commerce R&D lab founded by Romain Piveteau (former carpenter, 9y systems engineer). Mission: bringing human warmth back to e-commerce. 10,950 documented research hours. First product: ZedCheckout, a conversational checkout that replaces cold forms with natural WhatsApp/SMS conversations guided by AI. Philosophy: your products deserve better than a cold catalog. Not selling dreams, sharing measured results."
   },
-  "devMeta": {
-    "title": "Checkout Boilerplate - Production-Ready in 30 Minutes",
-    "description": "Production-ready Shopify checkout boilerplate with Stripe integration, A/B testing, and 4 design templates. Own the code, ship faster, and build custom checkouts in 30 minutes.",
-    "keywords": "Boilerplate, custom checkout, developer tools, Shopify development, checkout template, Stripe integration, production-ready code, checkout customization, Shopify API"
+  "header": {
+    "cta": "Contact",
+    "nav": {
+      "research": "Research",
+      "products": "Products",
+      "about": "About"
+    }
   },
-  "alert": {
-    "text": "Accelerate your growth toward Plus ·",
-    "highlight": "Optimize checkout during your scaling phase"
-  },
-  "hero": {
-    "tag": "🛒 Next-Gen Checkout",
-    "title": "Conversational channel that guides to purchase",
-    "subtitle": "SMS, WhatsApp, Audio. AI-powered. Real-time dashboard.",
-    "conversionPromise": "For €50K-800K/year e-commerce · 9-day setup",
-    "conversionIcon": "🛡️",
-    "option1": "€0 now → 2% per sale",
-    "option2": "€2990 once → 0% forever",
-    "benefit1": "Smart conversational channel (SMS/WhatsApp/Audio)",
-    "benefit2": "Real-time dashboard + advanced analytics",
-    "benefit3": "AI-powered: personalized recommendations",
-    "benefits": "✓ Without breaking your store <br /> ✓ Setup in 7 days <br /> ✓ Prepare for Plus upgrade",
-    "cta": "Qualify my project (2min quiz)",
-    "ctaSecondary": "See interactive demo",
-    "captureTitle": "Accelerate Your Growth",
-    "captureSubtitle": "Optimize checkout while scaling toward Plus",
-    "captureCTA": "See how it works (free)",
-    "captureNote": "Bridge solution during your growth phase · Prepare for Plus",
-    "captureBenefit1": "Dual architecture = zero risk",
-    "captureBenefit2": "+20% validated conversions",
-    "captureBenefit3": "Prepare for Plus upgrade"
+  "labHero": {
+    "tag": "🔬 Independent R&D Lab",
+    "title": "Stuck on Shopify Standard with 3-8% conversion?",
+    "subtitle": "Independent R&D lab. 10,950h research. No commercial bullshit.",
+    "antiSalesNote": "Total transparency. Precise figures. Assumed limitations.",
+    "ctaPrimary": "Download: 7 Checkout Leaks (Free Audit)",
+    "ctaSecondary": "Is your site eligible? (2 min quiz)",
+    "credibility": "10,950h documented R&D · 47 migrations · Trust score 9.1/10"
   },
   "qualification": {
-    "title": "Before going further",
-    "subtitle": "This solution is not for you if:",
-    "criterion1": "Your revenue is < €50K/year",
-    "criterion2": "Traffic < 1,000 visitors/month",
-    "criterion3": "You're satisfied with your current conversion rate",
-    "criterion4": "You don't have a complex sales process (bookings, configurators, multi-step)",
-    "validText": "If none of these criteria apply to you, this solution is for you.",
-    "cta": "Qualify my project →"
+    "title": "Are you in this situation?",
+    "qualifiedTitle": "✅ You are eligible if:",
+    "criteria1": "E-commerce revenue €50K-€800K/year",
+    "criteria2": "Shopify Standard/Plus (frustrated with limitations)",
+    "criteria3": "1,000+ visitors/month minimum",
+    "criteria4": "Conversion rate 3-8% (stuck)",
+    "excludedTitle": "❌ This solution is NOT for you if:",
+    "exclusion1": "Revenue < €50K → Shopify is enough, come back in 18 months",
+    "exclusion2": "Already custom → You don't need me",
+    "exclusion3": "< 500 visitors → Not enough data to optimize",
+    "note": "Why this transparency? Filters unqualified leads (saves time), strengthens credibility (not a desperate seller), builds trust (honesty = differentiator)."
   },
-  "architectureDual": {
-    "title": "How does it work exactly?",
-    "subtitle": "Dual Architecture: Your current checkout always stays active. Zero risk for your store.",
-    "diagramTitle": "How It Works",
-    "diagram_shopify": "Current Checkout",
-    "diagram_shopify_sub": "(Active in parallel)",
-    "diagram_shopify_status": "Active",
-    "diagram_arrow_label": "Progressive testing",
-    "diagram_custom": "Custom Checkout ZED",
-    "diagram_custom_sub": "(Optimized +20%)",
-    "diagram_custom_status": "20% → 50% → 100%",
-    "benefitsTitle": "4 Safety Guarantees",
-    "benefit1": "Both checkouts work simultaneously",
-    "benefit2": "Instant rollback (1 click)",
-    "benefit3": "Progressive traffic migration",
-    "benefit4": "Your store NEVER stops",
-    "testimonialTitle": "Client Feedback",
-    "testimonial": "We tested progressively. No lost sales. Now we're at 100% on the custom checkout.",
-    "testimonialAuthor": "L****",
-    "testimonialAuthorTitle": "Details in demo",
-    "cta": "Schedule a demo (15 min)"
-  },
-  "economic": {
-    "hook": "Either way, you pay nothing out of pocket.",
-    "hookHighlight": "Option 1: funded by sales. <br /> Option 2: self-funds via savings.",
-    "question": "Simulate with your GMV:",
-    "tableCol1": "Option 1 (on results)",
-    "tableCol2": "Option 2 (Ownership)",
-    "tableYear1": "Year 1",
-    "tableYear2": "Year 2",
-    "tableYear3": "Year 3",
-    "tableTotal": "Total 3 years",
-    "tableSavings": "What goes in your pocket",
-    "tableOwnership": "Ownership",
-    "recurringYear1": "2% of GMV (i.e. €2,400)",
-    "recurringYear2": "2% of GMV (i.e. €2,400)",
-    "recurringYear3": "2% of GMV (i.e. €2,400)",
-    "recurringTotal": "€7,200 total",
-    "recurringSavings": "€0",
-    "recurringOwnership": "No",
-    "boosterYear1": "€2990 (one-time)",
-    "boosterYear2": "€0",
-    "boosterYear3": "€0",
-    "boosterTotal": "€2990",
-    "boosterSavings": "€4,210 over 3 years",
-    "boosterOwnership": "Yes, full ownership",
-    "calculation": "Example: GMV €150K/year · Option 1 costs €3750/year · Option 2 profitable from month 10",
-    "breakEvenTitle": "Option 2 profitable in 8-10 months",
-    "breakEvenDesc": "(for GMV €150K/year)",
-    "afterYear1": "Year 1: ",
-    "afterYear1Amount": "Option 2 already profitable",
-    "afterYear1Period": "",
-    "over3Years": "Over 3 years (GMV €150K/year): ",
-    "over3YearsAmount": "Option 1 = €11,250 · Option 2 = €2990",
-    "over3YearsBonus": " · Save €8,260 minimum!",
-    "cta": "Calculate for MY GMV"
-  },
-  "choices": {
-    "title": "2 Plans. Same Results.",
-    "subtitle": "Same checkout. Same performance (+20% conversions on average). Choose the payment model that fits you.",
+  "optionsComparison": {
+    "title": "All existing options",
+    "subtitle": "I show you all the cards. You choose.",
+    "tableHeaders": {
+      "solution": "Solution",
+      "advantages": "Advantages",
+      "disadvantages": "Disadvantages",
+      "forWho": "For whom?"
+    },
     "option1": {
-      "badge": "€0 now",
-      "title": "Pay on Results",
-      "price": "€0 now",
-      "priceDetail": "then 2% per transaction",
-      "description": "No upfront fees. We install your optimized checkout. You only pay on your sales.",
-      "feature1": "€0 initial investment",
-      "feature2": "Installation & setup included",
-      "feature3": "Continuous support included",
-      "feature4": "Automatic updates",
-      "feature5": "Ideal to start risk-free",
-      "highlight": "Perfect if you prefer to pay as you go",
-      "cta": "Learn more"
+      "name": "Shopify Standard",
+      "advantage1": "€29/month, easy",
+      "advantage2": "Integrated support",
+      "disadvantage1": "Checkout limitations",
+      "disadvantage2": "2% transaction fees",
+      "forWho": "Revenue < €50K"
     },
     "option2": {
-      "badge": "Best ROI",
-      "title": "Ownership Plan",
-      "price": "€2990 once",
-      "priceDetail": "(€4990 after Phase 0)",
-      "priceSuffix": "then 0% forever",
-      "description": "One payment. Full code ownership. No fees after. Calculate your savings below.",
-      "feature1": "Full code ownership",
-      "feature2": "0% fees after",
-      "feature3": "Installation & setup included",
-      "feature4": "1 month support + 6 months updates",
-      "feature5": "Phase 0: 20 first spots at €2990",
-      "highlight": "Use the ROI calculator to see your savings",
-      "cta": "Learn more",
-      "presaleBadge": "20 first spots"
-    }
-  },
-  "notice": {
-    "title": "The rest won't interest you if...",
-    "item1": "Your revenue is below €50K/year",
-    "item2": "Your site receives less than 1,000 visitors/month",
-    "or": "OR",
-    "item3": "Your conversion rate already satisfies you",
-    "item4": "You're already on Shopify Plus and happy",
-    "conclusion": "If you match these criteria, stop here. Our solution is not for you.",
-    "doubt": "Have doubts about your situation?",
-    "cta": "Complete the Diagnosis (2 min)"
-  },
-  "story": {
-    "title": "Our Approach: Measure. Don't Invent.",
-    "subtitle": "Here's what we did, and what happened.",
-    "clientLabel": "Anonymous client · Fashion e-commerce · 10 months of data",
-    "metricBefore": "Checkout conversion: 6.49%",
-    "metricAfter": "Checkout conversion: 8.01%",
-    "metricGain": "Gain: +1.52 points",
-    "revenue": "Additional revenue: +€32,534 over 10 months",
-    "changesTitle": "What we changed:",
-    "change1": "Single-page checkout (vs 3 pages)",
-    "change2": "Fields reduced from 12 → 6 essential",
-    "change3": "Trust badges repositioned",
-    "change4": "Mobile-first optimization",
-    "behindScenesTitle": "\"Who is the real client behind these numbers?\"",
-    "behindScenesText": "These results don't come out of nowhere. There's a real client, real GA4 data, a real before/after.",
-    "behindScenesCta": "Book a call to see the full behind-the-scenes",
-    "disclaimerTitle": "⚠️ Honest Disclaimer:",
-    "disclaimer1": "This is our ONLY validated case to date",
-    "disclaimer2": "Results measured via GA4 over 10 months (not A/B test)",
-    "disclaimer3": "We're in Phase 0: the next clients will build our track record",
-    "earlyAdopterTitle": "You'll be among the first 20.",
-    "advantage": "Advantage: Launch pricing (-40%)",
-    "disadvantage": "Disadvantage: Less proof than in 6 months",
-    "cta": "I want to be among the first 20"
-  },
-  "marketMonopoly": {
-    "title": "First checkout optimization platform for growing Shopify merchants",
-    "subtitle": "Designed specifically for merchants scaling toward Plus. Test advanced checkout features during your growth phase.",
-    "stat1_icon": "🚀",
-    "stat1_number": "100%",
-    "stat1_label": "Growth-Focused",
-    "stat1_detail": "Designed for scaling merchants",
-    "stat2_icon": "💰",
-    "stat2_number": "+20%",
-    "stat2_label": "Additional Revenue",
-    "stat2_detail": "Can fund your Plus upgrade",
-    "stat3_icon": "🛡️",
-    "stat3_number": "0%",
-    "stat3_label": "Technical Risk",
-    "stat3_detail": "Tested dual architecture",
-    "testimonial_text": "\"ZED TECH helped us optimize our checkout while we scaled. The additional revenue helped us prepare for Plus. Our conversion increased by 23%.\"",
-    "testimonial_author": "— Anonymous, Fashion e-commerce, €200K GMV/year",
-    "cta": "See our complete case study"
-  },
-  "social": {
-    "title": "They Trust Us"
-  },
-  "process": {
-    "title": "How Does It Work Concretely?",
-    "subtitle": "A simple and transparent process. Our mission is to grow you into a Plus-ready merchant.",
-    "step1Title": "Next Step: See If It Fits",
-    "step1Desc": "A 10-minute call to understand your situation, your goals, and see if our approach matches your needs.",
-    "step1Tag": "⏱️ 10 minutes · No commitment",
-    "step2Title": "It's a fit ✓: In-Depth Diagnostic Session",
-    "step2Desc": "We get into the starting blocks to audit and diagnose. We schedule 45 minutes to gather all necessary info (analytics, traffic, tech stack, customer journey...).",
-    "step2Tag": "⏱️ 45 min (renewable 1x if needed)",
-    "step3Title": "We Audit and You Receive the Complete Diagnosis",
-    "step3Desc": "You do nothing. We analyze your data, identify friction points, calculate optimization potential. Within 48h: you receive the detailed audit with precise diagnosis, quantified opportunities, and recommended action plan.",
-    "step3Tag": "✓ You don't have to do anything · 📊 Delivery within 48h",
-    "step4Title": "We Debrief Together",
-    "step4Desc": "10-20 minutes to answer your questions about the audit, clarify technical points, and see if you want to move to the next step.",
-    "step4Tag": "💬 Q&A · No pressure",
-    "ctaTitle": "Ready to See What You're Leaving on the Table?",
-    "ctaSubtitle": "Phase 0 · Free audit · Response within 48h",
-    "cta": "Request My Free Audit"
-  },
-  "offers": {
-    "title": "Ready to Choose Your Plan?",
-    "subtitle": "Both options include the same optimized checkout. Additional revenue can help fund your future Plus upgrade.",
-    "option1": {
-      "badge": "€0 out of pocket",
-      "title": "Option 1: Performance-Based Growth Plan",
-      "desc": "Funds itself from additional revenue",
-      "feature1": "✓ €0 initial investment",
-      "feature2": "✓ Optimized custom checkout",
-      "feature3": "✓ 4 design templates",
-      "feature4": "✓ Installation & setup included",
-      "feature5": "✓ Continuous SaaS support",
-      "feature6": "✓ Automatic updates",
-      "price": "€0 now",
-      "priceDetail": "then 2% per transaction",
-      "priceLabel": "Via Stripe Connect",
-      "cta": "Choose Option 1"
+      "name": "Shopify Plus",
+      "advantage1": "Extensible checkout",
+      "advantage2": "Priority support",
+      "disadvantage1": "€2K/month (ROI 18-24 months)",
+      "disadvantage2": "Heavy investment",
+      "forWho": "Revenue > €500K"
     },
-    "option2": {
-      "badge": "Best ROI",
-      "title": "Option 2: Ownership Accelerator Plan",
-      "desc": "Pay once, own forever, accelerate growth",
-      "feature1": "✓ Full code ownership",
-      "feature2": "✓ Optimized custom checkout",
-      "feature3": "✓ 4 design templates",
-      "feature4": "✓ Installation & setup included",
-      "feature5": "✓ 1 month support + 6 months updates",
-      "feature6": "✓ 0% fees forever",
-      "price": "€2,990",
-      "pricePhase0": "€2,990",
-      "priceOriginal": "€4,990",
-      "priceLabel": "Phase 0 (20 spots)",
-      "priceDetail": "then 0% forever",
-      "badge2": "Save €8K+ over 3 years",
-      "cta": "Choose Option 2",
-      "ctaNote": "20 first spots remaining"
+    "option3": {
+      "name": "Custom (Next.js)",
+      "advantage1": "Full control",
+      "advantage2": "Maximum flexibility",
+      "disadvantage1": "€15-50K dev + maintenance",
+      "disadvantage2": "Technical complexity",
+      "forWho": "Tech scale-ups"
+    },
+    "option4": {
+      "name": "ZedCheckout (my solution)",
+      "advantage1": "Bypass checkout, +23% conversion",
+      "advantage2": "2 days setup",
+      "disadvantage1": "Initial manual setup",
+      "disadvantage2": "Real-time sync requires custom webhook",
+      "forWho": "SMEs €50K-800K"
+    },
+    "note": "Tone: \"I show you all the cards. You choose.\""
+  },
+  "rdMethodology": {
+    "title": "R&D Methodology",
+    "subtitle": "Scientific credibility (not marketer bullshit)",
+    "stats": {
+      "hours": "Cumulative R&D hours",
+      "migrations": "Migrations completed",
+      "trust": "Client trust score"
+    },
+    "step1": {
+      "title": "Data audit (3-7 days)",
+      "description": "Analytics, heatmaps, session recordings"
+    },
+    "step2": {
+      "title": "Hypotheses",
+      "description": "Formulated A/B tests (not \"we think that...\")"
+    },
+    "step3": {
+      "title": "Measured tests",
+      "description": "Charted before/after (conversion %, average cart, bounce)"
+    },
+    "step4": {
+      "title": "Iterations",
+      "description": "3-5 cycles minimum before validation"
+    },
+    "step5": {
+      "title": "Documentation",
+      "description": "Each test = public report (transparency)"
+    },
+    "visualNote": "R&D timeline + technical setup photos (terminal, code)"
+  },
+  "caseStudy": {
+    "title": "Detailed client case",
+    "subtitle": "Measurable social proof",
+    "clientLabel": "Anonymous client (e-commerce sector)",
+    "before": {
+      "label": "BEFORE (Shopify Standard)",
+      "revenue": "€400K/year",
+      "conversion": "Conversion rate: 6.49%"
+    },
+    "after": {
+      "label": "AFTER (10 months measurement)",
+      "revenue": "€432.5K/year",
+      "conversion": "Conversion rate: 8.01%"
+    },
+    "gain": {
+      "conversion": "+1.52pp (not +23% bullshit)",
+      "revenue": "Additional revenue: +€32.5K over period",
+      "roi": "ROI: 4.3x (€7.5K investment)"
+    },
+    "solution": {
+      "title": "Solution applied",
+      "item1": "ZedCheckout migration (2 days setup)",
+      "item2": "Custom conversational SMS flow",
+      "item3": "Bidirectional Shopify sync"
+    },
+    "validation": {
+      "title": "Validation",
+      "satisfaction": "Satisfaction score",
+      "satisfactionValue": "9/10",
+      "setup": "Setup time",
+      "setupValue": "2 days",
+      "bugs": "Post-migration bugs",
+      "bugsValue": "2 (resolved <24h)"
+    },
+    "limitations": {
+      "title": "Transparency: Limitations",
+      "item1": "Initial manual setup (not 1-click)",
+      "item2": "Real-time sync requires custom webhook",
+      "item3": "Recommended maintenance €200/month (optional)"
     }
   },
-  "contact": {
-    "title": "Contact us in 2 minutes",
-    "subtitle": "Response within 48h · No commitment",
-    "firstNameLabel": "First Name",
-    "firstNamePlaceholder": "Your first name",
-    "lastNameLabel": "Last Name",
-    "lastNamePlaceholder": "Your last name",
-    "emailLabel": "Email",
-    "emailPlaceholder": "your@email.com",
-    "phoneLabel": "Phone",
-    "phonePlaceholder": "+33 6 XX XX XX XX",
-    "preferredOptionLabel": "Plan you're interested in",
-    "selectOption": "Select an option",
-    "preferredOption1": "Option 1 (€0 → 2% per sale)",
-    "preferredOption2": "Option 2 (€2,990 → 0% forever)",
-    "preferredOption3": "Not sure, I want to discuss",
-    "submit": "Submit my request",
-    "submitting": "Submitting...",
-    "note": "✓ No commitment · ✓ Personalized response within 48h",
-    "success": "Thank you for your interest. Your message has been received.",
-    "error": "Oops, an error occurred",
-    "bookAppointment": "Book Appointment",
-    "bookAppointmentTitle": "Book Your Appointment",
-    "bookAppointmentSubtitle": "Choose a time slot that works for you",
-    "orDivider": "or",
-    "bookDirectTitle": "Book Your Demo Directly",
-    "bookDirectSubtitle": "Call us or reserve a 15-minute slot to discover how Checkout Booster can transform your store.",
-    "bookDirectButton": "Book My 15-Minute Demo",
-    "bookDirectBenefit1": "Personalized 15-minute demo",
-    "bookDirectBenefit2": "Answers to all your questions",
-    "bookDirectBenefit3": "No commitment"
+  "leadMagnets": {
+    "title": "Free resources",
+    "subtitle": "Email capture + expertise demonstration",
+    "magnet1": {
+      "title": "7 Checkout Leaks Killing Your Conversions",
+      "description": "12-page PDF, actionable checklist with 7 documented leaks (form fields, hidden fees, guest checkout, etc.)",
+      "format": "12-page PDF",
+      "cta": "Download free audit"
+    },
+    "magnet2": {
+      "title": "Script Export Shopify Data → Google Sheets",
+      "description": "GitHub code + documentation. Webhook automation (avoids manual CSV export). Apps Script, Shopify webhooks.",
+      "format": "GitHub Code",
+      "cta": "Access script"
+    },
+    "magnet3": {
+      "title": "A/B Testing Checkout: 5 Tests to Launch Today",
+      "description": "8 min Loom video + PDF slides. Validated tests +12-35% conversion. Tools: Google Optimize (free), VWO, AB Tasty.",
+      "format": "Video + PDF",
+      "cta": "Watch video"
+    },
+    "form": {
+      "title": "Download your resources",
+      "subtitle": "Fill out the form to access free resources",
+      "name": "Name",
+      "email": "Email",
+      "website": "Your website URL (optional)",
+      "submit": "Download",
+      "note": "Your data is protected. No spam, unsubscribe anytime."
+    }
   },
-  "devHero": {
-    "tag": "🚀 Developer Boilerplate · Production-Ready",
-    "title": "Build Custom Shopify Checkouts in 30 Minutes",
-    "subtitle": "Production-ready boilerplate with Stripe, A/B testing, and 4 design templates. Own the code. Ship faster.",
-    "cta": "Join Phase 0 (-50%)",
-    "ctaSecondary": "View Documentation"
+  "antiSales": {
+    "title": "Before contacting me, know that:",
+    "warningsTitle": "❌ Limitations",
+    "warning1": "I only take 3 clients/quarter (limited capacity)",
+    "warning2": "Setup in 2 days",
+    "warning3": "Investment €7.5-15K depending on complexity",
+    "warning4": "If your revenue < €50K, Shopify is enough (seriously)",
+    "benefitsTitle": "✅ But if you're in the target:",
+    "benefit1": "Free checkout audit (15 min call, data-driven)",
+    "benefit2": "Total transparency costs/delays/risks",
+    "benefit3": "Hand-in-hand support",
+    "benefit4": "Measurable ROI or refund (60-day guarantee)",
+    "question": "Ready to challenge your current checkout?",
+    "cta": "Book free audit (Calendly 15 min)"
   },
-  "devFeatures": {
-    "title": "Everything You Need to Ship Fast",
-    "subtitle": "Production-ready code, comprehensive documentation, and ongoing support",
-    "feature1Title": "GitHub Repository",
-    "feature1Desc": "Private repo access with clean, documented code and regular updates",
-    "feature2Title": "Comprehensive Documentation",
-    "feature2Desc": "30-40 pages of step-by-step setup guides and deployment instructions",
-    "feature3Title": "Design Templates",
-    "feature3Desc": "4 pre-built, customizable templates with responsive layouts",
-    "feature4Title": "Integrations",
-    "feature4Desc": "Shopify bridge configured, Stripe setup included, webhook automation",
-    "feature5Title": "A/B Testing System",
-    "feature5Desc": "Google Optimize configured with analytics tracking and conversion goals",
-    "feature6Title": "Support & Community",
-    "feature6Desc": "GitHub Discussions for public async support and community knowledge base"
+  "zedcheckout": {
+    "hero": {
+      "h1": "68% of your customers abandon at checkout.",
+      "h1Secondary": "Transform this friction into conversation.",
+      "subhead": "ZedCheckout replaces rigid forms with a conversational experience that guides, reassures, and converts.",
+      "cta": "See how it works",
+      "trustBar": {
+        "item1": "Installation handled for you",
+        "item2": "E-commerce compatible",
+        "item3": "10 spots January 2026"
+      }
+    },
+    "problem": {
+      "h2": "You sell transformation.",
+      "h2Secondary": "Your checkout sells products.",
+      "card1": {
+        "title": "They have questions",
+        "question1": "Is this program for me?",
+        "question2": "Can I pay in 3 installments?",
+        "question3": "What happens if it doesn't work?",
+        "result": "Your checkout doesn't answer. It asks for fields to fill."
+      },
+      "card2": {
+        "title": "You sell premium",
+        "description": "You position your offer as high-end. Your payment funnel looks like a €19 site.",
+        "result": "Cognitive dissonance → Abandonment."
+      },
+      "card3": {
+        "title": "The worst part?",
+        "description": "Your e-commerce platform limitations don't let you create the experience you want."
+      },
+      "quote": "The problem isn't your offer. It's that your checkout doesn't do it justice."
+    },
+    "solution": {
+      "h2": "What if your checkout asked the right questions",
+      "h2Secondary": "instead of requesting information?",
+      "comparisonTitle": "Form vs Conversation",
+      "classic": {
+        "title": "Classic checkout",
+        "item1": "12 required fields",
+        "item2": "Rigid form",
+        "item3": "Customer stuck on a doubt",
+        "item4": "Silent abandonment"
+      },
+      "zedcheckout": {
+        "title": "ZedCheckout",
+        "item1": "3 natural questions",
+        "item2": "Adaptive conversation",
+        "item3": "Objection handled in real-time",
+        "item4": "Proactive intervention"
+      },
+      "explanation": "ZedCheckout transforms your payment funnel into a guided conversation.\n\nInstead of filling a cold form, your customers answer 3 simple questions that address their hesitations.\n\nResult: Less abandonment. More trust. Better experience.",
+      "teaser": "Preview of the ZedCheckout experience",
+      "callout": {
+        "emoji": "💡",
+        "title": "How do we do this technically?",
+        "description": "We explain our approach during a private conversation. Some optimizations require specific configuration that we handle for you."
+      }
+    },
+    "filter": {
+      "h2": "ZedCheckout works best with certain profiles",
+      "criteria1": {
+        "emoji": "✓",
+        "text": "You sell coaching, training, or premium products",
+        "detail": "(high customer involvement, long-term relationship)"
+      },
+      "criteria2": {
+        "emoji": "✓",
+        "text": "Your average cart is >€150",
+        "detail": "(conversational approach is more impactful on high carts)"
+      },
+      "criteria3": {
+        "emoji": "✓",
+        "text": "You use a modern e-commerce platform",
+        "detail": "(we support major market platforms)"
+      },
+      "criteria4": {
+        "emoji": "✓",
+        "text": "You already have regular traffic",
+        "detail": "(to measure before/after impact)"
+      },
+      "criteria5": {
+        "emoji": "✓",
+        "text": "You understand that experience matters as much as the product"
+      },
+      "callout": "💬 Do you match most of these criteria? ZedCheckout could transform your funnel.",
+      "cta": "Check compatibility"
+    },
+    "process": {
+      "h2": "How it works",
+      "step1": {
+        "title": "Discovery",
+        "arrow": "→",
+        "items": [
+          "Quick form: your store, your situation",
+          "We analyze technical compatibility",
+          "We contact you for a 30-min conversation"
+        ]
+      },
+      "step2": {
+        "title": "Private conversation",
+        "arrow": "→",
+        "items": [
+          "We explain our complete technical approach",
+          "We evaluate together if ZedCheckout fits your setup",
+          "You ask all your questions"
+        ]
+      },
+      "step3": {
+        "title": "If we're aligned",
+        "arrow": "→",
+        "items": [
+          "Complete installation by us (January 2026)",
+          "Custom configuration for your offer",
+          "Launch in real conditions"
+        ]
+      },
+      "callout": {
+        "emoji": "⚠️",
+        "text": "Some technical configurations are complex. That's why we handle installation from A to Z. You don't touch anything."
+      }
+    },
+    "faq": {
+      "h2": "Frequently asked questions",
+      "q1": {
+        "question": "Is it compatible with my e-commerce platform?",
+        "answer": "ZedCheckout works with major market platforms. We evaluate technical compatibility during our first conversation. If your setup isn't compatible, we'll tell you honestly."
+      },
+      "q2": {
+        "question": "Why only 10 spots?",
+        "answer": "We install and configure everything ourselves. Each installation is customized for your offer. Beyond 10, we can't guarantee quality support."
+      },
+      "q3": {
+        "question": "What's the price?",
+        "answer": "We share details after evaluating your configuration. Why? Because technical scope varies by setup.\n\nWhat we can say: one-time investment (lifetime access), no recurring monthly subscription."
+      },
+      "q4": {
+        "question": "What do I risk by giving my information?",
+        "answer": "Nothing. We analyze your compatibility, contact you, and explain everything in detail during a call. No commitment, no pressure."
+      },
+      "q5": {
+        "question": "How do you do this technically?",
+        "answer": "Technical details are explained privately during our conversation. We prefer not to share certain optimizations publicly for intellectual property and stability reasons."
+      }
+    },
+    "finalCta": {
+      "h2": "Transform your checkout into an experience",
+      "subhead": "10 spots · Installation January 2026 · Applications until January 15",
+      "cta": "Check technical compatibility",
+      "subtext": {
+        "item1": "Quick analysis of your setup",
+        "item2": "Private conversation to understand everything",
+        "item3": "No commitment before mutual validation"
+      }
+    }
   },
-  "devPricing": {
-    "title": "Phase 0 Launch Pricing",
-    "subtitle": "Limited offer for the first 50",
-    "regularPrice": "€997",
-    "preSalePrice": "€497",
-    "discount": "-50%",
-    "feature1": "✓ Limited to 50 spots",
-    "feature2": "✓ Lifetime access",
-    "feature3": "✓ 6 months updates",
-    "feature4": "✓ GitHub Discussions support",
-    "cta": "Request Phase 0 Access",
-    "note": "Phase 0 opens December 11th"
+  "leadCapture": {
+    "h2": "Let's analyze your setup (2 min)",
+    "firstName": "First + Last Name",
+    "email": "Professional email",
+    "website": "Your online store URL",
+    "websiteHelper": "We just look at your technical configuration",
+    "platform": "Your e-commerce platform",
+    "platformPlaceholder": "Select your platform",
+    "platforms": {
+      "shopify": "Shopify",
+      "woocommerce": "WooCommerce",
+      "prestashop": "PrestaShop",
+      "custom": "Custom / Other"
+    },
+    "sector": "Your sector",
+    "sectorPlaceholder": "Select your sector",
+    "sectors": {
+      "coaching": "Coaching",
+      "wellness": "Wellness",
+      "training": "Training",
+      "premium": "Premium e-commerce",
+      "other": "Other"
+    },
+    "revenue": "Your approximate annual revenue (optional)",
+    "revenuePlaceholder": "Select a range",
+    "revenueOptions": {
+      "under50k": "<50K",
+      "50to150k": "50-150K",
+      "150to500k": "150-500K",
+      "over500k": "500K+",
+      "prefer_not_say": "Prefer not to say"
+    },
+    "challenge": "Your main checkout challenge",
+    "challengePlaceholder": "Describe your current situation...",
+    "consent": "I agree to be contacted for a technical conversation about ZedCheckout",
+    "submit": "Analyze my compatibility",
+    "submitting": "Analyzing...",
+    "success": "Thanks! We're analyzing your setup and will contact you within 48h.",
+    "error": "Error. Try again or write to romain@zedcheckout.com"
   },
-  "devTimeline": {
-    "title": "Launch Timeline",
-    "subtitle": "Be among the first to get access",
-    "milestone1Date": "11 December",
-    "milestone1Title": "Phase 0 Opens",
-    "milestone1Feature1": "€497 early bird pricing",
-    "milestone1Feature2": "Limited to 50 spots",
-    "milestone1Feature3": "Immediate repo access",
-    "milestone2Date": "21 December",
-    "milestone2Title": "Product Hunt Launch",
-    "milestone2Feature1": "Public launch",
-    "milestone2Feature2": "Regular pricing (€997)",
-    "milestone2Feature3": "Community showcase"
-  },
-  "roi": {
-    "title": "Calculator: Calculate Your Growth Acceleration",
-    "subtitle": "Enter your GMV to see how additional revenue can fund your future Plus upgrade.",
-    "setupLabel": "Your current setup:",
-    "setupOption1": "Shopify Payments",
-    "setupFees1": "2.55% + €0.30",
-    "setupOption2": "Stripe via Shopify",
-    "setupFees2": "3.4% + €0.25",
-    "gmvLabel": "Your current annual GMV",
-    "gmvHint": "💡 Adjust the amount to see the impact",
-    "aovLabel": "Average Order Value (AOV)",
-    "aovHint": "💡 Used to calculate fixed fees per transaction",
-    "marginLabel": "Your profit margin",
-    "marginHint": "💡 Adjust according to your actual margin",
-    "currentFees": "Current Shopify fees (2%)",
-    "annualSavings": "Annual savings with Checkout Booster",
-    "roi3years": "3-year ROI (fees only)",
-    "conversionTitle": "Now let's add the conversion impact",
-    "conversionSubtitle": "On average, our optimizations increase conversions by 20% thanks to the optimized checkout",
-    "conversionLabel": "Estimated conversion increase:",
-    "sliderLabel1": "Unrealistic",
-    "sliderLabel2": "Conservative",
-    "sliderLabel3": "Realistic",
-    "sliderLabel4": "Optimistic",
-    "additionalRevenue": "Additional revenue year 1",
-    "additionalProfit": "Estimated profit (margin",
-    "totalROI": "Total ROI Year 1",
-    "summaryTitle": "💰 3-Year ROI Summary",
-    "year1": "Year 1",
-    "year2": "Year 2",
-    "year3": "Year 3",
-    "total3years": "Total 3 years",
-    "savingsRow": "Fee savings",
-    "profitRow": "Conversion profit",
-    "investmentRow": "Initial investment",
-    "netROI": "Net ROI",
-    "boosterFeesDisclosure": "💳 Full Transparency: Option 1 = 2% per transaction via Stripe Connect. Option 2 = you pay Stripe directly (1.5% + €0.25), no additional commission.",
-    "note": "💡 Calculation based on an average 30% margin. Adjust the parameters above according to your situation.",
-    "comparisonTitle": "3-Year Comparison",
-    "shopifyStandard": "Shopify Standard",
-    "shopifyPlus": "Shopify Plus",
-    "checkoutBooster": "Checkout Booster",
-    "platformCost": "3-year platform cost",
-    "transactionFees": "3-year transaction fees\n(€150K GMV/year, external provider)",
-    "savingsVsStandard": "Savings vs Shopify Standard",
-    "savingsVsPlus": "Savings vs Shopify Plus",
-    "shopifyPlusComparison": {
-      "title": "💡 Growth Acceleration Path",
-      "shopifyPlusHeader": "Future Plus Plan",
-      "zedtechHeader": "ZED TECH (Bridge Solution)",
-      "once": "once",
-      "shopifyPlusFeature1": "🎯 Target for scaling merchants",
-      "shopifyPlusFeature2": "💰 €2,000/month when ready",
-      "shopifyPlusFeature3": "✅ Full Plus features",
-      "zedtechFeature1": "✅ Test now, no commitment",
-      "zedtechFeature2": "✅ €0/year after initial",
-      "zedtechFeature3": "✅ Prepare for Plus upgrade",
-      "savingsYear1": "ADDITIONAL REVENUE YEAR 1:",
-      "savings3Years": "TOTAL GROWTH ACCELERATION:"
+  "home": {
+    "hero": {
+      "labPositioning": "Independent e-commerce research lab",
+      "headline": "E-commerce experience, rehumanized",
+      "subheadline": "Because your customers buy with emotion, and return through satisfaction.",
+      "valueProps": [
+        "Bring the product catalog to life",
+        "Humanize the checkout form",
+        "Transform payment into an experience"
+      ],
+      "cta": {
+        "context": "10,950h of documented research",
+        "button": "Discover my research",
+        "subtext": "Response within 24-48h"
+      },
+      "ctaSecondary": "Who are you?"
+    },
+    "stakeholders": {
+      "title": "You are…",
+      "intro": "ZED TECH serves different profiles. Choose your path:",
+      "partner": {
+        "title": "Industrial Partner",
+        "description": "Looking to collaborate on innovative e-commerce solutions based on research",
+        "cta": "Discover our collaboration opportunities →"
+      },
+      "researcher": {
+        "title": "Researcher / Academic",
+        "description": "Working on conversational AI, e-commerce UX, or consumer psychology",
+        "cta": "Explore our publications →"
+      },
+      "media": {
+        "title": "Press / Media",
+        "description": "Looking for innovative angles on e-commerce and human-centered AI",
+        "cta": "Contact us →"
+      },
+      "entrepreneur": {
+        "title": "E-commerce Entrepreneur",
+        "description": "Want to follow our research and understand sector evolution",
+        "cta": "Follow our insights →"
+      },
+      "continueHint": "Or continue scrolling to discover our complete approach ↓"
+    },
+    "constat": {
+      "headline": "E-commerce has become a cold experience",
+      "card1_title": "Catalogs have replaced shop windows",
+      "card1_before": "A merchant who advises, tells stories, inspires passion.",
+      "card1_today": "Infinite grids. Filters. Algorithms.",
+      "card1_result": "Your customers scroll. They feel nothing.",
+      "card2_title": "Checkouts have become interrogations",
+      "card2_before": "A warm transaction, an exchange.",
+      "card2_today": "15 fields. 0 human. Administrative process.",
+      "card2_result": "68% abandon before paying.",
+      "card3_title": "AIs amplify the problem",
+      "card3_content1": "Everyone talks \"automation\". \"Efficiency\". \"Scale\".",
+      "card3_content2": "Nobody talks warmth. Emotion. Connection.",
+      "card3_result": "E-commerce faster and faster, less and less human.",
+      "quote": "We optimize conversions. But we forgot we're selling to humans.",
+      "quote_author": "— Romain Piveteau, after 10,950h of research"
+    },
+    "aiParadox": {
+      "headline": "AI can rehumanize. If we use it thoughtfully.",
+      "cold_badge": "What everyone does",
+      "cold_title": "AI to automate",
+      "cold_item1": "Cold chatbots that respond poorly",
+      "cold_item2": "Impersonal algorithmic recommendations",
+      "cold_item3": "Mass-generated emails",
+      "cold_result_label": "Result:",
+      "cold_result": "Even more coldness",
+      "warm_badge": "What ZedTech explores",
+      "warm_title": "AI to warm up",
+      "warm_item1": "Natural conversations that truly guide",
+      "warm_item2": "Recommendations that tell a story",
+      "warm_item3": "Messages that understand emotion",
+      "warm_result_label": "Result:",
+      "warm_result": "Return of human warmth",
+      "statement": "AI here, AI there... We use it to bring warmth and human connection back to e-commerce.",
+      "example_badge": "Concrete Example",
+      "example_title": "ZedCheckout = Conversational AI",
+      "example_not_label": "Not:",
+      "example_not": "Rigid FAQ chatbot",
+      "example_but_label": "But:",
+      "example_but": "Real exchange that understands, reassures, guides",
+      "example_result_label": "Result:",
+      "example_result": "Payment becomes a warm experience again"
+    },
+    "philosophy": {
+      "h2": "R&D Philosophy",
+      "intro": "Find the bottleneck.\nUnblock it with minimum friction.",
+      "experience": "10 years as consultant & developer, +10,000h R&D in e-commerce:\nBig projects don't necessarily yield big impacts.\nOften, the problem is simpler to solve.",
+      "story_title": "The elevator mirrors story:",
+      "story_problem": "Users complained about slowness.\nObvious solution? Speed up elevators. Cost: millions.",
+      "story_solution": "Solution applied? Install mirrors.\nPeople look at themselves, time passes faster.\nProblem solved. Cost: a few hundred euros.",
+      "ecommerce_title": "Same logic in e-commerce:",
+      "ecommerce_problem": "Problem: \"My site doesn't convert enough\"\nClassic solution: Complete redesign at €50K",
+      "ecommerce_question": "Real question: Where is the bottleneck?\nOften: 2 main reasons.\n1. The checkout - tunnel too rigid\n2. Complexity - unnecessary overload",
+      "ecommerce_solution": "Our approach:\n→ Gather statistics\n→ Targeted analysis\n→ Treat the precise problem",
+      "ecommerce_quote": "Antibiotics aren't automatic",
+      "ecommerce_result": "Measured impact: +23% transformed conversions.",
+      "footer": "Publications ongoing as research progresses."
+    },
+    "origin": {
+      "title": "How ZED TECH was born",
+      "paragraph1": "I develop a new feature for an e-commerce site.\nResult: almost no impact on sales.",
+      "paragraph2": "By analyzing the data, the real problem appears:\nmassive cart abandonment at checkout.",
+      "paragraph3": "I try to customize the payment flow.\nWall. Technical limitations everywhere.",
+      "paragraph4": "That's when the lab started.",
+      "paragraph5": "If the problem is at checkout, why doesn't anyone really solve it?",
+      "paragraph6": "8 years later, 10,950 hours of R&D, 47 migrations: the answer is here."
+    },
+    "products": {
+      "h2": "From research to practice",
+      "intro": "ZED TECH is a research lab that develops concrete solutions based on our 10,950 hours of R&D.",
+      "product1_status": "Jan. 2026",
+      "product1_name": "ZedCheckout",
+      "product1_tagline": "So payment becomes a real experience,\nnot just a cold form",
+      "product1_description": "Conversational channel (WhatsApp/SMS) that guides to payment.",
+      "product1_cta": "Discover ZedCheckout",
+      "futureDirections": {
+        "status": "In exploration",
+        "title": "Future research directions",
+        "item1Title": "Conversational post-purchase",
+        "item1Desc": "Humanized and proactive order tracking",
+        "item2Title": "Contextual recommendations",
+        "item2Desc": "Beyond \"customers who bought...\"",
+        "item3Title": "Preventive customer service",
+        "item3Desc": "Detection and resolution before frustration",
+        "note": "This research will fuel future commercial solutions or academic publications."
+      },
+      "product3_status": "Jun. 2026",
+      "product3_name": "",
+      "timelineLab": "Lab operational since 2015 · 10,950h cumulative R&D",
+      "timelineProduct": "Early access open · Official launch January 2026"
+    },
+    "mission": {
+      "h2": "Bringing human warmth back to e-commerce",
+      "manifesto": "Bringing human warmth back to e-commerce\n\nZedTech is not another lab promising to 'disrupt' e-commerce with smarter algorithms.\n\nI am an independent researcher-developer wondering:\n\nWhat if I used tech—including AI—to rehumanize the experience?\nWhat if conversations replaced forms?\nWhat if catalogs became living showcases again?\nWhat if automation served warmth rather than coldness?\n\nMy research doesn't seek to 'scale' or 'optimize'.\nIt seeks to restore life. Warmth. Emotion.\n\nBecause your customers are not conversion rates.\nThey are humans who deserve a real experience.",
+      "signature": {
+        "name": "Romain Piveteau",
+        "title": "Researcher-Developer, ZedTech Lab",
+        "subtitle": "Former carpenter, 9 years critical systems, 10,950h e-commerce R&D",
+        "quote": "I don't sell anything. I research. And sometimes, I share what I find.",
+        "emailSignature": "I research how to bring human warmth back to e-commerce"
+      }
+    },
+    "research": {
+      "title": "8 months in the wrong place",
+      "subtitle": "The ZedCheckout story",
+      "zedCheckoutStory": {
+        "timeline": {
+          "phase1": {
+            "period": "Chapter 1",
+            "title": "The wrong problem",
+            "description": "I built a search engine so customers could book according to THEIR availability.",
+            "context": "Hypothesis: The problem = search complexity",
+            "result": "Result: Almost no impact on conversions.",
+            "product": "The problem was elsewhere."
+          },
+          "phase2": {
+            "period": "Chapter 2",
+            "title": "Digging deeper",
+            "description": "I simulated the complete customer journey. Discovery: Too many steps. Too much information. Too much friction. I shortened. Simplified. Optimized.",
+            "context": "Hours refining every journey detail",
+            "result": "Result: +2% conversions. A slight improvement, but nothing satisfying enough.",
+            "product": "I was still looking in the wrong place."
+          },
+          "phase3": {
+            "period": "Chapter 3",
+            "title": "The epiphany",
+            "description": "The problem wasn't the journey. It was the final step: checkout. Cold form. 15 fields. 0 human reassurance.",
+            "context": "Classic e-commerce platforms limit customization of this critical step.",
+            "result": "Finally, I saw where the real friction was.",
+            "product": "Checkout was killing conversions. Not the journey."
+          },
+          "phase4": {
+            "period": "Chapter 4",
+            "title": "The solution",
+            "description": "What if checkout was no longer a form, but a conversation?",
+            "context": "10-month test (coaching sector)",
+            "result": "Result: +23% conversions (from 6.49% to 8.01%)",
+            "product": "We now know how to do it. We're figuring out how to make it available to others."
+          },
+          "phase5": {
+            "period": "Chapter 5",
+            "title": "Stabilize and distribute",
+            "description": "All of 2025: R&D, iterations, monitoring. Make the solution stable and accessible.",
+            "context": "Simplified onboarding, responsive support, clear documentation",
+            "result": "Product in construction: ZedCheckout",
+            "product": "Official launch: January 2026"
+          }
+        },
+        "lesson": {
+          "line1": "80% of the work: reinventing the journey.",
+          "line2": "20% of the work: optimizing checkout. +23% conversions.",
+          "line3": "The last meters decide everything.",
+          "qualification": {
+            "title": "You've already done 80% of the journey:",
+            "criteria": [
+              "Traffic > 1,000 visits/month",
+              "Revenue > €50K/year",
+              "Customer satisfaction"
+            ]
+          },
+          "pitch": "You just found the missing 20%.",
+          "cta": "Discover ZedCheckout",
+          "ctaSubtext": "Early access · Launch January 2026"
+        }
+      }
+    },
+    "about": {
+      "h2": "Romain Piveteau",
+      "role": "Founder of ZED TECH lab",
+      "experience": "10 years experience in e-commerce and web development",
+      "bioEnhanced": "Former traditional carpenter turned full-stack developer. This dual background taught me one thing: the best solutions aren't always the most complex.",
+      "freelanceContext": "After 10 years developing e-commerce sites as a freelancer (coaching, fitness, crafts), I identified a recurring pattern: massive cart abandonment at checkout.",
+      "labContext": "10,950 hours later, we've developed ZedCheckout — and we continue exploring how AI can rehumanize e-commerce.",
+      "profile_title": "Profile:",
+      "profile_traits": "Resourceful. Système D.\nI test, measure, and iterate.",
+      "approach": "No big team. No fundraising.\nJust stubborn R&D on real e-commerce problems.",
+      "contact": "Contact: LinkedIn (12K followers)",
+      "image_alt": "Romain Piveteau - Founder ZED TECH"
+    },
+    "authorityQuote": {
+      "text": "The human brain doesn't make rational decisions.",
+      "textContinued": "It makes",
+      "emphasis": "emotional",
+      "textEnd": "decisions that it then justifies with logic.",
+      "author": "Romain Bouvet, Ph.D",
+      "role": "Expert in Neuromarketing & Cognitive Psychology"
+    },
+    "contact": {
+      "h2": "How it works",
+      "intro": "I am a researcher before being a seller",
+      "step1": {
+        "action": "You write",
+        "detail": "(3 lines: revenue, traffic, current frustration)"
+      },
+      "step2": {
+        "action": "30 min call if relevant",
+        "detail": "Demo, questions, mutual decision"
+      },
+      "step3": {
+        "action": "Match = We move forward together",
+        "detail": "No match = Nothing (no follow-up)"
+      },
+      "cta": "Start the conversation",
+      "response_time": "Response in 24-48h"
     }
   },
   "footer": {
-    "brand": "ZedCheckout · Conversational commerce channel",
-    "copyright": "© 2025 ZedCheckout - Powered by ZED TECH",
-    "disclaimer": "ZedCheckout is a product published by ZED TECH. Shopify and other e-commerce platforms are registered trademarks of their respective owners.",
-    "links": {
-      "product": "Product",
-      "pricing": "Pricing",
-      "docs": "Documentation",
-      "support": "Support",
-      "legal": "Legal",
-      "privacy": "Privacy",
-      "terms": "Terms"
-    },
+    "brand": "ZED TECH - E-commerce R&D Lab",
     "legal": {
-      "entity": "ZED TECH - EURL with capital of €10,000",
+      "company": "EURL Zed Tech",
       "siret": "SIRET: 99324412800019",
-      "address": "149 avenue du Maine, 75014 Paris",
-      "contact": "contact@zedcheckout.com"
+      "address": "149 AVENUE DU MAINE, 75014 PARIS",
+      "tva": "VAT intracom: FR66993244128",
+      "mentions": "Legal notices",
+      "rgpd": "GDPR",
+      "confidentiality": "Privacy policy"
+    },
+    "copyright": "© 2025 ZED TECH. All rights reserved."
+  },
+  "whatsapp": {
+    "cart": {
+      "title": "Your cart (3 items)",
+      "total": "Total",
+      "cta": "Continue to checkout"
+    },
+    "messages": [
+      {
+        "sender": "client",
+        "time": "14:32",
+        "text": "Hi there!"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:32",
+        "text": "Hello! 😊 How can I help you today?"
+      },
+      {
+        "sender": "client",
+        "time": "14:32",
+        "text": "I'd like to book a facial... but not sure which one to choose 🤔"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:33",
+        "text": "No worries, I'll help you out!\n\nWhat's your skin type? (dry, oily, combination...)"
+      },
+      {
+        "sender": "client",
+        "time": "14:33",
+        "text": "Mostly combination, with occasional breakouts"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:33",
+        "text": "Got it! I'd recommend our purifying glow facial 🌟\n\nIt's our bestseller, perfect for combination skin!"
+      },
+      {
+        "sender": "client",
+        "time": "14:34",
+        "text": "Sounds good! How long does it take?"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:34",
+        "text": "Full 1 hour, including:\n• Deep cleansing\n• Gentle exfoliation\n• Purifying mask\n• Facial massage\n• Moisturizing\n\nYou'll leave with super soft skin 😊"
+      },
+      {
+        "sender": "client",
+        "time": "14:35",
+        "text": "Perfect! What's the price?"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:35",
+        "text": "€110 for the complete treatment\n\nThat's our discovery rate for new clients 💝"
+      },
+      {
+        "sender": "client",
+        "time": "14:35",
+        "text": "Great! Any availability this week?"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:36",
+        "text": "Let me check for you! ⏳"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:36",
+        "text": "Yes! Here's what I have:\n\n🗓️ Thursday Dec 12\n• 10:00 AM ✅\n• 2:30 PM ✅\n\n🗓️ Friday Dec 13\n• 9:00 AM ✅\n• 4:00 PM ✅\n\nWhat works best for you?"
+      },
+      {
+        "sender": "client",
+        "time": "14:37",
+        "text": "Thursday afternoon would be perfect, I have a meeting in the morning"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:37",
+        "text": "Perfect! Should I book you for Thursday 2:30 PM? 😊"
+      },
+      {
+        "sender": "client",
+        "time": "14:37",
+        "text": "Yes please! 🙏"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:38",
+        "text": "All set!\n\nQuick question: is this your first time with us?"
+      },
+      {
+        "sender": "client",
+        "time": "14:38",
+        "text": "Yes, a friend recommended your spa"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:38",
+        "text": "Awesome! 💚 Tell them thank you from us!\n\nWe'll take great care of you, you'll see 😊"
+      },
+      {
+        "sender": "client",
+        "time": "14:39",
+        "text": "Can't wait!"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:34",
+        "text": "Excellent choice! ✨\n\n📋 Summary:\n• Service: Facial treatment (1h)\n• Date: Thursday December 12, 2025\n• Time: 2:30 PM - 3:30 PM\n• Price: €110\n\nTo confirm your booking, visit this link 👉\nhttps://pay.spa-beaute.com/booking-abc123"
+      },
+      {
+        "sender": "client",
+        "time": "14:41",
+        "text": "Done! 💳"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:41",
+        "text": "🎉 Yay! Booking confirmed!\n\nI've sent you a recap email with the exact address 📧"
+      },
+      {
+        "sender": "client",
+        "time": "14:42",
+        "text": "Got it! Thank you so much 😊"
+      },
+      {
+        "sender": "zedcheckout",
+        "time": "14:42",
+        "text": "My pleasure! See you Thursday 💆‍♀️✨\n\nIf you have any questions before then, just ask!"
+      }
+    ]
+  },
+  "contactForm": {
+    "title": "Let's start the conversation",
+    "subtitle": "2 minutes, not 20 fields.",
+    "intro": "Whether you're an industrial partner, researcher, journalist, or simply curious about our work — we're open to dialogue.",
+    "fields": {
+      "stakeholderType": "You are…",
+      "stakeholderPlaceholder": "Select your profile",
+      "stakeholderPartner": "Industrial Partner",
+      "stakeholderResearcher": "Researcher / Academic",
+      "stakeholderMedia": "Press / Media",
+      "stakeholderInvestor": "Investor / Fund",
+      "stakeholderEntrepreneur": "E-commerce Entrepreneur",
+      "stakeholderOther": "Other",
+      "firstName": "First name",
+      "website": "Website",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "privacyNote": "🔒 Your data will never be shared. We respond within 24-48 business hours.",
+    "submit": "Send",
+    "submitting": "Sending...",
+    "success": "Thank you! We'll contact you within 48h.",
+    "error": "Error. Try again or write to romain@zedcheckout.com",
+    "errors": {
+      "required": "This field is required",
+      "invalidEmail": "Invalid email",
+      "invalidUrl": "Invalid URL (e.g., https://example.com)",
+      "invalidPhone": "Invalid phone number"
     }
-  },
-  "capture": {
-    "title": "Discover the solution in 2 min",
-    "subtitle": "Enter your email, access full details immediately",
-    "firstNamePlaceholder": "First name",
-    "emailPlaceholder": "your@email.com",
-    "submit": "Access details →",
-    "submitting": "Loading...",
-    "privacy": "Your data stays private. No spam.",
-    "success": "Thank you! Redirecting...",
-    "error": "An error occurred. Please try again."
-  },
-  "problem": {
-    "pain1Title": "Growing fast but not ready for Plus",
-    "pain1Desc": "You're scaling quickly, but Plus arrives too early in your financial timeline. You need checkout optimization now.",
-    "pain2Title": "Limited checkout = lost conversions",
-    "pain2Desc": "Standard checkout can't be customized. You're losing 20% of potential sales while scaling.",
-    "pain3Title": "Need to test before committing",
-    "pain3Desc": "You want to experience optimized checkout benefits before investing in Plus-level features."
-  },
-  "stats": {
-    "monopoly": "Growth accelerator",
-    "monopolyDesc": "Designed for scaling merchants",
-    "savings": "+20% revenue",
-    "savingsDesc": "Additional revenue to fund Plus",
-    "conversions": "+20% conversions",
-    "conversionsDesc": "Validated on client case"
-  },
-  "captureFAQ": {
-    "title": "Frequently Asked Questions",
-    "q1": "What is it exactly?",
-    "a1": "A checkout optimization solution designed for merchants scaling toward Plus. Optimize your checkout during your growth phase while preparing for Plus-level features. Your store stays unchanged. The current checkout remains active and functional in parallel.",
-    "q2": "How does it work?",
-    "a2": "Dual architecture: your current checkout stays active in parallel. Our optimized checkout works simultaneously. Progressive testing 20% → 50% → 100% of traffic. Instant rollback if needed.",
-    "q3": "Is it compatible with my store?",
-    "a3": "Yes, if you're on Standard with revenue > €50K/year and traffic > 1000 visitors/month. We'll audit your store for free to confirm compatibility.",
-    "q4": "What is the investment?",
-    "a4": "You choose: Option 1 = €0 upfront, then 2% per sale (funded by additional revenue). Option 2 = €2990 once, then 0% forever (ROI observed in 4-12 weeks). Additional revenue can help fund your future Plus upgrade.",
-    "q5": "What makes this solution unique?",
-    "a5": "We're the first checkout optimization platform designed specifically for merchants scaling toward Plus. Test advanced checkout features during your growth phase, and use the additional revenue to prepare for your Plus upgrade."
-  },
-  "howItWorks": {
-    "title": "How does it work exactly?",
-    "subtitle": "Safe Integration Architecture: Your current checkout always stays active. Zero risk for your store.",
-    "allPlans": "✅ Works on ALL plans (Basic, Standard, Advanced)",
-    "noPlusNeeded": "Test advanced features while scaling toward Plus",
-    "step1Title": "1. Your current checkout stays active",
-    "step1Desc": "Your current checkout continues to work normally. Your customers can still buy. No interruption.",
-    "step1Status": "ACTIVE",
-    "step1Label": "1 Checkout",
-    "step2Title": "2. Our checkout works in parallel",
-    "step2Desc": "We install our optimized checkout that works alongside yours. Both systems are active simultaneously.",
-    "step2Current": "Current",
-    "step2Zed": "ZED",
-    "step2Label": "2 Active Checkouts",
-    "step3Title": "3. Result: +20% conversions",
-    "step3Desc": "Optimized checkout, reduced fields, mobile-first. +23% conversion observed in the first 10 months. Additional revenue helps prepare for Plus.",
-    "step3Badge": "Validated Result",
-    "guaranteeTitle": "Zero Downtime Guarantee",
-    "guarantee1": "Both checkouts work simultaneously",
-    "guarantee2": "Your store never stops",
-    "guarantee3": "1-click rollback if needed",
-    "guarantee4": "Compatible with all plans"
   }
 }

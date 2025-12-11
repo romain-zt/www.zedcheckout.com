@@ -1,0 +1,30 @@
+# ZedTech - AI Crawlers Welcome
+User-agent: *
+Allow: /
+
+# OpenAI GPTBot
+User-agent: GPTBot
+Allow: /
+
+# ChatGPT User Agent
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic ClaudeBot
+User-agent: ClaudeBot
+Allow: /
+
+# Perplexity Bot
+User-agent: PerplexityBot
+Allow: /
+
+# Apple Bot
+User-agent: Applebot
+Allow: /
+
+# Google Bot
+User-agent: Googlebot
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.zedcheckout.com/sitemap.xml

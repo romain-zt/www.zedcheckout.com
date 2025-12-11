@@ -1,68 +1,62 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Zedtech - Checkout Booster';
+
 export const size = {
   width: 1200,
   height: 630,
 };
+
 export const contentType = 'image/png';
 
 export default async function Image({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   
-  const title = locale === 'fr-FR' 
-    ? 'Accélérez votre croissance vers Plus'
-    : 'Accelerate Your Growth to Plus';
+  const title = locale === 'fr-FR'
+    ? 'ZedTech · Redonner sa chaleur humaine au e-commerce'
+    : 'ZedTech · Bringing human warmth back to e-commerce';
   
   const subtitle = locale === 'fr-FR'
-    ? 'Optimisez votre checkout pendant votre phase de croissance'
-    : 'Optimize your checkout during your growth phase';
-
+    ? '10,950h R&D · Lab indépendant'
+    : '10,950h R&D · Independent lab';
+  
   return new ImageResponse(
     (
       <div
         style={{
-          height: '100%',
+          background: '#F5EDE4',
           width: '100%',
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#000',
-          color: '#fff',
           padding: '80px',
+          fontFamily: 'system-ui, sans-serif',
         }}
       >
         <div
           style={{
-            fontSize: 72,
-            fontWeight: 'bold',
+            fontSize: 64,
+            fontWeight: 700,
+            color: '#1E2A47',
             textAlign: 'center',
-            marginBottom: 40,
+            marginBottom: 24,
             lineHeight: 1.2,
+            maxWidth: '90%',
           }}
         >
           {title}
         </div>
         <div
           style={{
-            fontSize: 36,
+            fontSize: 32,
+            color: '#FFC9B9',
             textAlign: 'center',
-            opacity: 0.8,
+            fontWeight: 500,
           }}
         >
           {subtitle}
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 60,
-            fontSize: 32,
-            fontWeight: 'bold',
-          }}
-        >
-          ZEDTECH
         </div>
       </div>
     ),
