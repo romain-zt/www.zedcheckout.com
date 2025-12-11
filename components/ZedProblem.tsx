@@ -11,7 +11,7 @@ export default function ZedProblem() {
   const card3 = t.raw('card3') as { title: string; description: string };
 
   return (
-    <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white">
+    <section id="zed-problem" className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         
         {/* Headline */}

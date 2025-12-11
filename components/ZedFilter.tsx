@@ -18,7 +18,7 @@ export default function ZedFilter() {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   return (
-    <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white">
+    <section id="zed-filter" className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white">
       <div className="max-w-4xl mx-auto">
         
         {/* Headline */}

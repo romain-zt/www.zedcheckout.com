@@ -18,7 +18,7 @@ export default function ZedFAQ() {
   ];
 
   return (
-    <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white">
+    <section id="zed-faq" className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-white">
       <div className="max-w-3xl mx-auto">
         
         {/* Headline */}

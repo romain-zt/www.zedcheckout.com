@@ -12,7 +12,7 @@ export default function ZedFinalCTA() {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   return (
-    <section className="relative py-20 sm:py-24 lg:py-32 px-4 sm:px-6 bg-gradient-to-br from-[#1E2A47] via-[#2A3F5F] to-[#1E2A47] overflow-hidden">
+    <section id="zed-cta" className="relative py-20 sm:py-24 lg:py-32 px-4 sm:px-6 bg-gradient-to-br from-[#1E2A47] via-[#2A3F5F] to-[#1E2A47] overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{

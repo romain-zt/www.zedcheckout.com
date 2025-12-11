@@ -18,7 +18,7 @@ export default function ZedProcess() {
   ];
 
   return (
-    <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-gradient-to-br from-[#F5EDE4] to-[#FEFAF6]">
+    <section id="zed-process" className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-gradient-to-br from-[#F5EDE4] to-[#FEFAF6]">
       <div className="max-w-5xl mx-auto">
         
         {/* Headline */}
