@@ -4,6 +4,63 @@
 
 Un vrai agent IA de checkout conversationnel, pas un simple chatbot. Utilise Claude 3.5 Sonnet avec tool calling pour orchestrer des conversations de checkout intelligentes.
 
+## ⚠️ Modes de Compatibilité
+
+L'API supporte **deux modes** pour rétrocompatibilité :
+
+### 1. Legacy Mode (ChatWidgetAI.tsx)
+**Détection** : Présence de `leadData` et absence de `context` dans la requête
+
+**Requête** :
+```typescript
+{
+  message: string,
+  conversationHistory: ChatMessage[],
+  leadData: { firstName?, email?, ... },
+  sectionContext?: string,
+  sectionDescription?: string
+}
+```
+
+**Réponse** :
+```typescript
+{
+  success: true,
+  response: {
+    message: string,
+    extractedData: { firstName?, email?, ... },
+    isQualificationComplete: boolean,
+    suggestedReplies?: string[],
+    confidence?: "high" | "medium" | "low"
+  },
+  usage: { inputTokens, outputTokens }
+}
+```
+
+### 2. Agent Mode (ChatWidget.tsx)
+**Détection** : Présence de `context` ou `isFirstMessage: true`
+
+**Requête** :
+```typescript
+{
+  message: string,
+  conversationHistory: ChatMessage[],
+  context: ConversationContext,
+  isFirstMessage?: boolean
+}
+```
+
+**Réponse** :
+```typescript
+{
+  success: true,
+  messages: AgentMessage[], // [{ text, delay?, suggestedReplies?, ... }]
+  context: ConversationContext,
+  isGreeting?: boolean,
+  usage: { inputTokens, outputTokens }
+}
+```
+
 ## Architecture
 
 ```

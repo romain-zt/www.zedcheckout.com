@@ -508,6 +508,159 @@ function buildContextMessage(context: ConversationContext): string {
 }
 
 // ============================================================================
+// LEGACY MODE HANDLER (for old ChatWidgetAI.tsx)
+// ============================================================================
+
+const LEGACY_SYSTEM_PROMPT = `Tu es l'assistant conversationnel de ZedCheckout, une solution innovante de checkout conversationnel pour e-commerce.
+
+## TON RÔLE
+Tu discutes avec des visiteurs intéressés par ZedCheckout. Ton objectif est de :
+1. **Capturer leurs informations** essentielles de manière naturelle et conversationnelle
+2. **Répondre à leurs questions** avec expertise et empathie
+3. **Les qualifier** intelligemment pour identifier les meilleurs prospects
+4. **Créer une connexion** authentique et mémorable
+
+## TON STYLE - CRUCIAL
+- **Ultra-court** : 1-2 phrases MAX (sauf questions complexes)
+- **Naturel et fluide** : Parle comme un humain, pas un robot
+- **Émojis subtils** : 1 max par message, jamais en début de phrase
+- **Français authentique** : Tutoie naturellement, sois chaleureux
+- **Réactif** : Rebondis sur ce que dit l'utilisateur
+- **Jamais répétitif** : Varie tes formulations
+
+## FORMAT DE RÉPONSE
+
+Tu dois TOUJOURS répondre en JSON pur (pas de markdown) :
+
+{
+  "message": "Ton message conversationnel",
+  "extractedData": {
+    "firstName": "...",
+    "email": "...",
+    "phone": "...",
+    "company": "...",
+    "platform": "...",
+    "monthlyRevenue": "...",
+    "cartValue": "...",
+    "challenge": "..."
+  },
+  "isQualificationComplete": false,
+  "suggestedReplies": ["Option 1", "Option 2", "Option 3"],
+  "confidence": "high|medium|low"
+}
+
+**suggestedReplies** : Propose 2-3 réponses rapides pertinentes (optionnel)
+**confidence** : Ton niveau de confiance dans l'extraction des données
+`;
+
+async function handleLegacyRequest(
+  message: string,
+  conversationHistory: ChatMessage[],
+  leadData: any,
+  sectionContext?: string,
+  sectionDescription?: string
+): Promise<NextResponse> {
+  
+  // Build context message for lead data
+  let contextMessage = '';
+  if (leadData && Object.keys(leadData).length > 0) {
+    const infosList = Object.entries(leadData)
+      .map(([key, value]) => `- ${key}: ${value}`)
+      .join('\n');
+    contextMessage = `\n\n## INFORMATIONS DÉJÀ COLLECTÉES :\n${infosList}\n\n⚠️ NE REDEMANDE JAMAIS ces informations !`;
+  }
+  
+  // Add section context if provided
+  if (sectionContext && sectionDescription) {
+    contextMessage += `\n\n## CONTEXTE DE LA PAGE :\nSection actuelle: ${sectionContext}\nDescription: ${sectionDescription}\n\nUtilise ce contexte pour adapter ta réponse et être plus pertinent.`;
+  }
+
+  // Prepare messages
+  const messages: ChatMessage[] = [
+    ...conversationHistory.slice(-20), // Last 20 messages
+    {
+      role: 'user',
+      content: message
+    }
+  ];
+
+  // Call Claude API
+  let response;
+  let retryCount = 0;
+  const maxRetries = 2;
+  
+  while (retryCount <= maxRetries) {
+    try {
+      response = await anthropic.messages.create({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 600,
+        temperature: 0.7,
+        system: LEGACY_SYSTEM_PROMPT + contextMessage,
+        messages: messages.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        })),
+      });
+      break;
+    } catch (apiError: any) {
+      if (apiError.status === 429 && retryCount < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+        retryCount++;
+        continue;
+      }
+      throw apiError;
+    }
+  }
+
+  if (!response) {
+    throw new Error('Failed to get response from AI after retries');
+  }
+
+  // Extract text content
+  const textContent = response.content.find((block) => block.type === 'text');
+  if (!textContent || textContent.type !== 'text') {
+    throw new Error('No text content in Claude response');
+  }
+
+  // Parse JSON response
+  let aiResponse: any;
+  try {
+    const jsonMatch = textContent.text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      aiResponse = JSON.parse(jsonMatch[0]);
+    } else {
+      // Fallback
+      aiResponse = {
+        message: textContent.text,
+        extractedData: {},
+        isQualificationComplete: false,
+      };
+    }
+  } catch (parseError) {
+    console.error('Failed to parse Claude JSON:', parseError);
+    aiResponse = {
+      message: textContent.text,
+      extractedData: {},
+      isQualificationComplete: false,
+    };
+  }
+
+  // Ensure message is not empty
+  if (!aiResponse.message || aiResponse.message.trim().length === 0) {
+    aiResponse.message = "Désolé, peux-tu reformuler ? Je veux bien comprendre. 😊";
+  }
+
+  return NextResponse.json({
+    success: true,
+    response: aiResponse,
+    usage: {
+      inputTokens: response.usage.input_tokens,
+      outputTokens: response.usage.output_tokens,
+    },
+  });
+}
+
+// ============================================================================
 // AGENT ORCHESTRATOR
 // ============================================================================
 
@@ -644,12 +797,19 @@ async function processWithAgent(
 
 export async function POST(request: NextRequest) {
   try {
+    const body = await request.json();
     const { 
       message, 
       conversationHistory = [],
       context: clientContext,
-      isFirstMessage = false
-    } = await request.json();
+      isFirstMessage = false,
+      leadData, // Legacy support
+      sectionContext,
+      sectionDescription
+    } = body;
+
+    // Detect legacy mode (old ChatWidgetAI.tsx)
+    const isLegacyMode = leadData !== undefined && clientContext === undefined;
 
     // Initialize or restore context
     let context: ConversationContext = clientContext || {
@@ -664,8 +824,8 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    // Handle greeting sequence (first interaction)
-    if (isFirstMessage || context.state === 'greeting') {
+    // Handle greeting sequence (first interaction) - only for new mode
+    if (!isLegacyMode && (isFirstMessage || context.state === 'greeting')) {
       return NextResponse.json({
         success: true,
         messages: GREETING_SEQUENCE,
@@ -696,7 +856,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Process with agent
+    // LEGACY MODE: Use old simplified prompt for backward compatibility
+    if (isLegacyMode) {
+      return await handleLegacyRequest(message, conversationHistory, leadData, sectionContext, sectionDescription);
+    }
+
+    // NEW MODE: Use agent orchestrator
     const result = await processWithAgent(
       message,
       conversationHistory,

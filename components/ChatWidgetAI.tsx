@@ -104,7 +104,6 @@ const trackEvent = (eventName: string, properties?: any) => {
   if (typeof window !== 'undefined' && (window as any).gtag) {
     (window as any).gtag('event', eventName, properties);
   }
-  console.log('📊 Event:', eventName, properties);
 };
 
 const STORAGE_KEY = 'zed_chat_state';
