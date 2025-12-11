@@ -308,7 +308,7 @@ function shouldCompleteQualification(leadData: any): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, conversationHistory, leadData } = await request.json();
+    const { message, conversationHistory, leadData, sectionContext, sectionDescription } = await request.json();
 
     // Validate input
     if (!message || typeof message !== 'string') {
@@ -347,6 +347,11 @@ export async function POST(request: NextRequest) {
         .map(([key, value]) => `- ${key}: ${value}`)
         .join('\n');
       contextMessage = `\n\n## INFORMATIONS DÉJÀ COLLECTÉES :\n${infosList}\n\n⚠️ NE REDEMANDE JAMAIS ces informations !`;
+    }
+    
+    // Add section context if provided
+    if (sectionContext && sectionDescription) {
+      contextMessage += `\n\n## CONTEXTE DE LA PAGE :\nSection actuelle: ${sectionContext}\nDescription: ${sectionDescription}\n\nUtilise ce contexte pour adapter ta réponse et être plus pertinent.`;
     }
 
     // Call Claude API with retry logic

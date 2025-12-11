@@ -27,16 +27,76 @@ interface ConversationMessage {
   content: string;
 }
 
-// Section-specific placeholder messages
-const SECTION_PLACEHOLDERS: Record<string, string> = {
-  'zed-hero': "Comment ZedCheckout peut transformer votre checkout ?",
-  'zed-problem': "Votre checkout vous fait perdre des clients ?",
-  'zed-solution': "Comment fonctionne l'IA conversationnelle ?",
-  'zed-filter': "ZedCheckout est-il fait pour vous ?",
-  'zed-process': "Comment se passe la mise en place ?",
-  'zed-faq': "Une question sur ZedCheckout ?",
-  'zed-cta': "Prêt à augmenter vos conversions ?",
-  'default': "Demandez ce que vous voulez...",
+// Section-specific placeholder messages (FR + EN)
+const SECTION_PLACEHOLDERS: Record<string, { fr: string; en: string }> = {
+  'zed-hero': {
+    fr: "Comment ZedCheckout peut transformer votre checkout ?",
+    en: "How can ZedCheckout transform your checkout?"
+  },
+  'zed-problem': {
+    fr: "Votre checkout vous fait perdre des clients ?",
+    en: "Is your checkout losing customers?"
+  },
+  'zed-solution': {
+    fr: "Comment fonctionne l'IA conversationnelle ?",
+    en: "How does conversational AI work?"
+  },
+  'zed-filter': {
+    fr: "ZedCheckout est-il fait pour vous ?",
+    en: "Is ZedCheckout right for you?"
+  },
+  'zed-process': {
+    fr: "Comment se passe la mise en place ?",
+    en: "How does the implementation work?"
+  },
+  'zed-faq': {
+    fr: "Une question sur ZedCheckout ?",
+    en: "Any questions about ZedCheckout?"
+  },
+  'zed-cta': {
+    fr: "Prêt à augmenter vos conversions ?",
+    en: "Ready to boost your conversions?"
+  },
+  'default': {
+    fr: "Demandez ce que vous voulez...",
+    en: "Ask anything you want..."
+  },
+};
+
+// Section descriptions for AI context
+const SECTION_DESCRIPTIONS: Record<string, { fr: string; en: string }> = {
+  'zed-hero': {
+    fr: "L'utilisateur regarde la section hero/introduction de ZedCheckout",
+    en: "User is viewing the hero/introduction section of ZedCheckout"
+  },
+  'zed-problem': {
+    fr: "L'utilisateur lit sur les problèmes du checkout traditionnel (abandons de panier, friction)",
+    en: "User is reading about traditional checkout problems (cart abandonment, friction)"
+  },
+  'zed-solution': {
+    fr: "L'utilisateur découvre la solution ZedCheckout et l'IA conversationnelle",
+    en: "User is discovering the ZedCheckout solution and conversational AI"
+  },
+  'zed-filter': {
+    fr: "L'utilisateur vérifie si ZedCheckout est adapté à son profil e-commerce",
+    en: "User is checking if ZedCheckout is suitable for their e-commerce profile"
+  },
+  'zed-process': {
+    fr: "L'utilisateur consulte le processus de mise en place et d'intégration",
+    en: "User is reviewing the implementation and integration process"
+  },
+  'zed-faq': {
+    fr: "L'utilisateur cherche des réponses à des questions fréquentes",
+    en: "User is looking for answers to frequently asked questions"
+  },
+  'zed-cta': {
+    fr: "L'utilisateur est dans la section appel à l'action finale",
+    en: "User is in the final call-to-action section"
+  },
+  'default': {
+    fr: "L'utilisateur navigue sur la page",
+    en: "User is navigating the page"
+  },
 };
 
 // Analytics helper
@@ -61,6 +121,7 @@ export default function ChatWidgetAI() {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [currentSection, setCurrentSection] = useState<string>('default');
+  const [locale, setLocale] = useState<'fr' | 'en'>('fr');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -148,6 +209,48 @@ export default function ChatWidgetAI() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
+  // Scroll detection for section-based placeholder updates
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px', // Section is "active" when it's in the middle third of viewport
+      threshold: 0,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id;
+          if (sectionId && SECTION_PLACEHOLDERS[sectionId]) {
+            setCurrentSection(sectionId);
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    // Observe all sections with IDs matching our placeholders
+    const sections = document.querySelectorAll('[id^="zed-"]');
+    sections.forEach((section) => observer.observe(section));
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+    };
+  }, []);
+
+  // Detect locale from document or browser
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const htmlLang = document.documentElement.lang;
+      if (htmlLang.startsWith('en')) {
+        setLocale('en');
+      } else {
+        setLocale('fr');
+      }
+    }
+  }, []);
+
   // Natural greeting: wait 3s, cancel if user types
   useEffect(() => {
     if (isOpen && !hasGreeted) {
@@ -157,15 +260,17 @@ export default function ChatWidgetAI() {
       // Start 3-second timer for greeting
       greetingTimeoutRef.current = setTimeout(async () => {
         if (!userHasTyped.current && !hasGreeted) {
-          // Use AI to generate a short, natural greeting
+          // Use AI to generate a short, natural greeting with section context
+          const sectionContext = SECTION_DESCRIPTIONS[currentSection]?.[locale] || SECTION_DESCRIPTIONS.default[locale];
           try {
             const response = await fetch('/api/chat-ai', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                message: '[SYSTEM: Generate a very short greeting (max 2 sentences) to welcome the user and ask their name. Be casual and friendly.]',
+                message: `[SYSTEM: Generate a very short greeting (max 2 sentences) to welcome the user and ask their name. Be casual and friendly. CONTEXT: ${sectionContext}]`,
                 conversationHistory: [],
                 leadData: {},
+                sectionContext: currentSection,
               }),
             });
 
@@ -257,8 +362,12 @@ export default function ChatWidgetAI() {
       trackEvent('message_sent', { 
         messageLength: userMessage.length,
         isRetry,
-        conversationLength: conversationHistory.length 
+        conversationLength: conversationHistory.length,
+        currentSection 
       });
+      
+      // Add section context to the first message
+      const sectionContext = SECTION_DESCRIPTIONS[currentSection]?.[locale] || SECTION_DESCRIPTIONS.default[locale];
       
       const response = await fetch('/api/chat-ai', {
         method: 'POST',
@@ -269,6 +378,8 @@ export default function ChatWidgetAI() {
           message: userMessage,
           conversationHistory,
           leadData,
+          sectionContext: currentSection,
+          sectionDescription: sectionContext,
         }),
       });
 
@@ -540,8 +651,8 @@ export default function ChatWidgetAI() {
                       }
                     }
                   }}
-                  placeholder={SECTION_PLACEHOLDERS[currentSection] || SECTION_PLACEHOLDERS.default}
-                  key={currentSection}
+                  placeholder={SECTION_PLACEHOLDERS[currentSection]?.[locale] || SECTION_PLACEHOLDERS.default[locale]}
+                  key={`${currentSection}-${locale}`}
                   autoComplete="off"
                   className="relative w-full px-5 py-3.5 pr-14 sm:px-6 sm:py-4 sm:pr-16 rounded-full backdrop-blur-2xl bg-white/80 border-2 border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.12)] text-gray-900 placeholder-gray-500 outline-none transition-all duration-500 focus:bg-white/90 focus:border-[#E88B7A]/60 focus:shadow-[0_20px_60px_rgba(232,139,122,0.3)] group-hover:bg-white/90 group-hover:border-white/70 placeholder:transition-opacity placeholder:duration-500"
                 />
