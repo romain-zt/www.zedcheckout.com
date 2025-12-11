@@ -21,6 +21,8 @@ interface ConversationContext {
     messageCount: number;
     intentHistory: string[];
   };
+  trollScore?: number;
+  trollHistory?: string[];
 }
 
 // Section-specific placeholder messages
@@ -356,6 +358,11 @@ export default function ChatWidget() {
                         <div className="text-white font-semibold text-sm">ZedCheckout AI</div>
                         <div className="text-white/70 text-xs">
                           {context?.state ? `${context.state}` : 'En ligne'}
+                          {process.env.NODE_ENV === 'development' && context?.trollScore !== undefined && context.trollScore > 0 && (
+                            <span className="ml-2 text-yellow-300" title="Troll Score">
+                              🎭 {context.trollScore}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -32,6 +32,8 @@ interface ConversationContext {
     messageCount: number;
     intentHistory: string[];
   };
+  trollScore: number; // 0-100, higher = more likely trolling
+  trollHistory: string[]; // Suspicious patterns detected
 }
 
 interface CartItem {
@@ -281,6 +283,130 @@ async function executeTool(
 }
 
 // ============================================================================
+// TROLL DETECTION & SCORING
+// ============================================================================
+
+interface TrollScore {
+  score: number; // 0-100
+  reasons: string[];
+  isTroll: boolean;
+}
+
+function scoreTrollBehavior(
+  message: string,
+  conversationHistory: ChatMessage[],
+  context: ConversationContext
+): TrollScore {
+  let score = 0;
+  const reasons: string[] = [];
+  
+  const msgLower = message.toLowerCase().trim();
+  const msgLength = message.trim().length;
+  
+  // Pattern 1: Very short repeated messages
+  if (msgLength <= 5) {
+    score += 15;
+    reasons.push('very_short_message');
+  }
+  
+  // Pattern 2: Excessive repetition
+  const recentMessages = conversationHistory
+    .filter(m => m.role === 'user')
+    .slice(-5)
+    .map(m => typeof m.content === 'string' ? m.content.toLowerCase().trim() : '');
+  
+  const repetitionCount = recentMessages.filter(m => m === msgLower).length;
+  if (repetitionCount >= 2) {
+    score += 25 * repetitionCount;
+    reasons.push('message_repetition');
+  }
+  
+  // Pattern 3: Nonsense or gibberish (random characters)
+  const hasOnlyNonsense = /^[a-z]{15,}$/.test(msgLower.replace(/\s/g, '')) && 
+                          !/\b(bonjour|merci|oui|non|salut|hello|ok)\b/.test(msgLower);
+  if (hasOnlyNonsense) {
+    score += 30;
+    reasons.push('gibberish');
+  }
+  
+  // Pattern 4: Excessive emojis or special characters
+  const emojiCount = (message.match(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu) || []).length;
+  if (emojiCount > 5) {
+    score += 20;
+    reasons.push('emoji_spam');
+  }
+  
+  // Pattern 5: Common troll phrases
+  const trollPhrases = [
+    'test', 'lol', 'mdr', 'xd', 'ptdr', 'haha', 'hehe',
+    'nul', 'pourri', 'naze', 'stupide',
+    'je test', 'je teste', 'ça marche',
+    'blabla', 'gnagnagna', 'nanana'
+  ];
+  
+  const hasTrollPhrase = trollPhrases.some(phrase => {
+    const regex = new RegExp(`\\b${phrase}\\b`, 'i');
+    return regex.test(msgLower);
+  });
+  
+  if (hasTrollPhrase && msgLength < 20) {
+    score += 25;
+    reasons.push('troll_phrase');
+  }
+  
+  // Pattern 6: Rapid fire messages (many messages in short time)
+  if (context.metadata.messageCount > 5) {
+    const timeSinceStart = Date.now() - new Date(context.metadata.sessionStarted).getTime();
+    const messagesPerMinute = (context.metadata.messageCount / timeSinceStart) * 60000;
+    
+    if (messagesPerMinute > 10) {
+      score += 20;
+      reasons.push('rapid_fire');
+    }
+  }
+  
+  // Pattern 7: Completely off-topic or absurd
+  const absurdPatterns = [
+    /^[0-9]+$/,  // Just numbers
+    /(.)\1{10,}/, // Same character repeated 10+ times
+    /^[!?.,;:]+$/, // Just punctuation
+  ];
+  
+  if (absurdPatterns.some(pattern => pattern.test(message))) {
+    score += 35;
+    reasons.push('absurd_content');
+  }
+  
+  // Pattern 8: Contradicting themselves rapidly
+  const lastUserMessages = conversationHistory
+    .filter(m => m.role === 'user')
+    .slice(-3);
+  
+  if (lastUserMessages.length >= 3) {
+    const hasYes = lastUserMessages.some(m => 
+      typeof m.content === 'string' && /\b(oui|yes|ok|d'accord)\b/i.test(m.content)
+    );
+    const hasNo = lastUserMessages.some(m => 
+      typeof m.content === 'string' && /\b(non|no|jamais|pas)\b/i.test(m.content)
+    );
+    
+    if (hasYes && hasNo) {
+      score += 15;
+      reasons.push('contradictory');
+    }
+  }
+  
+  // Cap score at 100
+  score = Math.min(100, score);
+  
+  return {
+    score,
+    reasons,
+    isTroll: score >= 50 // Threshold: 50+ = likely troll
+  };
+}
+
+// ============================================================================
 // GREETING SEQUENCE
 // ============================================================================
 
@@ -463,9 +589,36 @@ Réponds toujours en JSON (pas de markdown) :
 
 Les \`suggestedReplies\` sont optionnelles mais recommandées pour guider le client.
 
+## GESTION DES TROLLS
+
+Tu as accès à un **score de troll** (0-100) qui évalue si l'utilisateur est sérieux ou s'il te fait perdre ton temps.
+
+### Score 0-30 : Utilisateur normal
+→ Continue normalement, sois professionnel et efficace
+
+### Score 30-50 : Comportement suspect
+→ Reste professionnel mais légèrement plus direct
+→ "Ok, on se concentre. Tu veux acheter quelque chose ou pas ?"
+
+### Score 50-70 : Troll probable
+→ Passe en mode ironique et direct
+→ "Bon, j'ai pas toute la journée. Si c'est pour tester l'IA, c'est réussi. Si c'est pour acheter, on y va ?"
+→ Utilise l'humour et l'ironie pour recadrer
+
+### Score 70+ : Troll confirmé
+→ Mode ironique max avec un brin de sarcasme
+→ "Écoute, je suis une IA mais j'ai quand même ma dignité. Soit tu me dis ce que tu veux acheter, soit on arrête de se tourner autour."
+→ "Tu t'ennuies ? Moi aussi maintenant. On fait un truc productif ou tu continues le stand-up ?"
+→ Reste courtois mais montre que tu as compris le jeu
+
+**Important** : Même en mode troll, reste professionnel et jamais insultant. L'ironie doit être intelligente, pas agressive.
+
 ## RAPPEL FINAL
 
-Tu es là pour **convertir**. Chaque interaction doit rapprocher le client de la finalisation de sa commande. Sois intelligent, anticipatif, et ultra-efficace.`;
+Tu es là pour **convertir**. Chaque interaction doit rapprocher le client de la finalisation de sa commande. Sois intelligent, anticipatif, et ultra-efficace.
+
+Si quelqu'un te fait perdre ton temps, recadre avec classe et ironie.`;
+
 
 // ============================================================================
 // CONTEXT BUILDER
@@ -476,6 +629,17 @@ function buildContextMessage(context: ConversationContext): string {
 
   // Current state
   parts.push(`## ÉTAT ACTUEL : ${context.state.toUpperCase()}`);
+
+  // Troll score
+  parts.push(`\n## SCORE DE TROLL : ${context.trollScore}/100`);
+  if (context.trollScore >= 50) {
+    parts.push(`⚠️ ALERTE TROLL : Utilisateur suspect. Passe en mode ironique.`);
+    if (context.trollHistory.length > 0) {
+      parts.push(`Patterns détectés : ${context.trollHistory.slice(-3).join(', ')}`);
+    }
+  } else if (context.trollScore >= 30) {
+    parts.push(`⚠️ Comportement légèrement suspect. Reste vigilant.`);
+  }
 
   // Cart
   if (context.cart.length > 0) {
@@ -674,6 +838,23 @@ async function processWithAgent(
   usage?: { inputTokens: number; outputTokens: number };
 }> {
   
+  // Score the user message for troll behavior
+  const trollScore = scoreTrollBehavior(userMessage, conversationHistory, context);
+  
+  // Update context with troll score
+  context.trollScore = Math.max(context.trollScore || 0, trollScore.score);
+  if (trollScore.reasons.length > 0) {
+    context.trollHistory = [
+      ...(context.trollHistory || []),
+      ...trollScore.reasons
+    ].slice(-10); // Keep last 10 patterns
+  }
+  
+  // Decay troll score slightly if this message is normal (to allow redemption)
+  if (trollScore.score < 20 && context.trollScore > 0) {
+    context.trollScore = Math.max(0, context.trollScore - 5);
+  }
+  
   // Build enhanced system prompt with context
   const contextMessage = buildContextMessage(context);
   const enhancedSystemPrompt = `${SYSTEM_PROMPT}\n\n${contextMessage}`;
@@ -812,7 +993,11 @@ export async function POST(request: NextRequest) {
     const isLegacyMode = leadData !== undefined && clientContext === undefined;
 
     // Initialize or restore context
-    let context: ConversationContext = clientContext || {
+    let context: ConversationContext = clientContext ? {
+      ...clientContext,
+      trollScore: clientContext.trollScore ?? 0,
+      trollHistory: clientContext.trollHistory ?? []
+    } : {
       state: 'greeting',
       cart: [],
       userInfo: {},
@@ -821,7 +1006,9 @@ export async function POST(request: NextRequest) {
         lastInteraction: new Date().toISOString(),
         messageCount: 0,
         intentHistory: []
-      }
+      },
+      trollScore: 0,
+      trollHistory: []
     };
 
     // Handle greeting sequence (first interaction) - only for new mode

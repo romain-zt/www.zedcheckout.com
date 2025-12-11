@@ -177,7 +177,9 @@ Chaque conversation maintient un contexte :
     lastInteraction: string,
     messageCount: number,
     intentHistory: string[]
-  }
+  },
+  trollScore: number,        // 0-100, détection de comportement suspect
+  trollHistory: string[]      // Patterns détectés
 }
 ```
 
@@ -186,6 +188,79 @@ Ce contexte est :
 - Envoyé à chaque requête
 - Enrichi par l'agent via les tool calls
 - Utilisé pour construire le system prompt
+
+## 🎭 Système de Détection de Trolls
+
+L'agent intègre un **système de scoring intelligent** pour détecter et gérer les utilisateurs non sérieux.
+
+### Comment ça marche
+
+À chaque message, l'agent analyse 8 patterns de comportement :
+
+1. **Messages très courts** (<5 caractères) → +15 points
+2. **Répétition excessive** (même message 2-3 fois) → +25 points/répétition
+3. **Gibberish** (texte aléatoire sans sens) → +30 points
+4. **Spam d'emojis** (>5 emojis) → +20 points
+5. **Phrases de troll** (test, lol, mdr, blabla, etc.) → +25 points
+6. **Rapid fire** (>10 messages/minute) → +20 points
+7. **Contenu absurde** (que des chiffres, même caractère répété, etc.) → +35 points
+8. **Contradictions rapides** (dit oui puis non rapidement) → +15 points
+
+**Score max** : 100
+
+### Comportement de l'agent selon le score
+
+#### 🟢 Score 0-30 : Normal
+```
+Agent professionnel et efficace, mode standard
+```
+
+#### 🟡 Score 30-50 : Suspect
+```
+Agent légèrement plus direct :
+"Ok, on se concentre. Tu veux acheter quelque chose ou pas ?"
+```
+
+#### 🟠 Score 50-70 : Troll probable
+```
+Agent ironique et direct :
+"Bon, j'ai pas toute la journée. Si c'est pour tester l'IA, 
+c'est réussi. Si c'est pour acheter, on y va ?"
+```
+
+#### 🔴 Score 70+ : Troll confirmé
+```
+Agent ironique max avec sarcasme intelligent :
+"Écoute, je suis une IA mais j'ai quand même ma dignité. 
+Soit tu me dis ce que tu veux acheter, soit on arrête 
+de se tourner autour."
+```
+
+### Rédemption
+
+Le score **décroît de -5 points** si l'utilisateur envoie un message normal (score <20), permettant la rédemption.
+
+### Debug
+
+En mode développement, le troll score s'affiche dans le header du chat avec un emoji 🎭.
+
+### Exemples
+
+**Scénario 1 : Troll classique**
+```
+User: "test"           → Score: 25 (short + troll phrase)
+User: "test"           → Score: 50 (repetition)
+User: "lol"            → Score: 75 (more trolling)
+AI: "Écoute, je suis une IA mais j'ai quand même ma dignité..."
+```
+
+**Scénario 2 : Utilisateur qui se ressaisit**
+```
+User: "haha"           → Score: 25
+User: "ok désolé"      → Score: 20 (-5 decay)
+User: "Je veux un produit" → Score: 15 (-5 decay)
+AI: (redevient normal)
+```
 
 ## Séquence de Greeting
 
