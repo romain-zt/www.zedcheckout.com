@@ -38,18 +38,34 @@ function buildPerplexityQuery(request: ResearchRequest): string {
   
   switch (type) {
     case 'website_check':
-      return `Analyze the website ${userWebsite || 'mentioned'}. 
-I need to know:
-1. Does it exist and is it accessible?
-2. What e-commerce platform is it using (Shopify, WooCommerce, PrestaShop, custom, etc.)?
-3. What theme or template is visible?
-4. Is it a professional setup or basic?
-5. Any technical details visible (apps, integrations)?
+      return `Analyze the website ${userWebsite || 'mentioned'} with a customer-first approach. 
+
+CRITICAL: Focus on understanding the ACTUAL business, not just surface appearances.
+
+Priority 1 - BUSINESS UNDERSTANDING:
+1. What does this business ACTUALLY do? (Be specific - don't guess based on design)
+   - What products/services do they sell?
+   - What industry are they in? (e.g., beauty/wellness, fashion, home goods, services)
+   - Are they B2C, B2B, or both?
+2. Who are their target customers?
+   - Demographics, needs, pain points
+3. What is their unique value proposition?
+   - What makes them different?
+   - What problem do they solve for customers?
+4. What are their main product/service categories?
+
+Priority 2 - E-COMMERCE SETUP:
+5. Does the website exist and is it accessible?
+6. What e-commerce platform is it using (Shopify, WooCommerce, PrestaShop, custom, etc.)?
+7. Is it a professional setup or basic?
+8. What's their current customer experience like? (navigation, checkout flow if visible)
 
 Context: ${context}
 Query: ${query}
 
-Please provide a concise analysis in JSON format with: platform, theme, exists, professional_setup, technical_stack.`;
+IMPORTANT: Read the actual content carefully. A beauty institute is NOT decoration. A wellness spa is NOT fashion. Be precise about what the business ACTUALLY offers.
+
+Provide a structured analysis focusing on customer needs first, technical details second.`;
 
     case 'platform_compatibility':
       return `Check if ZedCheckout (a conversational AI checkout solution) is compatible with ${query}.
@@ -130,7 +146,17 @@ async function callPerplexity(query: string): Promise<any> {
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful research assistant. Provide concise, factual, and well-structured answers. When analyzing websites or technical details, be specific and accurate. Format responses in a clear, structured way.'
+          content: `You are a customer-focused business analyst specializing in e-commerce. 
+
+Your priority is understanding:
+1. What the business ACTUALLY does (not assumptions based on design)
+2. Who their customers are and what they need
+3. The business model and value proposition
+4. Then the technical implementation
+
+Be precise: A beauty institute is NOT decoration. A wellness spa is NOT fashion accessories. Read the actual content, products, and services offered.
+
+Provide concise, factual, well-structured answers that prioritize customer understanding over technical details.`
         },
         {
           role: 'user',
