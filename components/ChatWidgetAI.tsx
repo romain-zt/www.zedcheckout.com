@@ -12,6 +12,7 @@ interface Message {
 }
 
 interface LeadData {
+  website?: string;
   firstName?: string;
   email?: string;
   phone?: string;
@@ -20,6 +21,7 @@ interface LeadData {
   monthlyRevenue?: string;
   cartValue?: string;
   challenge?: string;
+  emotionalState?: string;
 }
 
 interface ConversationMessage {
@@ -30,36 +32,36 @@ interface ConversationMessage {
 // Section-specific placeholder messages (FR + EN) - DEPRECATED, kept for backward compat
 const SECTION_PLACEHOLDERS: Record<string, { fr: string; en: string }> = {
   'zed-hero': {
-    fr: "Comment ZedCheckout peut transformer votre checkout ?",
-    en: "How can ZedCheckout transform your checkout?"
+    fr: "https://votre-site.com 🌐",
+    en: "https://your-website.com 🌐"
   },
   'zed-problem': {
-    fr: "Votre checkout vous fait perdre des clients ?",
-    en: "Is your checkout losing customers?"
+    fr: "Quelle est l'URL de votre site ?",
+    en: "What's your website URL?"
   },
   'zed-solution': {
-    fr: "Comment fonctionne l'IA conversationnelle ?",
-    en: "How does conversational AI work?"
+    fr: "Partagez l'URL de votre boutique...",
+    en: "Share your store URL..."
   },
   'zed-filter': {
-    fr: "ZedCheckout est-il fait pour vous ?",
-    en: "Is ZedCheckout right for you?"
+    fr: "Votre site web ? (ex: https://...)",
+    en: "Your website? (e.g., https://...)"
   },
   'zed-process': {
-    fr: "Comment se passe la mise en place ?",
-    en: "How does the implementation work?"
+    fr: "URL de votre site pour commencer...",
+    en: "Your website URL to get started..."
   },
   'zed-faq': {
-    fr: "Une question sur ZedCheckout ?",
-    en: "Any questions about ZedCheckout?"
+    fr: "https://mon-site.com",
+    en: "https://my-site.com"
   },
   'zed-cta': {
-    fr: "Prêt à augmenter vos conversions ?",
-    en: "Ready to boost your conversions?"
+    fr: "Entrez l'URL de votre site 🚀",
+    en: "Enter your website URL 🚀"
   },
   'default': {
-    fr: "Demandez ce que vous voulez...",
-    en: "Ask anything you want..."
+    fr: "https://votre-site.com",
+    en: "https://your-site.com"
   },
 };
 
@@ -140,6 +142,34 @@ const trackEvent = (eventName: string, properties?: any) => {
   if (typeof window !== 'undefined' && (window as any).gtag) {
     (window as any).gtag('event', eventName, properties);
   }
+};
+
+// URL detection and extraction helper
+const detectAndExtractURL = (text: string): { isURL: boolean; url?: string; domain?: string } => {
+  // Match URLs with or without protocol
+  const urlRegex = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/[^\s]*)?)/gi;
+  const match = text.match(urlRegex);
+  
+  if (match && match.length > 0) {
+    let url = match[0];
+    // Add protocol if missing
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+    
+    try {
+      const urlObj = new URL(url);
+      return {
+        isURL: true,
+        url: url,
+        domain: urlObj.hostname.replace('www.', '')
+      };
+    } catch (e) {
+      return { isURL: false };
+    }
+  }
+  
+  return { isURL: false };
 };
 
 const STORAGE_KEY = 'zed_chat_state';
@@ -553,11 +583,16 @@ export default function ChatWidgetAI() {
     try {
       setError(null);
       
+      // Detect if message contains URL
+      const urlDetection = detectAndExtractURL(userMessage);
+      
       trackEvent('message_sent', { 
         messageLength: userMessage.length,
         isRetry,
         conversationLength: conversationHistory.length,
-        currentSection 
+        currentSection,
+        containsURL: urlDetection.isURL,
+        domain: urlDetection.domain
       });
       
       // Add section context to the first message
@@ -617,9 +652,19 @@ export default function ChatWidgetAI() {
               fieldsCollected,
               newFields: Object.keys(newData),
               confidence: aiResponse.confidence,
+              emotionalState: aiResponse.emotionalState,
+              hasWebsite: !!newData.website,
             });
             
             return merged;
+          });
+        }
+        
+        // Track emotional state for analytics
+        if (aiResponse.emotionalState) {
+          trackEvent('emotional_state_detected', {
+            state: aiResponse.emotionalState,
+            messageNumber: conversationHistory.length / 2,
           });
         }
         
@@ -686,8 +731,9 @@ export default function ChatWidgetAI() {
       totalMessages: messages.length,
     });
     
-    // Prepare summary message
+    // Prepare summary message with neuroscience techniques
     const summaryParts = [];
+    if (leadData.website) summaryParts.push(`🌐 ${leadData.website}`);
     if (leadData.firstName) summaryParts.push(`👤 ${leadData.firstName}`);
     if (leadData.email) summaryParts.push(`📧 ${leadData.email}`);
     if (leadData.phone) summaryParts.push(`📱 ${leadData.phone}`);
@@ -696,9 +742,10 @@ export default function ChatWidgetAI() {
     if (leadData.monthlyRevenue) summaryParts.push(`💰 ${leadData.monthlyRevenue}/mois`);
     if (leadData.cartValue) summaryParts.push(`🛍️ Panier moyen: ${leadData.cartValue}`);
     
+    // Use future pacing and presupposition
     const summaryMessage = summaryParts.length > 0
-      ? `Parfait ${leadData.firstName || ''} ! 🎉\n\nVoici ce que je retiens :\n\n${summaryParts.join('\n')}\n\nUn membre de notre équipe va analyser ton profil et te contacter rapidement${leadData.email ? ` à ${leadData.email}` : ''}.\n\nÀ très vite ! 👋`
-      : `Parfait ! 🎉\n\nMerci pour cet échange. Notre équipe va revenir vers toi rapidement.\n\nÀ très vite ! 👋`;
+      ? `Parfait ${leadData.firstName || ''} ! 🎉\n\nVoici ce que je retiens :\n\n${summaryParts.join('\n')}\n\nNotre équipe va analyser ${leadData.website ? 'ton site' : 'ton profil'} et te recontacter${leadData.email ? ` à ${leadData.email}` : ''} avec un plan personnalisé.\n\nQuand tu verras les résultats dans 3 mois, tu te rappelleras de cette conversation. 😉\n\nÀ très vite ! 👋`
+      : `Parfait ! 🎉\n\nMerci pour cet échange. Notre équipe va analyser ton profil et revenir vers toi avec un plan d'action.\n\nÀ très vite ! 👋`;
     
     addBotMessage(summaryMessage);
     
