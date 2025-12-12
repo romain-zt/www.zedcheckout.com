@@ -836,6 +836,7 @@ Tu dois TOUJOURS répondre en JSON pur (pas de markdown) :
 **NE PROPOSE DES SUGGESTIONS QUE POUR LES QUESTIONS À OPTIONS :**
 - Questions avec choix multiples (ex: "Quel est ton CA mensuel ? A) 0-10k B) 10-50k C) 50k+")
 - Questions oui/non (ex: "Tu as déjà essayé d'autres solutions ?")
+  → Pour les questions oui/non, propose UNIQUEMENT : ["Oui", "Non"] ou ["Oui", "Non", "Peut-être"]
 - Questions avec range (ex: "Quel pourcentage d'abandon ? A) 0-30% B) 30-60% C) 60%+")
 
 **NE PROPOSE JAMAIS de suggestions pour :**
@@ -844,6 +845,7 @@ Tu dois TOUJOURS répondre en JSON pur (pas de markdown) :
 - Demande d'email ou prénom
 - Toutes les questions qui nécessitent une réponse personnalisée
 
+**RÈGLE CRITIQUE : Pour une question oui/non, les suggestions DOIVENT être ["Oui", "Non"] et rien d'autre.**
 **RÈGLE D'OR : Moins de suggestions = plus naturel. N'en propose que quand vraiment nécessaire.**
 
 **confidence** : Ton niveau de confiance dans l'extraction des données
@@ -918,8 +920,8 @@ async function handleLegacyRequest(
     try {
       response = await anthropic.messages.create({
         model: 'claude-3-5-haiku-20241022',
-        max_tokens: 300,
-        temperature: 0.7,
+        max_tokens: 400,
+        temperature: 0.5,
         system: LEGACY_SYSTEM_PROMPT + contextMessage,
         messages: messages.map(msg => ({
           role: msg.role,
@@ -950,11 +952,22 @@ async function handleLegacyRequest(
   // Parse JSON response
   let aiResponse: any;
   try {
-    const jsonMatch = textContent.text.match(/\{[\s\S]*\}/);
+    let jsonText = textContent.text.trim();
+    
+    // Remove markdown code blocks if present
+    jsonText = jsonText.replace(/^```json?\s*/i, '').replace(/\s*```$/i, '');
+    
+    // Try to extract JSON from the text
+    const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       aiResponse = JSON.parse(jsonMatch[0]);
+      
+      // Validate that we got a proper response object
+      if (!aiResponse.message || typeof aiResponse.message !== 'string') {
+        throw new Error('Invalid JSON structure: missing or invalid message field');
+      }
     } else {
-      // Fallback
+      // Fallback: treat entire text as message
       aiResponse = {
         message: textContent.text,
         extractedData: {},
@@ -963,6 +976,9 @@ async function handleLegacyRequest(
     }
   } catch (parseError) {
     console.error('Failed to parse Claude JSON:', parseError);
+    console.error('Raw text:', textContent.text);
+    
+    // Fallback: use raw text as message
     aiResponse = {
       message: textContent.text,
       extractedData: {},
