@@ -30,15 +30,6 @@
     height: auto;
   }
 
-  /* Touch targets minimum size (Apple HIG + Material Design) */
-  button,
-  a[href],
-  input[type="submit"],
-  input[type="button"],
-  [role="button"] {
-    min-height: 44px;
-  }
-
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 10px;
