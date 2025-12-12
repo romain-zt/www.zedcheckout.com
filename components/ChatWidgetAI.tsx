@@ -15,6 +15,7 @@ interface Message {
   sender: 'bot' | 'user';
   timestamp: Date;
   suggestedReplies?: string[];
+  status?: 'sending' | 'sent' | 'delivered';
 }
 
 interface LeadData {
@@ -200,6 +201,8 @@ export default function ChatWidgetAI() {
   const [hasUnreadToast, setHasUnreadToast] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [toastShownTime, setToastShownTime] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -359,6 +362,12 @@ export default function ChatWidgetAI() {
       } else {
         setLocale('fr');
       }
+      
+      // Detect mobile
+      const checkMobile = () => setIsMobile(window.innerWidth < 768);
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
     }
   }, []);
 
@@ -574,15 +583,24 @@ export default function ChatWidgetAI() {
   };
 
   const addUserMessage = (text: string) => {
+    const messageId = Date.now().toString();
     setMessages(prev => [
       ...prev,
       {
-        id: Date.now().toString(),
+        id: messageId,
         text,
         sender: 'user',
         timestamp: new Date(),
+        status: 'sending',
       },
     ]);
+    
+    // Update to 'sent' after 200ms (simulating API receive)
+    setTimeout(() => {
+      setMessages(prev => prev.map(m => 
+        m.id === messageId ? { ...m, status: 'sent' as const } : m
+      ));
+    }, 200);
   };
 
   const callAI = async (userMessage: string, isRetry: boolean = false) => {
@@ -635,6 +653,17 @@ export default function ChatWidgetAI() {
         
         // Reset retry count on success
         setRetryCount(0);
+        
+        // Update last user message to 'delivered' (AI responded)
+        setMessages(prev => {
+          const lastUserIndex = prev.map(m => m.sender).lastIndexOf('user');
+          if (lastUserIndex !== -1) {
+            const updated = [...prev];
+            updated[lastUserIndex] = { ...updated[lastUserIndex], status: 'delivered' as const };
+            return updated;
+          }
+          return prev;
+        });
         
         // Add AI message to UI with suggested replies
         addBotMessage(aiResponse.message, aiResponse.suggestedReplies);
@@ -887,6 +916,46 @@ export default function ChatWidgetAI() {
     });
   };
 
+  // Get WhatsApp message based on conversation context
+  const getWhatsAppMessage = () => {
+    const baseMsg = "Bonjour ZedCheckout 👋\n\n";
+    
+    if (leadData.website) {
+      return baseMsg + `Je souhaite continuer notre conversation.\n\n` +
+        `Mon site : ${leadData.website}\n` +
+        `${leadData.firstName ? `Prénom : ${leadData.firstName}\n` : ''}` +
+        `${leadData.email ? `Email : ${leadData.email}\n` : ''}` +
+        `${leadData.challenge ? `Défi : ${leadData.challenge}\n` : ''}`;
+    }
+    
+    if (leadData.email) {
+      return baseMsg + `Je continue notre conversation (${leadData.email})`;
+    }
+    
+    return baseMsg + "Je souhaite être mis en relation avec votre équipe.";
+  };
+
+  // Get contextual CTA text based on conversation progress
+  const getCTAText = () => {
+    const hasWebsite = !!leadData.website;
+    const hasEmail = !!leadData.email;
+    const hasChallenge = !!leadData.challenge;
+    
+    if (isComplete && hasEmail && hasWebsite) {
+      return "Continuer l'échange sur WhatsApp ✅";
+    }
+    
+    if (hasWebsite && hasChallenge) {
+      return "Envoyer ma demande et recevoir mon audit 📊";
+    }
+    
+    if (hasWebsite) {
+      return "Finaliser ma configuration ⚙️";
+    }
+    
+    return "Analyser mon cas sur WhatsApp 🔍";
+  };
+
   return (
     <>
       {/* Floating Write Icon - Closed State */}
@@ -1028,19 +1097,36 @@ export default function ChatWidgetAI() {
                   </svg>
                 </button>
                 
-                <div className="relative flex-shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                    <svg className="w-6 h-6 text-[#075E54]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
+                <button
+                  onClick={() => {
+                    if (isMobile) {
+                      // Mobile: Open WhatsApp directly
+                      const phone = "33780978892";
+                      const message = getWhatsAppMessage();
+                      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+                      trackEvent('header_click_mobile_whatsapp');
+                    } else {
+                      // Desktop: Show QR modal
+                      setShowQRModal(true);
+                      trackEvent('header_click_desktop_qr');
+                    }
+                  }}
+                  className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  <div className="relative flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                      <svg className="w-6 h-6 text-[#075E54]" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                    </div>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#25D366] rounded-full border-2 border-[#075E54]" />
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#25D366] rounded-full border-2 border-[#075E54]" />
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="text-white font-medium text-base">ZedCheckout</div>
-                  <div className="text-white/80 text-xs">en ligne</div>
-                </div>
+                  
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="text-white font-medium text-base">ZedCheckout</div>
+                    <div className="text-white/80 text-xs">en ligne · {isMobile ? 'Toucher pour continuer' : 'Cliquer pour QR'}</div>
+                  </div>
+                </button>
                 
                 <div className="flex items-center gap-4">
                   {process.env.NODE_ENV === 'development' && messages.length > 0 && (
@@ -1098,8 +1184,30 @@ export default function ChatWidgetAI() {
                         }`}
                       >
                         <div className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{message.text}</div>
-                        <div className={`text-[11px] text-gray-500 mt-1 text-right`}>
-                          {formatTime(message.timestamp)}
+                        <div className={`text-[11px] mt-1 flex items-center justify-end gap-1 ${
+                          message.sender === 'user' ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                          <span>{formatTime(message.timestamp)}</span>
+                          {message.sender === 'user' && message.status && (
+                            <span className="flex items-center">
+                              {message.status === 'sending' && (
+                                <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+                                </svg>
+                              )}
+                              {message.status === 'sent' && (
+                                <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                              {message.status === 'delivered' && (
+                                <svg className="w-4 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13l4 4L23 7" />
+                                </svg>
+                              )}
+                            </span>
+                          )}
                         </div>
                       </div>
                       
@@ -1233,22 +1341,16 @@ export default function ChatWidgetAI() {
                     {/* Mobile: WhatsApp Button */}
                     <div className="md:hidden">
                       <a
-                        href={`https://wa.me/33780978892?text=${encodeURIComponent(
-                          `Salut ! Je viens du site ZedCheckout.\n\n` +
-                          `${leadData.website ? `Mon site : ${leadData.website}\n` : ''}` +
-                          `${leadData.firstName ? `Prénom : ${leadData.firstName}\n` : ''}` +
-                          `${leadData.email ? `Email : ${leadData.email}\n` : ''}` +
-                          `${leadData.challenge ? `Défi : ${leadData.challenge}\n` : ''}` +
-                          `\nJ'aimerais en savoir plus sur ZedCheckout.`
-                        )}`}
+                        href={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => trackEvent('completion_whatsapp_mobile', { hasWebsite: !!leadData.website })}
                         className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-full font-medium transition-colors shadow-md"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                         </svg>
-                        Continuer sur WhatsApp
+                        {getCTAText()}
                       </a>
                     </div>
                     
@@ -1257,39 +1359,106 @@ export default function ChatWidgetAI() {
                       <div className="text-xs text-gray-500 mb-3">Scanne avec ton téléphone</div>
                       <div className="inline-block p-4 bg-white border-2 border-gray-200 rounded-lg">
                         <QRCodeSVG
-                          value={`https://wa.me/33780978892?text=${encodeURIComponent(
-                            `Salut ! Je viens du site ZedCheckout.\n\n` +
-                            `${leadData.website ? `Mon site : ${leadData.website}\n` : ''}` +
-                            `${leadData.firstName ? `Prénom : ${leadData.firstName}\n` : ''}` +
-                            `${leadData.email ? `Email : ${leadData.email}\n` : ''}` +
-                            `${leadData.challenge ? `Défi : ${leadData.challenge}\n` : ''}` +
-                            `\nJ'aimerais en savoir plus sur ZedCheckout.`
-                          )}`}
+                          value={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
                           size={192}
                           level="M"
                           includeMargin={false}
                         />
                       </div>
-                      <a
-                        href={`https://wa.me/33780978892?text=${encodeURIComponent(
-                          `Salut ! Je viens du site ZedCheckout.\n\n` +
-                          `${leadData.website ? `Mon site : ${leadData.website}\n` : ''}` +
-                          `${leadData.firstName ? `Prénom : ${leadData.firstName}\n` : ''}` +
-                          `${leadData.email ? `Email : ${leadData.email}\n` : ''}` +
-                          `${leadData.challenge ? `Défi : ${leadData.challenge}\n` : ''}` +
-                          `\nJ'aimerais en savoir plus sur ZedCheckout.`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block mt-3 text-sm text-[#25D366] hover:text-[#20BA5A] font-medium transition-colors"
-                      >
-                        Ou ouvrir WhatsApp Web →
-                      </a>
+                      <div className="mt-4 space-y-2">
+                        <a
+                          href={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => trackEvent('completion_whatsapp_desktop', { hasWebsite: !!leadData.website })}
+                          className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#25D366] hover:text-[#20BA5A] font-medium transition-colors"
+                        >
+                          {getCTAText()} →
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* QR Modal for Desktop Header Click */}
+      <AnimatePresence>
+        {showQRModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4"
+            onClick={() => setShowQRModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Continuer sur WhatsApp</h3>
+                <button
+                  onClick={() => setShowQRModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Fermer"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="flex flex-col items-center gap-4">
+                <div className="p-4 bg-gray-50 rounded-xl">
+                  <QRCodeSVG
+                    value={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                    size={220}
+                    level="H"
+                    includeMargin={false}
+                  />
+                </div>
+                
+                <p className="text-sm text-gray-600 text-center">
+                  Scanne ce code avec ton téléphone pour continuer la conversation sur WhatsApp
+                </p>
+                
+                <div className="flex flex-col gap-2 w-full">
+                  <a
+                    href={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      trackEvent('qr_modal_whatsapp_web');
+                      setShowQRModal(false);
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20BA5A] text-white rounded-lg font-medium transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    Ouvrir WhatsApp Web
+                  </a>
+                  
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`);
+                      trackEvent('qr_modal_copy_link');
+                      // Could add a toast here
+                    }}
+                    className="w-full px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors text-sm"
+                  >
+                    Copier le lien
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
