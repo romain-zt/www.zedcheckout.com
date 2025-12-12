@@ -4,6 +4,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
+const DELAY_OPTIONS = [
+  300,600,800, 900,1200
+]
+
 const QRCodeSVG = dynamic(
   () => import('qrcode.react').then((mod) => mod.QRCodeSVG),
   { ssr: false }
@@ -35,10 +39,6 @@ interface ConversationMessage {
   role: 'user' | 'assistant';
   content: string;
 }
-
-const DELAY_OPTIONS = [
-  400,800,1000,1400
-]
 
 // Section-specific placeholder messages (FR + EN) - DEPRECATED, kept for backward compat
 const SECTION_PLACEHOLDERS: Record<string, { fr: string; en: string }> = {
@@ -555,34 +555,80 @@ export default function ChatWidgetAI() {
   }, [hasGreeted, isOpen, showToastNotification]);
 
   const addBotMessage = (text: string, suggestedReplies?: string[]) => {
-    setError(null); // Clear any previous errors
+    setError(null);
     
-    // More natural typing delay: faster for short messages, slower for long ones
-    // Average reading speed: ~200 words per minute = ~3.3 words per second
-    const wordCount = text.split(/\s+/).length;
-    const baseDelay = Math.min(wordCount * 200, 2500); // 200ms per word, max 2.5s
-    const variance = Math.random() * 300; // Add 0-300ms randomness for naturalness
-    const typingDelay = baseDelay + variance;
-    
-    // Clear any existing typing timeout
+    // Clear any existing timeouts
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
+    simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
+    simulationTimeouts.current = [];
+
+    // Calculate total typing time based on message length
+    const wordCount = text.split(/\s+/).length;
+    const baseDelay = Math.min(wordCount * 400, 2500); // 200ms per word, max 2.5s
+    const variance = Math.random() * 500; // up to 300ms random
+    const totalTypingTime = baseDelay + variance;
+
+    // Create hesitation pattern: typing pauses to simulate human-like thinking
+    const hesitations = Math.floor(Math.random() * 3) + 1; // 1-3 hesitations
     
-    typingTimeoutRef.current = setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          text,
-          sender: 'bot',
-          timestamp: new Date(),
-          suggestedReplies,
-        },
-      ]);
-      setIsTyping(false);
-      typingTimeoutRef.current = null;
-    }, typingDelay);
+    interface TypingPhase {
+      isTyping: boolean;
+      duration: number;
+    }
+    
+    const sequence: TypingPhase[] = [];
+    let remainingTime = totalTypingTime;
+
+    // Build alternating pause/typing sequence
+    for (let i = 0; i < hesitations; i++) {
+      const pauseDuration = 150 + Math.random() * 120; // 150-270ms pause
+      const typingDuration = (totalTypingTime / (hesitations + 1)) + Math.random() * 140;
+
+      if (remainingTime < pauseDuration + typingDuration) break;
+
+      sequence.push({ isTyping: false, duration: pauseDuration });
+      sequence.push({ isTyping: true, duration: typingDuration });
+
+      remainingTime -= (pauseDuration + typingDuration);
+    }
+    
+    // Final pause before last typing burst
+    sequence.push({ isTyping: false, duration: 120 + Math.random() * 90 });
+    // Final typing phase with remaining time
+    const finalTypingDuration = Math.max(200, remainingTime);
+    sequence.push({ isTyping: true, duration: finalTypingDuration });
+
+    // Execute the typing sequence
+    let cumulativeDelay = 0;
+
+    sequence.forEach((phase, index) => {
+      const timeout = setTimeout(() => {
+        setIsTyping(phase.isTyping);
+
+        // On the last phase, show the message after the typing duration
+        if (index === sequence.length - 1) {
+          typingTimeoutRef.current = setTimeout(() => {
+            setMessages(prev => [
+              ...prev,
+              {
+                id: Date.now().toString(),
+                text,
+                sender: 'bot',
+                timestamp: new Date(),
+                suggestedReplies,
+              },
+            ]);
+            setIsTyping(false);
+            typingTimeoutRef.current = null;
+          }, phase.duration);
+        }
+      }, cumulativeDelay);
+      
+      simulationTimeouts.current.push(timeout);
+      cumulativeDelay += phase.duration;
+    });
   };
 
   const addUserMessage = (text: string) => {
@@ -639,10 +685,8 @@ export default function ChatWidgetAI() {
             ));
 
             setTimeout(() => {
-              setIsTyping(true);
+              setIsTyping(false);
             }, DELAY_OPTIONS[Math.floor(Math.random() * DELAY_OPTIONS.length)]);
-
-
           }, DELAY_OPTIONS[Math.floor(Math.random() * DELAY_OPTIONS.length)]);
         }, DELAY_OPTIONS[Math.floor(Math.random() * DELAY_OPTIONS.length)]);
       }
