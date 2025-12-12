@@ -15,7 +15,7 @@ interface Message {
   sender: 'bot' | 'user';
   timestamp: Date;
   suggestedReplies?: string[];
-  status?: 'sending' | 'sent' | 'delivered';
+  status?: 'sending' | 'sent' | 'delivered' | 'read';
 }
 
 interface LeadData {
@@ -35,6 +35,10 @@ interface ConversationMessage {
   role: 'user' | 'assistant';
   content: string;
 }
+
+const DELAY_OPTIONS = [
+  400,800,1000,1400
+]
 
 // Section-specific placeholder messages (FR + EN) - DEPRECATED, kept for backward compat
 const SECTION_PLACEHOLDERS: Record<string, { fr: string; en: string }> = {
@@ -551,7 +555,6 @@ export default function ChatWidgetAI() {
   }, [hasGreeted, isOpen, showToastNotification]);
 
   const addBotMessage = (text: string, suggestedReplies?: string[]) => {
-    setIsTyping(true);
     setError(null); // Clear any previous errors
     
     // More natural typing delay: faster for short messages, slower for long ones
@@ -595,15 +598,10 @@ export default function ChatWidgetAI() {
       },
     ]);
     
-    // Update to 'sent' after 200ms (simulating API receive)
-    setTimeout(() => {
-      setMessages(prev => prev.map(m => 
-        m.id === messageId ? { ...m, status: 'sent' as const } : m
-      ));
-    }, 200);
+    return messageId;
   };
 
-  const callAI = async (userMessage: string, isRetry: boolean = false) => {
+  const callAI = async (userMessage: string, isRetry: boolean = false, messageId?: string) => {
     try {
       setError(null);
       
@@ -621,6 +619,33 @@ export default function ChatWidgetAI() {
       
       // Add section context to the first message
       const sectionContext = SECTION_DESCRIPTIONS[currentSection]?.[locale] || SECTION_DESCRIPTIONS.default[locale];
+      
+      // Step 1→2: sending → sent (when API call starts)
+      if (messageId) {
+        setMessages(prev => prev.map(m => 
+          m.id === messageId ? { ...m, status: 'sent' as const } : m
+        ));
+        
+        // Step 2→3: sent → delivered (after 300ms)
+        setTimeout(() => {
+          setMessages(prev => prev.map(m => 
+            m.id === messageId ? { ...m, status: 'delivered' as const } : m
+          ));
+          
+          // Step 3→4: delivered → read (after another 300ms)
+          setTimeout(() => {
+            setMessages(prev => prev.map(m => 
+              m.id === messageId ? { ...m, status: 'read' as const } : m
+            ));
+
+            setTimeout(() => {
+              setIsTyping(true);
+            }, DELAY_OPTIONS[Math.floor(Math.random() * DELAY_OPTIONS.length)]);
+
+
+          }, DELAY_OPTIONS[Math.floor(Math.random() * DELAY_OPTIONS.length)]);
+        }, DELAY_OPTIONS[Math.floor(Math.random() * DELAY_OPTIONS.length)]);
+      }
       
       const response = await fetch('/api/chat-ai', {
         method: 'POST',
@@ -654,18 +679,8 @@ export default function ChatWidgetAI() {
         // Reset retry count on success
         setRetryCount(0);
         
-        // Update last user message to 'delivered' (AI responded)
-        setMessages(prev => {
-          const lastUserIndex = prev.map(m => m.sender).lastIndexOf('user');
-          if (lastUserIndex !== -1) {
-            const updated = [...prev];
-            updated[lastUserIndex] = { ...updated[lastUserIndex], status: 'delivered' as const };
-            return updated;
-          }
-          return prev;
-        });
-        
-        // Add AI message to UI with suggested replies
+        // Now show typing indicator, then AI message
+        // addBotMessage already handles typing with setIsTyping(true)
         addBotMessage(aiResponse.message, aiResponse.suggestedReplies);
         
         // Update conversation history
@@ -740,7 +755,7 @@ export default function ChatWidgetAI() {
         );
         
         setTimeout(() => {
-          callAI(userMessage, true);
+          callAI(userMessage, true, messageId);
         }, 2000);
       } else {
         // Final fallback after retries
@@ -853,15 +868,15 @@ export default function ChatWidgetAI() {
       // Retry last user message
       const lastUserMessage = messages.filter(m => m.sender === 'user').pop();
       if (lastUserMessage) {
-        callAI(lastUserMessage.text, false);
+        callAI(lastUserMessage.text, false, lastUserMessage.id);
         trackEvent('manual_retry');
       }
       return;
     }
     
-    addUserMessage(reply);
+    const messageId = addUserMessage(reply);
     trackEvent('quick_reply_clicked', { reply });
-    callAI(reply);
+    callAI(reply, false, messageId);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -871,11 +886,11 @@ export default function ChatWidgetAI() {
 
     const userInput = inputValue.trim();
     
-    addUserMessage(userInput);
+    const messageId = addUserMessage(userInput);
     setInputValue('');
 
     // Call AI to process the message
-    await callAI(userInput);
+    await callAI(userInput, false, messageId);
   };
 
   const handleToastClick = () => {
@@ -1191,19 +1206,23 @@ export default function ChatWidgetAI() {
                           {message.sender === 'user' && message.status && (
                             <span className="flex items-center">
                               {message.status === 'sending' && (
-                                <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <circle cx="12" cy="12" r="10" strokeWidth="2"/>
-                                </svg>
+                                <span className="text-gray-400">⏳</span>
                               )}
                               {message.status === 'sent' && (
-                                <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                                 </svg>
                               )}
                               {message.status === 'delivered' && (
-                                <svg className="w-4 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13l4 4L23 7" />
+                                <svg className="w-5 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 13l4 4L25 7" />
+                                </svg>
+                              )}
+                              {message.status === 'read' && (
+                                <svg className="w-5 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 13l4 4L25 7" />
                                 </svg>
                               )}
                             </span>
