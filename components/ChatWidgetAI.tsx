@@ -927,13 +927,13 @@ export default function ChatWidgetAI() {
         )}
       </AnimatePresence>
 
-      {/* Toast Notification (WhatsApp Style) */}
+      {/* Toast Notification (Native WhatsApp Style - Top Right) */}
       <AnimatePresence>
         {showToast && !isOpen && (
           <motion.div
-            initial={{ opacity: 0, x: 100, scale: 0.8 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 100, scale: 0.8 }}
+            initial={{ opacity: 0, y: -100, x: 50 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, y: -50, x: 50 }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={(e, info) => {
@@ -941,236 +941,234 @@ export default function ChatWidgetAI() {
                 handleToastDismiss('swipe');
               }
             }}
-            transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-            className={`fixed ${keyboardVisible ? 'bottom-4' : 'bottom-24 sm:bottom-28'} right-6 sm:right-8 z-40 max-w-[280px] sm:max-w-xs`}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="fixed top-4 right-4 z-50 max-w-[340px] sm:max-w-md"
             role="alert"
             aria-live="polite"
             aria-atomic="true"
           >
-            <div className="relative group cursor-pointer" onClick={handleToastClick}>
-              {/* Glow effect */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] rounded-2xl opacity-40 blur-lg" />
-              
-              {/* Toast content (WhatsApp style) */}
-              <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-4 border border-white/60">
-                {/* Header with avatar + close */}
-                <div className="flex items-start gap-3 mb-2">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                      </svg>
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-gray-900 mb-0.5">ZedCheckout Assistant</div>
-                    <div className="text-sm text-gray-800 leading-relaxed">{toastMessage}</div>
-                  </div>
-                  
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToastDismiss('button');
-                    }}
-                    className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
-                    aria-label="Fermer la notification"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+            <div 
+              className="relative cursor-pointer bg-white rounded-lg shadow-2xl overflow-hidden" 
+              onClick={handleToastClick}
+            >
+              {/* Native notification header bar */}
+              <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full bg-[#25D366]" />
+                  <span className="text-xs font-medium text-gray-600">ZedCheckout</span>
                 </div>
-                
-                {/* Reply indicator */}
-                <div className="flex items-center justify-end gap-1.5 mt-2 text-xs text-gray-500">
-                  <span>Répondre</span>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToastDismiss('button');
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Fermer"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
+                </button>
+              </div>
+              
+              {/* Notification content */}
+              <div className="flex items-start gap-3 p-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-[#25D366] flex items-center justify-center">
+                    <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                  </div>
                 </div>
                 
-                {/* WhatsApp-style tail */}
-                <div className="absolute -right-2 top-6 w-0 h-0 border-l-[12px] border-l-white/95 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent" />
+                <div className="flex-1 min-w-0 pt-1">
+                  <div className="text-sm font-medium text-gray-900 mb-1">ZedCheckout Assistant</div>
+                  <div className="text-sm text-gray-700 leading-relaxed">{toastMessage}</div>
+                  <div className="text-xs text-gray-400 mt-2">Maintenant · Toucher pour répondre</div>
+                </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Chat Window */}
+      {/* Chat Window (WhatsApp Style) */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, x: 100, y: 50 }}
-            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, x: 100, y: 50 }}
-            transition={{ 
-              type: 'spring', 
-              stiffness: 300, 
-              damping: 30 
-            }}
-            className="fixed bottom-4 left-0 right-0 z-50 px-4 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 md:inset-auto md:bottom-4 md:right-4 md:w-[420px] md:h-[600px] md:rounded-lg md:shadow-2xl overflow-hidden"
           >
-            {/* Glass container */}
-            <div className="relative">
-              {/* Glow background */}
-              <div className="absolute -inset-1 bg-gradient-to-br from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-3xl opacity-20 blur-xl" />
-              
-              {/* Main chat container */}
-              <div className="relative rounded-3xl backdrop-blur-2xl bg-white/90 border border-white/20 shadow-2xl overflow-hidden">
-                {/* Header */}
-                <div className="relative px-6 py-4 bg-gradient-to-r from-[#1E2A47] to-[#2D3E5F] border-b border-white/10">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="relative flex-shrink-0">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center">
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                          </svg>
-                        </div>
-                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-[#1E2A47]" />
-                      </div>
-                      <div>
-                        <div className="text-white font-semibold text-sm flex items-center gap-2">
-                          <span>ZedCheckout Assistant</span>
-                          <span className="px-2 py-0.5 text-[10px] bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] rounded-full">
-                            AI
-                          </span>
-                        </div>
-                        <div className="text-white/70 text-xs">En ligne</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {/* Reset button (dev mode only) */}
-                      {process.env.NODE_ENV === 'development' && messages.length > 0 && (
-                        <button
-                          onClick={resetConversation}
-                          className="text-white/50 hover:text-white transition-colors duration-200 p-1"
-                          aria-label="Réinitialiser la conversation"
-                          title="Réinitialiser (dev only)"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                          </svg>
-                        </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          setIsOpen(false);
-                          trackEvent('chat_closed', {
-                            messageCount: messages.length,
-                            hasLeadData: Object.keys(leadData).length > 0,
-                          });
-                        }}
-                        className="text-white/70 hover:text-white transition-all duration-200 hover:rotate-90"
-                        aria-label="Fermer le chat"
-                      >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
+            {/* WhatsApp-style container */}
+            <div className="relative h-full flex flex-col bg-[#ECE5DD]">
+              {/* Header - WhatsApp Green */}
+              <div className="relative px-4 py-3 bg-[#075E54] shadow-md flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    trackEvent('chat_closed', {
+                      messageCount: messages.length,
+                      hasLeadData: Object.keys(leadData).length > 0,
+                    });
+                  }}
+                  className="text-white md:hidden"
+                  aria-label="Retour"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                
+                <div className="relative flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                    <svg className="w-6 h-6 text-[#075E54]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
                   </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#25D366] rounded-full border-2 border-[#075E54]" />
                 </div>
-
-                {/* Messages */}
-                <div className="h-[400px] overflow-y-auto px-6 py-4 space-y-4 bg-gradient-to-b from-white/40 to-white/60">
-                  {messages.map((message, index) => (
-                    <motion.div
-                      key={message.id}
-                      initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.3, delay: index === messages.length - 1 ? 0 : 0 }}
-                      className={`flex flex-col ${message.sender === 'user' ? 'items-end' : 'items-start'}`}
+                
+                <div className="flex-1 min-w-0">
+                  <div className="text-white font-medium text-base">ZedCheckout</div>
+                  <div className="text-white/80 text-xs">en ligne</div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  {process.env.NODE_ENV === 'development' && messages.length > 0 && (
+                    <button
+                      onClick={resetConversation}
+                      className="text-white/70 hover:text-white transition-colors"
+                      aria-label="Reset"
+                      title="Reset (dev)"
                     >
-                      <div className={`max-w-[85%] sm:max-w-[80%]`}>
-                        <div
-                          className={`rounded-2xl px-4 py-3 shadow-lg whitespace-pre-wrap ${
-                            message.sender === 'user'
-                              ? 'bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white rounded-br-sm'
-                              : 'bg-white/80 backdrop-blur-sm text-gray-800 rounded-bl-sm border border-gray-100'
-                          }`}
-                        >
-                          <div className="text-sm leading-relaxed">{message.text}</div>
-                        </div>
-                        <div className={`text-xs text-gray-500 mt-1 px-2 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      trackEvent('chat_closed', {
+                        messageCount: messages.length,
+                        hasLeadData: Object.keys(leadData).length > 0,
+                      });
+                    }}
+                    className="text-white/80 hover:text-white transition-colors hidden md:block"
+                    aria-label="Fermer"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Messages - WhatsApp Background Pattern */}
+              <div 
+                className="flex-1 overflow-y-auto px-4 py-3 space-y-2"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d9d9d9' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                  backgroundColor: '#ECE5DD'
+                }}
+              >
+                {messages.map((message, index) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-[85%] sm:max-w-[75%]`}>
+                      <div
+                        className={`rounded-lg px-3 py-2 shadow-sm ${
+                          message.sender === 'user'
+                            ? 'bg-[#DCF8C6] text-gray-900 rounded-br-none'
+                            : 'bg-white text-gray-900 rounded-bl-none'
+                        }`}
+                      >
+                        <div className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{message.text}</div>
+                        <div className={`text-[11px] text-gray-500 mt-1 text-right`}>
                           {formatTime(message.timestamp)}
                         </div>
-                        
-                        {/* Quick reply buttons */}
-                        {message.sender === 'bot' && 
-                         message.suggestedReplies && 
-                         message.suggestedReplies.length > 0 && 
-                         index === messages.length - 1 && 
-                         !isTyping && 
-                         !isComplete && (
-                          <motion.div 
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className="flex flex-wrap gap-2 mt-3"
-                          >
-                            {message.suggestedReplies.map((reply, idx) => (
-                              <motion.button
-                                key={idx}
-                                onClick={() => handleQuickReply(reply)}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="px-4 py-2 bg-white/90 hover:bg-white border border-gray-200 hover:border-[#E88B7A] rounded-full text-sm text-gray-700 hover:text-[#E88B7A] transition-all duration-200 shadow-sm hover:shadow-md font-medium"
-                              >
-                                {reply}
-                              </motion.button>
-                            ))}
-                          </motion.div>
-                        )}
                       </div>
-                    </motion.div>
-                  ))}
+                      
+                      {/* Quick reply buttons */}
+                      {message.sender === 'bot' && 
+                       message.suggestedReplies && 
+                       message.suggestedReplies.length > 0 && 
+                       index === messages.length - 1 && 
+                       !isTyping && 
+                       !isComplete && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="flex flex-wrap gap-2 mt-2"
+                        >
+                          {message.suggestedReplies.map((reply, idx) => (
+                            <motion.button
+                              key={idx}
+                              onClick={() => handleQuickReply(reply)}
+                              whileTap={{ scale: 0.95 }}
+                              className="px-3 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 rounded-full text-[13px] text-gray-700 transition-colors shadow-sm"
+                            >
+                              {reply}
+                            </motion.button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
 
-                  {/* Typing indicator */}
-                  {isTyping && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex justify-start"
-                    >
-                      <div className="bg-white/80 backdrop-blur-sm rounded-2xl rounded-bl-sm px-5 py-3 shadow-lg border border-gray-100">
-                        <div className="flex gap-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                        </div>
+                {/* Typing indicator */}
+                {isTyping && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-start"
+                  >
+                    <div className="bg-white rounded-lg rounded-bl-none px-4 py-3 shadow-sm">
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
-                    </motion.div>
-                  )}
-                  
-                  {/* Error state */}
-                  {error && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex justify-center"
-                    >
-                      <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-2 text-sm text-red-600">
-                        ⚠️ {error}
-                      </div>
-                    </motion.div>
-                  )}
-                  
-                  <div ref={messagesEndRef} />
-                </div>
+                    </div>
+                  </motion.div>
+                )}
+                
+                {/* Error state */}
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex justify-center"
+                  >
+                    <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-600">
+                      ⚠️ {error}
+                    </div>
+                  </motion.div>
+                )}
+                
+                <div ref={messagesEndRef} />
+              </div>
 
-                {/* Input */}
-                {!isComplete && (
-                  <form onSubmit={handleSubmit} className="relative p-4 bg-white/60 backdrop-blur-sm border-t border-gray-100">
-                    <div className="relative">
+              {/* Input Bar */}
+              {!isComplete && (
+                <form onSubmit={handleSubmit} className="p-2 bg-[#F0F0F0]">
+                  <div className="flex items-end gap-2">
+                    <div className="flex-1 relative">
                       <input
                         ref={inputRef}
                         type="text"
                         value={inputValue}
                         onChange={(e) => {
-                          // Stop simulation if user types
                           if (isSimulating.current) {
                             isSimulating.current = false;
                             simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
@@ -1178,7 +1176,6 @@ export default function ChatWidgetAI() {
                           }
                           
                           setInputValue(e.target.value);
-                          // Cancel greeting if user starts typing
                           if (!hasGreeted && e.target.value.length > 0) {
                             userHasTyped.current = true;
                             if (greetingTimeoutRef.current) {
@@ -1188,39 +1185,47 @@ export default function ChatWidgetAI() {
                           }
                         }}
                         disabled={isTyping}
-                        placeholder="Tapez votre réponse..."
-                        className="w-full px-5 py-3 pr-12 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200 focus:border-[#E88B7A] focus:ring-2 focus:ring-[#E88B7A]/20 outline-none transition-all duration-300 text-gray-800 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                        placeholder="Message"
+                        className="w-full px-4 py-2.5 pr-10 rounded-full bg-white border-none outline-none text-[15px] text-gray-900 placeholder-gray-500 disabled:opacity-50"
                         autoComplete="off"
                       />
                       <button
-                        type="submit"
-                        disabled={!inputValue.trim() || isTyping}
-                        aria-label="Envoyer"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </button>
                     </div>
-                  </form>
-                )}
-
-                {/* Completion state */}
-                {isComplete && (
-                  <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-t border-green-100">
-                    <div className="text-center">
-                      <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
-                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div className="text-lg font-semibold text-gray-800 mb-1">Merci !</div>
-                      <div className="text-sm text-gray-600">Nous revenons vers vous très vite</div>
-                    </div>
+                    <button
+                      type="submit"
+                      disabled={!inputValue.trim() || isTyping}
+                      aria-label="Envoyer"
+                      className="flex-shrink-0 w-11 h-11 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:bg-[#20BA5A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                    </button>
                   </div>
-                )}
-              </div>
+                </form>
+              )}
+
+              {/* Completion state */}
+              {isComplete && (
+                <div className="p-6 bg-white border-t border-gray-200">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-[#25D366] flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div className="text-lg font-semibold text-gray-900 mb-1">Merci !</div>
+                    <div className="text-sm text-gray-600">Nous revenons vers vous très vite</div>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
