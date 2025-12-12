@@ -599,15 +599,23 @@ export default function ChatWidgetAI() {
     }
   }, [hasGreeted, isOpen, showToastNotification]);
 
-  // Periodic attention animation (every ~5 seconds)
+  // Periodic icon wobble animation (every 3-5 seconds)
   useEffect(() => {
     if (!isOpen) {
-      const intervalId = setInterval(() => {
+      const triggerAnimation = () => {
         setShouldAnimate(true);
-        setTimeout(() => setShouldAnimate(false), 1200); // Animation lasts 1200ms
-      }, 5000);
+        setTimeout(() => setShouldAnimate(false), 600); // Animation lasts 600ms
+        
+        // Schedule next animation in 3-5 seconds
+        const nextDelay = 3000 + Math.random() * 2000;
+        setTimeout(triggerAnimation, nextDelay);
+      };
+      
+      // Start first animation after initial 3-5 second delay
+      const initialDelay = 3000 + Math.random() * 2000;
+      const timeoutId = setTimeout(triggerAnimation, initialDelay);
 
-      return () => clearInterval(intervalId);
+      return () => clearTimeout(timeoutId);
     }
   }, [isOpen]);
 
@@ -1251,26 +1259,14 @@ Now provide a natural follow-up message to the user based on these research find
           <motion.button
             onClick={handleIconClick}
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={shouldAnimate ? { 
-              opacity: 1, 
-              scale: [1, 1.12, 1.08, 1.12, 1],
-              y: [0, -4, 0, -4, 0]
-            } : { 
-              opacity: 1, 
-              scale: 1,
-              y: 0
-            }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            transition={shouldAnimate ? {
-              duration: 1.2,
-              ease: "easeInOut",
-              times: [0, 0.25, 0.5, 0.75, 1]
-            } : { 
+            transition={{ 
               type: 'spring', 
               stiffness: 200, 
-              damping: 25
+              damping: 25 
             }}
             className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40 group"
             aria-label={hasUnreadToast ? "Ouvrir le chat (1 message non lu)" : "Ouvrir le chat"}
@@ -1282,9 +1278,25 @@ Now provide a natural follow-up message to the user based on these research find
             {/* Icon button */}
             <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center shadow-2xl">
               {/* Pencil/Write icon */}
-              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <motion.svg 
+                className="w-7 h-7 text-white" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                animate={shouldAnimate ? {
+                  x: [0, -3, 3, -3, 3, -2, 2, 0],
+                  rotate: [0, -5, 5, -5, 5, -3, 3, 0]
+                } : {
+                  x: 0,
+                  rotate: 0
+                }}
+                transition={{
+                  duration: 0.6,
+                  ease: "easeInOut"
+                }}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
+              </motion.svg>
               
               {/* Unread badge */}
               {hasUnreadToast && (
