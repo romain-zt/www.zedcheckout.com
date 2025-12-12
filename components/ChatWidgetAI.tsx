@@ -216,6 +216,8 @@ export default function ChatWidgetAI() {
   const simulationTimeouts = useRef<NodeJS.Timeout[]>([]);
   const isSimulating = useRef<boolean>(false);
   const slowResponseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const slowTypingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const shouldContinueSlowTyping = useRef<boolean>(false);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -271,6 +273,44 @@ export default function ChatWidgetAI() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Human-like typing simulation for slow responses (continuous loop)
+  const startSlowTypingSimulation = useCallback(() => {
+    shouldContinueSlowTyping.current = true;
+    
+    const runTypingCycle = () => {
+      if (!shouldContinueSlowTyping.current) return;
+      
+      // Phase 1: Pause (thinking)
+      setIsTyping(false);
+      const pauseDuration = 800 + Math.random() * 700; // 800-1500ms pause
+      
+      slowTypingIntervalRef.current = setTimeout(() => {
+        if (!shouldContinueSlowTyping.current) return;
+        
+        // Phase 2: Typing
+        setIsTyping(true);
+        const typingDuration = 1500 + Math.random() * 1500; // 1500-3000ms typing
+        
+        slowTypingIntervalRef.current = setTimeout(() => {
+          if (!shouldContinueSlowTyping.current) return;
+          
+          // Continue the cycle
+          runTypingCycle();
+        }, typingDuration);
+      }, pauseDuration);
+    };
+    
+    runTypingCycle();
+  }, []);
+
+  const stopSlowTypingSimulation = useCallback(() => {
+    shouldContinueSlowTyping.current = false;
+    if (slowTypingIntervalRef.current) {
+      clearTimeout(slowTypingIntervalRef.current);
+      slowTypingIntervalRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
@@ -320,13 +360,14 @@ export default function ChatWidgetAI() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
+        stopSlowTypingSimulation();
         trackEvent('chat_closed_keyboard');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, stopSlowTypingSimulation]);
 
   // Scroll detection for section-based placeholder updates
   useEffect(() => {
@@ -458,8 +499,10 @@ export default function ChatWidgetAI() {
       if (slowResponseTimeoutRef.current) {
         clearTimeout(slowResponseTimeoutRef.current);
       }
+      // Clean up slow typing simulation
+      stopSlowTypingSimulation();
     };
-  }, [simulateTyping]);
+  }, [simulateTyping, stopSlowTypingSimulation]);
 
   // Toast notification trigger (replaces old greeting logic)
   const showToastNotification = useCallback(async () => {
@@ -633,14 +676,14 @@ export default function ChatWidgetAI() {
     try {
       setError(null);
       
-      // Set typing indicator after 15s if no response
+      // Start human-like typing simulation after 5s if no response
       slowResponseTimeoutRef.current = setTimeout(() => {
-        setIsTyping(true);
+        startSlowTypingSimulation();
         trackEvent('slow_response_typing_shown', { 
           messageLength: userMessage.length,
           conversationLength: conversationHistory.length 
         });
-      }, 5_000);
+      }, 5000);
       
       // Detect if message contains URL
       const urlDetection = detectAndExtractURL(userMessage);
@@ -708,11 +751,12 @@ export default function ChatWidgetAI() {
 
       const data = await response.json();
       
-      // Clear slow response timeout on success
+      // Clear slow response timeout and stop slow typing simulation on success
       if (slowResponseTimeoutRef.current) {
         clearTimeout(slowResponseTimeoutRef.current);
         slowResponseTimeoutRef.current = null;
       }
+      stopSlowTypingSimulation();
       
       if (data.success && data.response) {
         const aiResponse = data.response;
@@ -783,11 +827,12 @@ export default function ChatWidgetAI() {
     } catch (error: any) {
       console.error('Error calling AI:', error);
       
-      // Clear slow response timeout on error
+      // Clear slow response timeout and stop slow typing simulation on error
       if (slowResponseTimeoutRef.current) {
         clearTimeout(slowResponseTimeoutRef.current);
         slowResponseTimeoutRef.current = null;
       }
+      stopSlowTypingSimulation();
       
       const errorMessage = error.message || 'Erreur inconnue';
       setError(errorMessage);
@@ -896,6 +941,7 @@ export default function ChatWidgetAI() {
       clearTimeout(slowResponseTimeoutRef.current);
       slowResponseTimeoutRef.current = null;
     }
+    stopSlowTypingSimulation();
     
     setMessages([]);
     setLeadData({});
@@ -907,7 +953,7 @@ export default function ChatWidgetAI() {
     setInputValue('');
     setIsTyping(false);
     trackEvent('conversation_reset');
-  }, []);
+  }, [stopSlowTypingSimulation]);
 
   const handleQuickReply = (reply: string) => {
     if (isTyping || isComplete) return;
@@ -1154,6 +1200,7 @@ export default function ChatWidgetAI() {
                 <button
                   onClick={() => {
                     setIsOpen(false);
+                    stopSlowTypingSimulation();
                     trackEvent('chat_closed', {
                       messageCount: messages.length,
                       hasLeadData: Object.keys(leadData).length > 0,
@@ -1214,6 +1261,7 @@ export default function ChatWidgetAI() {
                   <button
                     onClick={() => {
                       setIsOpen(false);
+                      stopSlowTypingSimulation();
                       trackEvent('chat_closed', {
                         messageCount: messages.length,
                         hasLeadData: Object.keys(leadData).length > 0,
