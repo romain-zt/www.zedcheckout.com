@@ -215,6 +215,7 @@ export default function ChatWidgetAI() {
   const userHasTyped = useRef<boolean>(false);
   const simulationTimeouts = useRef<NodeJS.Timeout[]>([]);
   const isSimulating = useRef<boolean>(false);
+  const slowResponseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -453,6 +454,10 @@ export default function ChatWidgetAI() {
       window.removeEventListener('simulateTyping' as any, handleSimulateTyping as EventListener);
       // Clean up all simulation timeouts
       simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
+      // Clean up slow response timeout
+      if (slowResponseTimeoutRef.current) {
+        clearTimeout(slowResponseTimeoutRef.current);
+      }
     };
   }, [simulateTyping]);
 
@@ -628,6 +633,15 @@ export default function ChatWidgetAI() {
     try {
       setError(null);
       
+      // Set typing indicator after 15s if no response
+      slowResponseTimeoutRef.current = setTimeout(() => {
+        setIsTyping(true);
+        trackEvent('slow_response_typing_shown', { 
+          messageLength: userMessage.length,
+          conversationLength: conversationHistory.length 
+        });
+      }, 5_000);
+      
       // Detect if message contains URL
       const urlDetection = detectAndExtractURL(userMessage);
       
@@ -693,6 +707,12 @@ export default function ChatWidgetAI() {
       }
 
       const data = await response.json();
+      
+      // Clear slow response timeout on success
+      if (slowResponseTimeoutRef.current) {
+        clearTimeout(slowResponseTimeoutRef.current);
+        slowResponseTimeoutRef.current = null;
+      }
       
       if (data.success && data.response) {
         const aiResponse = data.response;
@@ -762,6 +782,12 @@ export default function ChatWidgetAI() {
       
     } catch (error: any) {
       console.error('Error calling AI:', error);
+      
+      // Clear slow response timeout on error
+      if (slowResponseTimeoutRef.current) {
+        clearTimeout(slowResponseTimeoutRef.current);
+        slowResponseTimeoutRef.current = null;
+      }
       
       const errorMessage = error.message || 'Erreur inconnue';
       setError(errorMessage);
@@ -864,6 +890,13 @@ export default function ChatWidgetAI() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(STORAGE_KEY);
     }
+    
+    // Clear all timeouts
+    if (slowResponseTimeoutRef.current) {
+      clearTimeout(slowResponseTimeoutRef.current);
+      slowResponseTimeoutRef.current = null;
+    }
+    
     setMessages([]);
     setLeadData({});
     setConversationHistory([]);
@@ -872,6 +905,7 @@ export default function ChatWidgetAI() {
     setError(null);
     setRetryCount(0);
     setInputValue('');
+    setIsTyping(false);
     trackEvent('conversation_reset');
   }, []);
 
