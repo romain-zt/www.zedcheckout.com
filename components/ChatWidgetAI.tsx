@@ -228,7 +228,7 @@ export default function ChatWidgetAI() {
   const [showQRModal, setShowQRModal] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const greetingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const userHasTyped = useRef<boolean>(false);
@@ -1142,6 +1142,11 @@ Now provide a natural follow-up message to the user based on these research find
     
     const messageId = addUserMessage(userInput);
     setInputValue('');
+    
+    // Reset textarea height
+    if (inputRef.current) {
+      inputRef.current.style.height = '44px';
+    }
 
     // Call AI to process the message
     await callAI(userInput, false, messageId);
@@ -1574,9 +1579,8 @@ Now provide a natural follow-up message to the user based on these research find
                 <form onSubmit={handleSubmit} className="p-2 bg-[#F0F0F0]">
                   <div className="flex items-end gap-2">
                     <div className="flex-1 relative">
-                      <input
+                      <textarea
                         ref={inputRef}
-                        type="text"
                         value={inputValue}
                         onChange={(e) => {
                           if (isSimulating.current) {
@@ -1586,6 +1590,11 @@ Now provide a natural follow-up message to the user based on these research find
                           }
                           
                           setInputValue(e.target.value);
+                          
+                          // Auto-resize
+                          e.target.style.height = 'auto';
+                          e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                          
                           if (!hasGreeted && e.target.value.length > 0) {
                             userHasTyped.current = true;
                             if (greetingTimeoutRef.current) {
@@ -1594,9 +1603,17 @@ Now provide a natural follow-up message to the user based on these research find
                             }
                           }
                         }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSubmit(e as any);
+                          }
+                        }}
                         disabled={isTyping}
                         placeholder="Message"
-                        className="w-full px-4 py-2.5 pr-10 rounded-full bg-white border-none outline-none text-[15px] text-gray-900 placeholder-gray-500 disabled:opacity-50"
+                        rows={1}
+                        className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-white border-none outline-none text-[15px] text-gray-900 placeholder-gray-500 disabled:opacity-50 resize-none max-h-[120px] overflow-y-auto"
+                        style={{ height: '44px' }}
                         autoComplete="off"
                       />
                       <button
