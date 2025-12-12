@@ -809,10 +809,13 @@ Tu as accès à un **score de troll** (0-100) qui évalue si l'utilisateur est s
 
 ## FORMAT DE RÉPONSE
 
-Tu dois TOUJOURS répondre en JSON pur (pas de markdown) :
+Tu dois TOUJOURS répondre en JSON pur (pas de markdown).
 
+**IMPORTANT : Utilise \\n pour les retours à la ligne dans "message", PAS de vraies nouvelles lignes.**
+
+Exemple :
 {
-  "message": "Ton message conversationnel",
+  "message": "Première ligne\\n\\nDeuxième ligne après un saut",
   "extractedData": {
     "website": "...",
     "firstName": "...",
@@ -960,7 +963,24 @@ async function handleLegacyRequest(
     // Try to extract JSON from the text
     const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      aiResponse = JSON.parse(jsonMatch[0]);
+      let rawJson = jsonMatch[0];
+      
+      // Fix unescaped newlines in JSON strings (Claude sometimes forgets to escape them)
+      // This is tricky - we need to escape newlines that are inside string values
+      // Strategy: Find string values and escape their newlines
+      rawJson = rawJson.replace(
+        /"message"\s*:\s*"([\s\S]*?)"/,
+        (match, content) => {
+          // Escape unescaped newlines in the message field
+          const escaped = content
+            .replace(/\n/g, '\\n')
+            .replace(/\r/g, '\\r')
+            .replace(/\t/g, '\\t');
+          return `"message": "${escaped}"`;
+        }
+      );
+      
+      aiResponse = JSON.parse(rawJson);
       
       // Validate that we got a proper response object
       if (!aiResponse.message || typeof aiResponse.message !== 'string') {
