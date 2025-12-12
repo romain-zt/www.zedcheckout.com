@@ -462,44 +462,19 @@ export default function ChatWidgetAI() {
     
     const sectionContext = SECTION_DESCRIPTIONS[currentSection]?.[locale] || SECTION_DESCRIPTIONS.default[locale];
     
+    // Déterminer le type de message en fonction de l'historique
+    const isReturningUser = messages.length > 0;
+    
+    const notificationMessage = isReturningUser
+      ? (locale === 'fr' 
+          ? "Ravi de vous revoir, est ce que je peux vous aider ?"
+          : "Nice to see you again, can I help you?")
+      : (locale === 'fr'
+          ? "Bonjour, c'est votre première visite ?"
+          : "Hello, is this your first visit?");
+    
     try {
-      // Call AI for contextual greeting
-      const response = await fetch('/api/chat-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: `[SYSTEM: Generate ultra-short WhatsApp-style notification (10-15 words max). Ask for website URL. Be intriguing. CONTEXT: ${sectionContext}]`,
-          conversationHistory: [],
-          leadData: {},
-          sectionContext: currentSection,
-        }),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.response) {
-          setToastMessage(data.response.message);
-          setShowToast(true);
-          setHasUnreadToast(true);
-          setHasGreeted(true);
-          setToastShownTime(Date.now());
-          
-          trackEvent('toast_shown', { 
-            trigger: 'auto',
-            section: currentSection,
-            message: data.response.message
-          });
-          
-          // Auto-hide toast after 8 seconds
-          setTimeout(() => {
-            setShowToast(false);
-          }, 8000);
-        }
-      }
-    } catch (error) {
-      // Fallback to section-specific message
-      const fallbackMessage = TOAST_MESSAGES[currentSection]?.[locale] || TOAST_MESSAGES.default[locale];
-      setToastMessage(fallbackMessage);
+      setToastMessage(notificationMessage);
       setShowToast(true);
       setHasUnreadToast(true);
       setHasGreeted(true);
@@ -508,28 +483,30 @@ export default function ChatWidgetAI() {
       trackEvent('toast_shown', { 
         trigger: 'auto',
         section: currentSection,
-        message: fallbackMessage,
-        fallback: true
+        message: notificationMessage,
+        isReturningUser
       });
       
       // Auto-hide toast after 8 seconds
       setTimeout(() => {
         setShowToast(false);
       }, 8000);
+    } catch (error) {
+      console.error('Error showing notification:', error);
     }
-  }, [hasGreeted, isOpen, showToast, currentSection, locale]);
+  }, [hasGreeted, isOpen, showToast, currentSection, locale, messages.length]);
 
-  // Natural toast trigger: wait 3s, cancel if user types OR chat opens
+  // Natural toast trigger: wait 10s, cancel if user types OR chat opens
   useEffect(() => {
     if (!hasGreeted && !isOpen) {
       userHasTyped.current = false;
       
-      // Trigger 1: 3 seconds delay
+      // Trigger 1: 10 seconds delay
       greetingTimeoutRef.current = setTimeout(() => {
         if (!userHasTyped.current) {
           showToastNotification();
         }
-      }, 3000);
+      }, 10000);
       
       // Trigger 2: Scroll to checkout section
       const handleScroll = () => {
