@@ -1376,7 +1376,7 @@ Now provide a natural follow-up message to the user based on these research find
                   onClick={() => {
                     if (isMobile) {
                       // Mobile: Open WhatsApp directly
-                      const phone = "33780978892";
+                      const phone = "33780978894";
                       const message = getWhatsAppMessage();
                       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                       trackEvent('header_click_mobile_whatsapp');
@@ -1654,7 +1654,7 @@ Now provide a natural follow-up message to the user based on these research find
                     {/* Mobile: WhatsApp Button */}
                     <div className="md:hidden">
                       <a
-                        href={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                        href={`https://wa.me/33780978894?text=${encodeURIComponent(getWhatsAppMessage())}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => trackEvent('completion_whatsapp_mobile', { hasWebsite: !!leadData.website })}
@@ -1672,7 +1672,7 @@ Now provide a natural follow-up message to the user based on these research find
                       <div className="text-xs text-gray-500 mb-3">Scanne avec ton téléphone</div>
                       <div className="inline-block p-4 bg-white border-2 border-gray-200 rounded-lg">
                         <QRCodeSVG
-                          value={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                          value={`https://wa.me/33780978894?text=${encodeURIComponent(getWhatsAppMessage())}`}
                           size={192}
                           level="M"
                           includeMargin={false}
@@ -1680,7 +1680,7 @@ Now provide a natural follow-up message to the user based on these research find
                       </div>
                       <div className="mt-4 space-y-2">
                         <a
-                          href={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                          href={`https://wa.me/33780978894?text=${encodeURIComponent(getWhatsAppMessage())}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => trackEvent('completion_whatsapp_desktop', { hasWebsite: !!leadData.website })}
@@ -1731,7 +1731,7 @@ Now provide a natural follow-up message to the user based on these research find
               <div className="flex flex-col items-center gap-4">
                 <div className="p-4 bg-gray-50 rounded-xl">
                   <QRCodeSVG
-                    value={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                    value={`https://wa.me/33780978894?text=${encodeURIComponent(getWhatsAppMessage())}`}
                     size={220}
                     level="H"
                     includeMargin={false}
@@ -1744,7 +1744,7 @@ Now provide a natural follow-up message to the user based on these research find
                 
                 <div className="flex flex-col gap-2 w-full">
                   <a
-                    href={`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`}
+                    href={`https://wa.me/33780978894?text=${encodeURIComponent(getWhatsAppMessage())}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => {
@@ -1761,7 +1761,7 @@ Now provide a natural follow-up message to the user based on these research find
                   
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(`https://wa.me/33780978892?text=${encodeURIComponent(getWhatsAppMessage())}`);
+                      navigator.clipboard.writeText(`https://wa.me/33780978894?text=${encodeURIComponent(getWhatsAppMessage())}`);
                       trackEvent('qr_modal_copy_link');
                       // Could add a toast here
                     }}
