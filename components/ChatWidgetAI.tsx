@@ -27,7 +27,7 @@ interface ConversationMessage {
   content: string;
 }
 
-// Section-specific placeholder messages (FR + EN)
+// Section-specific placeholder messages (FR + EN) - DEPRECATED, kept for backward compat
 const SECTION_PLACEHOLDERS: Record<string, { fr: string; en: string }> = {
   'zed-hero': {
     fr: "Comment ZedCheckout peut transformer votre checkout ?",
@@ -61,6 +61,42 @@ const SECTION_PLACEHOLDERS: Record<string, { fr: string; en: string }> = {
     fr: "Demandez ce que vous voulez...",
     en: "Ask anything you want..."
   },
+};
+
+// Toast messages by section (used for WhatsApp-style notifications)
+const TOAST_MESSAGES: Record<string, { fr: string; en: string }> = {
+  'zed-hero': {
+    fr: "👋 Ton site e-commerce est sur quelle URL ?",
+    en: "👋 What's your e-commerce site URL?"
+  },
+  'zed-problem': {
+    fr: "💡 Combien de paniers tu perds par mois ?",
+    en: "💡 How many carts are you losing per month?"
+  },
+  'zed-solution': {
+    fr: "🚀 ZedCheckout peut transformer ton checkout. Ton site ?",
+    en: "🚀 ZedCheckout can transform your checkout. Your site?"
+  },
+  'zed-filter': {
+    fr: "🎯 ZedCheckout est-il fait pour toi ? Vérifions ensemble.",
+    en: "🎯 Is ZedCheckout right for you? Let's find out."
+  },
+  'zed-process': {
+    fr: "⚡ L'intégration prend 24h. Ton URL pour commencer ?",
+    en: "⚡ Integration takes 24h. Your URL to get started?"
+  },
+  'zed-faq': {
+    fr: "🤔 Une question ? Je suis là pour t'aider.",
+    en: "🤔 Any questions? I'm here to help."
+  },
+  'zed-cta': {
+    fr: "⚡ Dernière question : ton URL pour vérifier la compatibilité ?",
+    en: "⚡ Last question: your URL to check compatibility?"
+  },
+  'default': {
+    fr: "👋 Salut ! C'est quoi l'URL de ton site ?",
+    en: "👋 Hey! What's your website URL?"
+  }
 };
 
 // Section descriptions for AI context
@@ -121,6 +157,13 @@ export default function ChatWidgetAI() {
   const [retryCount, setRetryCount] = useState(0);
   const [currentSection, setCurrentSection] = useState<string>('default');
   const [locale, setLocale] = useState<'fr' | 'en'>('fr');
+  
+  // Toast notification states
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [hasUnreadToast, setHasUnreadToast] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [toastShownTime, setToastShownTime] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -197,6 +240,37 @@ export default function ChatWidgetAI() {
     }
   }, [isOpen, isComplete]);
 
+  // Auto-fill first message when opening from toast
+  useEffect(() => {
+    if (isOpen && toastMessage && messages.length === 0) {
+      // Add toast message as first bot message with contextual suggestions
+      const suggestions = currentSection === 'zed-cta' 
+        ? ["https://mon-site.com", "Je veux en savoir plus", "Combien ça coûte ?"]
+        : ["https://mon-site.com", "Pourquoi ?", "C'est quoi ZedCheckout ?"];
+        
+      setMessages([{
+        id: Date.now().toString(),
+        text: toastMessage,
+        sender: 'bot',
+        timestamp: new Date(),
+        suggestedReplies: suggestions
+      }]);
+      
+      setConversationHistory([{
+        role: 'assistant',
+        content: toastMessage,
+      }]);
+      
+      trackEvent('chat_opened_from_toast', {
+        section: currentSection,
+        toastMessage
+      });
+    } else if (isOpen && messages.length === 0 && !toastMessage) {
+      // Fallback if opened without toast (direct icon click)
+      trackEvent('chat_opened_direct');
+    }
+  }, [isOpen]);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -249,6 +323,21 @@ export default function ChatWidgetAI() {
       } else {
         setLocale('fr');
       }
+    }
+  }, []);
+
+  // Keyboard detection for mobile
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.visualViewport) {
+      const handleResize = () => {
+        const isKeyboard = window.visualViewport 
+          ? window.visualViewport.height < window.innerHeight * 0.75 
+          : false;
+        setKeyboardVisible(isKeyboard);
+      };
+      
+      window.visualViewport.addEventListener('resize', handleResize);
+      return () => window.visualViewport?.removeEventListener('resize', handleResize);
     }
   }, []);
 
@@ -318,65 +407,103 @@ export default function ChatWidgetAI() {
     };
   }, [simulateTyping]);
 
-  // Natural greeting: wait 3s, cancel if user types
+  // Toast notification trigger (replaces old greeting logic)
+  const showToastNotification = useCallback(async () => {
+    if (hasGreeted || isOpen || showToast) return;
+    
+    const sectionContext = SECTION_DESCRIPTIONS[currentSection]?.[locale] || SECTION_DESCRIPTIONS.default[locale];
+    
+    try {
+      // Call AI for contextual greeting
+      const response = await fetch('/api/chat-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `[SYSTEM: Generate ultra-short WhatsApp-style notification (10-15 words max). Ask for website URL. Be intriguing. CONTEXT: ${sectionContext}]`,
+          conversationHistory: [],
+          leadData: {},
+          sectionContext: currentSection,
+        }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.response) {
+          setToastMessage(data.response.message);
+          setShowToast(true);
+          setHasUnreadToast(true);
+          setHasGreeted(true);
+          setToastShownTime(Date.now());
+          
+          trackEvent('toast_shown', { 
+            trigger: 'auto',
+            section: currentSection,
+            message: data.response.message
+          });
+          
+          // Auto-hide toast after 8 seconds
+          setTimeout(() => {
+            setShowToast(false);
+          }, 8000);
+        }
+      }
+    } catch (error) {
+      // Fallback to section-specific message
+      const fallbackMessage = TOAST_MESSAGES[currentSection]?.[locale] || TOAST_MESSAGES.default[locale];
+      setToastMessage(fallbackMessage);
+      setShowToast(true);
+      setHasUnreadToast(true);
+      setHasGreeted(true);
+      setToastShownTime(Date.now());
+      
+      trackEvent('toast_shown', { 
+        trigger: 'auto',
+        section: currentSection,
+        message: fallbackMessage,
+        fallback: true
+      });
+      
+      // Auto-hide toast after 8 seconds
+      setTimeout(() => {
+        setShowToast(false);
+      }, 8000);
+    }
+  }, [hasGreeted, isOpen, showToast, currentSection, locale]);
+
+  // Natural toast trigger: wait 3s, cancel if user types OR chat opens
   useEffect(() => {
-    if (isOpen && !hasGreeted) {
-      trackEvent('chat_opened');
+    if (!hasGreeted && !isOpen) {
       userHasTyped.current = false;
       
-      // Start 3-second timer for greeting
-      greetingTimeoutRef.current = setTimeout(async () => {
-        if (!userHasTyped.current && !hasGreeted) {
-          // Use AI to generate a short, natural greeting with section context
-          const sectionContext = SECTION_DESCRIPTIONS[currentSection]?.[locale] || SECTION_DESCRIPTIONS.default[locale];
-          try {
-            const response = await fetch('/api/chat-ai', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                message: `[SYSTEM: Generate a very short greeting (max 2 sentences) to welcome the user and ask their name. Be casual and friendly. CONTEXT: ${sectionContext}]`,
-                conversationHistory: [],
-                leadData: {},
-                sectionContext: currentSection,
-              }),
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              if (data.success && data.response) {
-                const greetingMessage = data.response.message;
-                addBotMessage(greetingMessage, data.response.suggestedReplies || ["Je m'appelle...", "C'est quoi ZedCheckout ?"]);
-                
-                setConversationHistory([{
-                  role: 'assistant',
-                  content: greetingMessage,
-                }]);
-                
-                setHasGreeted(true);
-              }
-            }
-          } catch (error) {
-            // Fallback to simple greeting if AI fails
-            const fallbackGreeting = "Salut ! 👋 Comment tu t'appelles ?";
-            addBotMessage(fallbackGreeting, ["Je m'appelle...", "C'est quoi ZedCheckout ?"]);
-            setConversationHistory([{
-              role: 'assistant',
-              content: fallbackGreeting,
-            }]);
-            setHasGreeted(true);
-          }
+      // Trigger 1: 3 seconds delay
+      greetingTimeoutRef.current = setTimeout(() => {
+        if (!userHasTyped.current) {
+          showToastNotification();
         }
       }, 3000);
+      
+      // Trigger 2: Scroll to checkout section
+      const handleScroll = () => {
+        const checkoutSection = document.getElementById('zed-cta');
+        if (checkoutSection) {
+          const rect = checkoutSection.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            showToastNotification();
+          }
+        }
+      };
+      
+      window.addEventListener('scroll', handleScroll);
+      
+      return () => {
+        if (greetingTimeoutRef.current) {
+          clearTimeout(greetingTimeoutRef.current);
+          greetingTimeoutRef.current = null;
+        }
+        window.removeEventListener('scroll', handleScroll);
+      };
     }
-    
-    // Cleanup timeout on unmount or when chat closes
-    return () => {
-      if (greetingTimeoutRef.current) {
-        clearTimeout(greetingTimeoutRef.current);
-        greetingTimeoutRef.current = null;
-      }
-    };
-  }, [isOpen, hasGreeted]);
+  }, [hasGreeted, isOpen, showToastNotification]);
 
   const addBotMessage = (text: string, suggestedReplies?: string[]) => {
     setIsTyping(true);
@@ -662,16 +789,42 @@ export default function ChatWidgetAI() {
 
     const userInput = inputValue.trim();
     
-    // First message: open chat if not open
-    if (!isOpen) {
-      setIsOpen(true);
-    }
-    
     addUserMessage(userInput);
     setInputValue('');
 
     // Call AI to process the message
     await callAI(userInput);
+  };
+
+  const handleToastClick = () => {
+    setIsOpen(true);
+    setShowToast(false);
+    setHasUnreadToast(false);
+    
+    trackEvent('toast_clicked', { 
+      timeVisible: Date.now() - toastShownTime,
+      section: currentSection
+    });
+  };
+
+  const handleToastDismiss = (method: 'button' | 'swipe' | 'timeout') => {
+    setShowToast(false);
+    
+    trackEvent('toast_dismissed', { 
+      method,
+      timeVisible: Date.now() - toastShownTime,
+      section: currentSection
+    });
+  };
+
+  const handleIconClick = () => {
+    setIsOpen(true);
+    setHasUnreadToast(false);
+    
+    trackEvent('icon_clicked', {
+      hasUnread: hasUnreadToast,
+      section: currentSection
+    });
   };
 
   const formatTime = (date: Date) => {
@@ -683,66 +836,118 @@ export default function ChatWidgetAI() {
 
   return (
     <>
-      {/* Simple Input - Closed State */}
+      {/* Floating Write Icon - Closed State */}
       <AnimatePresence>
         {!isOpen && (
-          <motion.form
-            onSubmit={handleSubmit}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+          <motion.button
+            onClick={handleIconClick}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
             transition={{ 
               type: 'spring', 
               stiffness: 200, 
               damping: 25 
             }}
-            className="fixed bottom-4 left-0 right-0 z-50 px-4 sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-2xl"
+            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40 group"
+            aria-label={hasUnreadToast ? "Ouvrir le chat (1 message non lu)" : "Ouvrir le chat"}
+            aria-expanded={isOpen}
           >
-            <div className="relative group">
-              {/* Visible glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full opacity-50 group-hover:opacity-70 blur-xl transition-opacity duration-500 animate-pulse" />
+            {/* Glow effect */}
+            <div className="absolute -inset-3 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] rounded-full opacity-50 group-hover:opacity-70 blur-xl transition-opacity animate-pulse" />
+            
+            {/* Icon button */}
+            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center shadow-2xl">
+              {/* Pencil/Write icon */}
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
               
-              {/* Input field with button */}
-              <div className="relative">
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => {
-                    // Stop simulation if user types
-                    if (isSimulating.current) {
-                      isSimulating.current = false;
-                      simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
-                      simulationTimeouts.current = [];
-                    }
-                    
-                    setInputValue(e.target.value);
-                    // Cancel greeting if user starts typing
-                    if (!hasGreeted && e.target.value.length > 0) {
-                      userHasTyped.current = true;
-                      if (greetingTimeoutRef.current) {
-                        clearTimeout(greetingTimeoutRef.current);
-                        greetingTimeoutRef.current = null;
-                      }
-                    }
-                  }}
-                  placeholder={SECTION_PLACEHOLDERS[currentSection]?.[locale] || SECTION_PLACEHOLDERS.default[locale]}
-                  key={`${currentSection}-${locale}`}
-                  autoComplete="off"
-                  className="relative w-full px-5 py-3.5 pr-14 sm:px-6 sm:py-4 sm:pr-16 rounded-full backdrop-blur-2xl bg-white/80 border-2 border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.12)] text-gray-900 placeholder-gray-500 outline-none transition-all duration-500 focus:bg-white/90 focus:border-[#E88B7A]/60 focus:shadow-[0_20px_60px_rgba(232,139,122,0.3)] group-hover:bg-white/90 group-hover:border-white/70 placeholder:transition-opacity placeholder:duration-500"
-                />
-                <button
-                  type="submit"
-                  disabled={!inputValue.trim()}
-                  aria-label="Envoyer"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] text-white flex items-center justify-center hover:shadow-lg hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 active:scale-95"
+              {/* Unread badge */}
+              {hasUnreadToast && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  <span className="text-white text-xs font-bold">1</span>
+                </motion.div>
+              )}
+            </div>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Toast Notification (WhatsApp Style) */}
+      <AnimatePresence>
+        {showToast && !isOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: 100, scale: 0.8 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 100, scale: 0.8 }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={(e, info) => {
+              if (info.offset.x > 100) {
+                handleToastDismiss('swipe');
+              }
+            }}
+            transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+            className={`fixed ${keyboardVisible ? 'bottom-4' : 'bottom-24 sm:bottom-28'} right-6 sm:right-8 z-40 max-w-[280px] sm:max-w-xs`}
+            role="alert"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <div className="relative group cursor-pointer" onClick={handleToastClick}>
+              {/* Glow effect */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] rounded-2xl opacity-40 blur-lg" />
+              
+              {/* Toast content (WhatsApp style) */}
+              <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-4 border border-white/60">
+                {/* Header with avatar + close */}
+                <div className="flex items-start gap-3 mb-2">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-gray-900 mb-0.5">ZedCheckout Assistant</div>
+                    <div className="text-sm text-gray-800 leading-relaxed">{toastMessage}</div>
+                  </div>
+                  
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToastDismiss('button');
+                    }}
+                    className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label="Fermer la notification"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Reply indicator */}
+                <div className="flex items-center justify-end gap-1.5 mt-2 text-xs text-gray-500">
+                  <span>Répondre</span>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
-                </button>
+                </div>
+                
+                {/* WhatsApp-style tail */}
+                <div className="absolute -right-2 top-6 w-0 h-0 border-l-[12px] border-l-white/95 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent" />
               </div>
             </div>
-          </motion.form>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -750,9 +955,9 @@ export default function ChatWidgetAI() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 100, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 100, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.8, x: 100, y: 50 }}
+            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, x: 100, y: 50 }}
             transition={{ 
               type: 'spring', 
               stiffness: 300, 

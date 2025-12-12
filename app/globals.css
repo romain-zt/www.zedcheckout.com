@@ -71,6 +71,15 @@
   }
 }
 
+/* Container constraints - mobile-first with max-width on desktop */
+section > div {
+  @apply w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl;
+}
+
+section > div > div {
+  @apply w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl;
+}
+
 @layer utilities {
   /* Fade animations */
   .animate-fade-in-up {
