@@ -226,6 +226,7 @@ export default function ChatWidgetAI() {
   const [toastShownTime, setToastShownTime] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -597,6 +598,18 @@ export default function ChatWidgetAI() {
       };
     }
   }, [hasGreeted, isOpen, showToastNotification]);
+
+  // Periodic attention animation (every ~5 seconds)
+  useEffect(() => {
+    if (!isOpen) {
+      const intervalId = setInterval(() => {
+        setShouldAnimate(true);
+        setTimeout(() => setShouldAnimate(false), 1200); // Animation lasts 1200ms
+      }, 5000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [isOpen]);
 
   const addBotMessage = (text: string, suggestedReplies?: string[]) => {
     setError(null);
@@ -1238,14 +1251,26 @@ Now provide a natural follow-up message to the user based on these research find
           <motion.button
             onClick={handleIconClick}
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={shouldAnimate ? { 
+              opacity: 1, 
+              scale: [1, 1.12, 1.08, 1.12, 1],
+              y: [0, -4, 0, -4, 0]
+            } : { 
+              opacity: 1, 
+              scale: 1,
+              y: 0
+            }}
             exit={{ opacity: 0, scale: 0.8 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            transition={{ 
+            transition={shouldAnimate ? {
+              duration: 1.2,
+              ease: "easeInOut",
+              times: [0, 0.25, 0.5, 0.75, 1]
+            } : { 
               type: 'spring', 
               stiffness: 200, 
-              damping: 25 
+              damping: 25
             }}
             className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40 group"
             aria-label={hasUnreadToast ? "Ouvrir le chat (1 message non lu)" : "Ouvrir le chat"}
