@@ -40,6 +40,24 @@ interface ConversationMessage {
   content: string;
 }
 
+type ResearchType = 
+  | 'website_check'
+  | 'platform_compatibility'
+  | 'market_info'
+  | 'technical_details'
+  | 'competitor_analysis'
+  | 'pricing_research';
+
+interface PendingResearch {
+  id: string;
+  type: ResearchType;
+  query: string;
+  context: string;
+  startedAt: number;
+  status: 'pending' | 'completed' | 'error';
+  result?: any;
+}
+
 // Section-specific placeholder messages (FR + EN) - DEPRECATED, kept for backward compat
 const SECTION_PLACEHOLDERS: Record<string, { fr: string; en: string }> = {
   'zed-hero': {
@@ -197,6 +215,7 @@ export default function ChatWidgetAI() {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [currentSection, setCurrentSection] = useState<string>('default');
+  const [pendingResearch, setPendingResearch] = useState<PendingResearch | null>(null);
   const [locale, setLocale] = useState<'fr' | 'en'>('fr');
   
   // Toast notification states
@@ -672,6 +691,117 @@ export default function ChatWidgetAI() {
     return messageId;
   };
 
+  // 🔥 RESEARCH HANDLER - The magic happens here
+  const handleResearch = async (
+    researchId: string,
+    researchType: ResearchType,
+    query: string,
+    originalUserMessage: string
+  ) => {
+    try {
+      trackEvent('research_started', { type: researchType });
+      
+      // Call research API
+      const response = await fetch('/api/research', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: researchType,
+          query,
+          context: `Conversation about ZedCheckout. User message: "${originalUserMessage}"`,
+          userWebsite: leadData.website,
+          leadData,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Research failed');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Update research status
+        setPendingResearch(prev => 
+          prev?.id === researchId 
+            ? { ...prev, status: 'completed', result: data }
+            : prev
+        );
+        
+        trackEvent('research_completed', { type: researchType });
+        
+        // Now call Claude again with the research results
+        await injectResearchResults(data, originalUserMessage);
+      } else {
+        throw new Error(data.error || 'Research failed');
+      }
+      
+    } catch (error) {
+      console.error('Research error:', error);
+      
+      setPendingResearch(prev => 
+        prev?.id === researchId 
+          ? { ...prev, status: 'error' }
+          : prev
+      );
+      
+      trackEvent('research_error', { type: researchType });
+    }
+  };
+
+  // Inject research results back into conversation
+  const injectResearchResults = async (researchData: any, originalUserMessage: string) => {
+    try {
+      // Add a natural follow-up message from bot
+      const followUpContext = `[SYSTEM: You just completed a research. Here are the results:
+${JSON.stringify(researchData.data, null, 2)}
+
+Summary: ${researchData.summary}
+
+Now provide a natural follow-up message to the user based on these research findings. Be conversational, like "Ah j'ai fini de checker ton site !" or "Ok j'ai vérifié avec l'équipe..."]`;
+      
+      const response = await fetch('/api/chat-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: followUpContext,
+          conversationHistory: [
+            ...conversationHistory,
+            { role: 'user', content: originalUserMessage },
+          ],
+          leadData,
+          sectionContext: currentSection,
+        }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.success && data.response) {
+          // Add the research-enhanced response
+          addBotMessage(data.response.message, data.response.suggestedReplies);
+          
+          setConversationHistory(prev => [
+            ...prev,
+            { role: 'assistant', content: data.response.message },
+          ]);
+          
+          // Clear pending research
+          setPendingResearch(null);
+          
+          trackEvent('research_injected', {
+            hasNewData: !!(data.response.extractedData && Object.keys(data.response.extractedData).length > 0),
+          });
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error injecting research:', error);
+      // Clear pending research even on error
+      setPendingResearch(null);
+    }
+  };
+
   const callAI = async (userMessage: string, isRetry: boolean = false, messageId?: string) => {
     try {
       setError(null);
@@ -820,6 +950,29 @@ export default function ChatWidgetAI() {
           hasSuggestions: !!(aiResponse.suggestedReplies && aiResponse.suggestedReplies.length > 0),
           confidence: aiResponse.confidence,
         });
+        
+        // 🔥 MAGIC: Check if AI needs research
+        if (aiResponse.needsResearch && aiResponse.researchType && aiResponse.researchQuery) {
+          const researchId = `research_${Date.now()}`;
+          
+          // Set pending research state
+          setPendingResearch({
+            id: researchId,
+            type: aiResponse.researchType,
+            query: aiResponse.researchQuery,
+            context: `User: ${userMessage}\nAI: ${aiResponse.message}\n\nConversation context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}`,
+            startedAt: Date.now(),
+            status: 'pending',
+          });
+          
+          trackEvent('research_triggered', {
+            type: aiResponse.researchType,
+            confidence: aiResponse.confidence,
+          });
+          
+          // Start research in background
+          handleResearch(researchId, aiResponse.researchType, aiResponse.researchQuery, userMessage);
+        }
       } else {
         throw new Error('Réponse invalide du serveur');
       }
@@ -1375,6 +1528,27 @@ export default function ChatWidgetAI() {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
+                    </div>
+                  </motion.div>
+                )}
+                
+                {/* 🔥 Research indicator - The magic visual feedback */}
+                {pendingResearch && pendingResearch.status === 'pending' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-center"
+                  >
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700 flex items-center gap-2">
+                      <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                      <span>
+                        {pendingResearch.type === 'website_check' && '🔍 Je vérifie ton site...'}
+                        {pendingResearch.type === 'platform_compatibility' && '⚙️ Je check la compatibilité...'}
+                        {pendingResearch.type === 'market_info' && '📊 Je regarde les stats...'}
+                        {pendingResearch.type === 'technical_details' && '🔧 Je demande aux devs...'}
+                        {pendingResearch.type === 'competitor_analysis' && '🎯 J\'analyse le marché...'}
+                        {pendingResearch.type === 'pricing_research' && '💰 Je check les prix...'}
+                      </span>
                     </div>
                   </motion.div>
                 )}
