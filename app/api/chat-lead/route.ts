@@ -23,11 +23,20 @@ export async function POST(request: NextRequest) {
       challenge,
     } = leadData;
 
-    // Validate required fields
-    if (!name || !email || !company || !platform) {
-      console.error('❌ [chat-lead] Missing required fields');
+    // Validate required fields (only name and platform are truly required)
+    if (!name || !platform) {
+      console.error('❌ [chat-lead] Missing required fields', { name, platform });
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Name and platform are required' },
+        { status: 400 }
+      );
+    }
+    
+    // At least one contact method required
+    if (!email && !leadData.phone) {
+      console.error('❌ [chat-lead] No contact method provided');
+      return NextResponse.json(
+        { error: 'Email or phone is required' },
         { status: 400 }
       );
     }
@@ -175,14 +184,24 @@ export async function POST(request: NextRequest) {
                     <span class="label">👤 Nom :</span>
                     <span class="value"><strong>${name}</strong></span>
                   </div>
+                  ${email ? `
                   <div class="info-row">
                     <span class="label">📧 Email :</span>
                     <span class="value"><a href="mailto:${email}" style="color: #E88B7A; text-decoration: none;">${email}</a></span>
                   </div>
+                  ` : ''}
+                  ${leadData.phone ? `
+                  <div class="info-row">
+                    <span class="label">📱 Téléphone :</span>
+                    <span class="value">${leadData.phone}</span>
+                  </div>
+                  ` : ''}
+                  ${company ? `
                   <div class="info-row">
                     <span class="label">🏢 Entreprise :</span>
                     <span class="value">${company}</span>
                   </div>
+                  ` : ''}
                   <div class="info-row">
                     <span class="label">🛒 Plateforme :</span>
                     <span class="value"><strong>${platform}</strong></span>
