@@ -2,6 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+const QRCodeSVG = dynamic(
+  () => import('qrcode.react').then((mod) => mod.QRCodeSVG),
+  { ssr: false }
+);
 
 interface Message {
   id: string;
@@ -1250,19 +1256,18 @@ export default function ChatWidgetAI() {
                     <div className="hidden md:block">
                       <div className="text-xs text-gray-500 mb-3">Scanne avec ton téléphone</div>
                       <div className="inline-block p-4 bg-white border-2 border-gray-200 rounded-lg">
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                            `https://wa.me/33780978892?text=${encodeURIComponent(
-                              `Salut ! Je viens du site ZedCheckout.\n\n` +
-                              `${leadData.website ? `Mon site : ${leadData.website}\n` : ''}` +
-                              `${leadData.firstName ? `Prénom : ${leadData.firstName}\n` : ''}` +
-                              `${leadData.email ? `Email : ${leadData.email}\n` : ''}` +
-                              `${leadData.challenge ? `Défi : ${leadData.challenge}\n` : ''}` +
-                              `\nJ'aimerais en savoir plus sur ZedCheckout.`
-                            )}`
+                        <QRCodeSVG
+                          value={`https://wa.me/33780978892?text=${encodeURIComponent(
+                            `Salut ! Je viens du site ZedCheckout.\n\n` +
+                            `${leadData.website ? `Mon site : ${leadData.website}\n` : ''}` +
+                            `${leadData.firstName ? `Prénom : ${leadData.firstName}\n` : ''}` +
+                            `${leadData.email ? `Email : ${leadData.email}\n` : ''}` +
+                            `${leadData.challenge ? `Défi : ${leadData.challenge}\n` : ''}` +
+                            `\nJ'aimerais en savoir plus sur ZedCheckout.`
                           )}`}
-                          alt="QR Code WhatsApp"
-                          className="w-48 h-48"
+                          size={192}
+                          level="M"
+                          includeMargin={false}
                         />
                       </div>
                       <a
