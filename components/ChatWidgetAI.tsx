@@ -229,6 +229,7 @@ export default function ChatWidgetAI() {
   const [showQRModal, setShowQRModal] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [shouldSendHeroGreeting, setShouldSendHeroGreeting] = useState(false);
+  const hasShownHeroGreeting = useRef(false); // Track if hero greeting was shown this session
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -771,20 +772,21 @@ export default function ChatWidgetAI() {
 
   // Handle hero CTA greeting - placed after addBotMessage is defined
   useEffect(() => {
-    if (shouldSendHeroGreeting && messages.length === 0 && isOpen) {
+    if (shouldSendHeroGreeting && !hasShownHeroGreeting.current && isOpen) {
       setTimeout(() => {
-        const greetingMessage = locale === 'fr' 
+        const greetingMessage = locale === 'fr'
           ? "Salut ! 👋\n\nJe suis l'assistant ZedCheckout. Partage-moi l'URL de ton site e-commerce et je t'aide à améliorer ton tunnel de vente."
           : "Hey! 👋\n\nI'm the ZedCheckout assistant. Share your e-commerce site URL and I'll help you improve your checkout flow.";
-        
+
         addBotMessage(greetingMessage, [
           locale === 'fr' ? "C'est parti !" : "Let's go!"
         ]);
-        
+
         setShouldSendHeroGreeting(false);
+        hasShownHeroGreeting.current = true; // Mark as shown for this session
       }, 500);
     }
-  }, [shouldSendHeroGreeting, messages.length, isOpen, locale, addBotMessage]);
+  }, [shouldSendHeroGreeting, isOpen, locale, addBotMessage]);
 
   // 🔥 RESEARCH HANDLER - The magic happens here
   const handleResearch = async (
