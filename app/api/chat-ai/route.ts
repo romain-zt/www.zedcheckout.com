@@ -637,10 +637,26 @@ async function createStreamingResponse(options: {
   const enhancedSystemPrompt = `${systemPrompt}\\n\\n${contextMessage}`;
 
   // Prepare messages for Claude
-  const messages: ChatMessage[] = [
+  const rawMessages: ChatMessage[] = [
     ...conversationHistory.slice(-20), // Keep last 20 messages
     { role: 'user', content: message }
   ];
+
+  // 🔥 FIX CRITIQUE: Filter out empty messages (Claude API rejects them)
+  const messages = rawMessages.filter(msg => {
+    if (!msg.content) return false;
+    if (typeof msg.content === 'string' && msg.content.trim() === '') return false;
+    return true;
+  });
+
+  console.log('🔵 [createStreamingResponse] Filtered messages:', {
+    rawCount: rawMessages.length,
+    filteredCount: messages.length,
+    messages: messages.map(m => ({
+      role: m.role,
+      contentLength: typeof m.content === 'string' ? m.content.length : JSON.stringify(m.content).length
+    }))
+  });
 
   // \ud83d\udd25 STREAM RESPONSE from Claude
   const encoder = new TextEncoder();

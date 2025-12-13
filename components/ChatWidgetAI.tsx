@@ -918,6 +918,17 @@ export default function ChatWidgetAI() {
         }, DELAY_OPTIONS[Math.floor(Math.random() * DELAY_OPTIONS.length)]);
       }
       
+      // 🔥 FIX: Filter out empty messages before sending
+      const validHistory = conversationHistory
+        .slice(-20) // Keep last 20
+        .filter(msg => msg.content && msg.content.trim() !== '');
+
+      console.log('🔵 [Frontend] Sending to API:', {
+        userMessage: userMessage.substring(0, 50),
+        historyCount: validHistory.length,
+        stream: true
+      });
+
       // 🔥 NEW: SSE STREAMING (like supafriends.ai)
       const response = await fetch('/api/chat-ai', {
         method: 'POST',
@@ -926,7 +937,7 @@ export default function ChatWidgetAI() {
         },
         body: JSON.stringify({
           message: userMessage,
-          conversationHistory: conversationHistory.slice(-20), // Keep last 20
+          conversationHistory: validHistory,
           leadData,
           sectionContext: currentSection,
           sectionDescription: sectionContext,
