@@ -766,6 +766,7 @@ export default function ChatWidgetAI() {
           context: `Conversation about ZedCheckout. User message: "${originalUserMessage}"`,
           userWebsite: leadData.website,
           leadData,
+          locale, // Pass locale to research API
         }),
       });
       
@@ -826,6 +827,7 @@ Now provide a natural follow-up message to the user based on these research find
           ],
           leadData,
           sectionContext: currentSection,
+          locale, // Pass locale for prompt selection
         }),
       });
       
@@ -921,6 +923,7 @@ Now provide a natural follow-up message to the user based on these research find
           leadData,
           sectionContext: currentSection,
           sectionDescription: sectionContext,
+          locale, // Pass locale for prompt selection
         }),
       });
 

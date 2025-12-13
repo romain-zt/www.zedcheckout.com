@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { loadPrompt, normalizeLocale, type Locale } from '@/lib/prompt-loader';
 
 const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || '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';
+
+// Cache prompts in memory
+let CACHED_RESEARCH_PROMPTS: Record<string, string> = {};
+
+function getResearchSystemPrompt(locale: Locale): string {
+  if (!CACHED_RESEARCH_PROMPTS[locale]) {
+    CACHED_RESEARCH_PROMPTS[locale] = loadPrompt('research', locale);
+  }
+  return CACHED_RESEARCH_PROMPTS[locale];
+}
 
 // ============================================================================
 // RESEARCH TYPES
@@ -20,6 +31,7 @@ interface ResearchRequest {
   context: string;            // Le contexte de la conversation
   userWebsite?: string;       // URL du site utilisateur si disponible
   leadData?: any;             // Données du lead pour contexte
+  locale?: string;            // Locale for the research (fr-FR, en-EN)
 }
 
 interface ResearchResponse {
@@ -134,7 +146,10 @@ Be concise and factual.`;
 // PERPLEXITY API CALL
 // ============================================================================
 
-async function callPerplexity(query: string): Promise<any> {
+async function callPerplexity(query: string, locale: Locale = 'fr-FR'): Promise<any> {
+  // Load the research system prompt for the appropriate locale
+  const systemPrompt = getResearchSystemPrompt(locale);
+  
   const response = await fetch('https://api.perplexity.ai/chat/completions', {
     method: 'POST',
     headers: {
@@ -146,17 +161,7 @@ async function callPerplexity(query: string): Promise<any> {
       messages: [
         {
           role: 'system',
-          content: `You are a customer-focused business analyst specializing in e-commerce. 
-
-Your priority is understanding:
-1. What the business ACTUALLY does (not assumptions based on design)
-2. Who their customers are and what they need
-3. The business model and value proposition
-4. Then the technical implementation
-
-Be precise: A beauty institute is NOT decoration. A wellness spa is NOT fashion accessories. Read the actual content, products, and services offered.
-
-Provide concise, factual, well-structured answers that prioritize customer understanding over technical details.`
+          content: systemPrompt
         },
         {
           role: 'user',
@@ -184,7 +189,10 @@ Provide concise, factual, well-structured answers that prioritize customer under
 export async function POST(request: NextRequest) {
   try {
     const body: ResearchRequest = await request.json();
-    const { type, query, context, userWebsite, leadData } = body;
+    const { type, query, context, userWebsite, leadData, locale: requestLocale } = body;
+    
+    // Normalize locale
+    const locale = normalizeLocale(requestLocale);
 
     // Validate request
     if (!type || !query) {
@@ -197,10 +205,10 @@ export async function POST(request: NextRequest) {
     // Build Perplexity query
     const perplexityQuery = buildPerplexityQuery(body);
 
-    console.log(`[Research] Starting ${type} research:`, query);
+    console.log(`[Research] Starting ${type} research (${locale}):`, query);
 
-    // Call Perplexity
-    const perplexityResponse = await callPerplexity(perplexityQuery);
+    // Call Perplexity with locale
+    const perplexityResponse = await callPerplexity(perplexityQuery, locale);
 
     // Extract the response content
     const researchResult = perplexityResponse.choices?.[0]?.message?.content || '';
