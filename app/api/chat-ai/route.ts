@@ -570,6 +570,14 @@ async function createStreamingResponse(options: {
     characterData
   } = options;
 
+  console.log('🔵 [createStreamingResponse] Called with:', {
+    messageLength: message.length,
+    conversationHistoryLength: conversationHistory.length,
+    locale,
+    isFirstMessage,
+    isRoleplayMode
+  });
+
   // \ud83d\udd25 GREETING: If first message, return greeting immediately
   if (isFirstMessage || conversationHistory.length === 0) {
     const greetingMessage = locale === 'fr-FR' 
@@ -655,18 +663,21 @@ async function createStreamingResponse(options: {
         });
 
         // Stream each chunk from Claude
+        console.log('🔵 [Stream] Starting to stream from Claude...');
         for await (const chunk of claudeStream) {
           if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
             const text = chunk.delta.text;
             fullText += text;
             
             // Send text chunk to client
+            console.log('🔵 [Stream] Sending chunk:', text.substring(0, 50));
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({
               type: 'chunk',
               content: text
             })}\\n\\n`));
           }
         }
+        console.log('🔵 [Stream] Finished streaming, fullText length:', fullText.length);
 
         // \ud83d\udd25 DECODE \\n correctly
         const decodedText = fullText.replace(/\\\\n/g, '\\n');
@@ -1268,10 +1279,12 @@ export async function POST(request: NextRequest) {
 
     // Detect mode
     const isRoleplayMode = mode === 'roleplay' && characterData !== undefined;
-    const isLegacyMode = leadData !== undefined && clientContext === undefined;
+    // 🔥 FIX: If stream is explicitly enabled, FORCE streaming mode (ignore legacy detection)
+    const isLegacyMode = !stream && leadData !== undefined && clientContext === undefined;
 
     // 🔥 NEW: SSE STREAMING MODE (like supafriends.ai)
-    if (stream && !isLegacyMode) {
+    if (stream) {
+      console.log('🔵 [API] SSE Streaming enabled, calling createStreamingResponse()');
       return createStreamingResponse({
         message,
         conversationHistory,

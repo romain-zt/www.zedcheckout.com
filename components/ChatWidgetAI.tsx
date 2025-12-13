@@ -946,6 +946,7 @@ export default function ChatWidgetAI() {
       }
 
       // 🔥 CONSUME SSE STREAM
+      console.log('🔵 Starting SSE stream consumption...');
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let streamedText = '';
@@ -968,15 +969,20 @@ export default function ChatWidgetAI() {
       while (true) {
         const { done, value } = await reader.read();
         
-        if (done) break;
+        if (done) {
+          console.log('🔵 SSE stream ended');
+          break;
+        }
 
         const chunk = decoder.decode(value, { stream: true });
+        console.log('🔵 Received chunk:', chunk);
         const lines = chunk.split('\\n');
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
+              console.log('🔵 Parsed SSE data:', data);
 
               if (data.type === 'chunk') {
                 // Accumulate streamed text
