@@ -548,6 +548,184 @@ function buildContextMessage(context: ConversationContext): string {
 }
 
 // ============================================================================
+// SSE STREAMING HANDLER (like supafriends.ai)
+// ============================================================================
+
+async function createStreamingResponse(options: {
+  message: string;
+  conversationHistory: ChatMessage[];
+  clientContext?: ConversationContext;
+  locale: Locale;
+  isFirstMessage: boolean;
+  isRoleplayMode?: boolean;
+  characterData?: RoleplayCharacter;
+}) {
+  const {
+    message,
+    conversationHistory,
+    clientContext,
+    locale,
+    isFirstMessage,
+    isRoleplayMode,
+    characterData
+  } = options;
+
+  // \ud83d\udd25 GREETING: If first message, return greeting immediately
+  if (isFirstMessage || conversationHistory.length === 0) {
+    const greetingMessage = locale === 'fr-FR' 
+      ? "Salut ! \ud83d\udc4b\\n\\nC'est quoi ton site e-commerce ?"
+      : "Hey! \ud83d\udc4b\\n\\nWhat's your e-commerce site?";
+    
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        // Send greeting message
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ 
+          type: 'message', 
+          content: greetingMessage 
+        })}\\n\\n`));
+        
+        // Signal completion
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\\n\\n`));
+        controller.close();
+      }
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+  }
+
+  // Initialize context
+  const sessionStarted = conversationHistory.length > 0 
+    ? new Date(Date.now() - (conversationHistory.length * 30000)).toISOString()
+    : new Date().toISOString();
+
+  let context: ConversationContext = clientContext || {
+    state: 'discovery',
+    cart: [],
+    userInfo: {},
+    metadata: {
+      sessionStarted,
+      lastInteraction: new Date().toISOString(),
+      messageCount: conversationHistory.filter(m => m.role === 'user').length + 1,
+      intentHistory: []
+    },
+    trollScore: 0,
+    trollHistory: []
+  };
+
+  // Load system prompt
+  const systemPrompt = isRoleplayMode && characterData
+    ? getRoleplaySystemPrompt(locale, characterData)
+    : getSystemPrompt(locale);
+
+  // Build context message
+  const contextMessage = buildContextMessage(context);
+  const enhancedSystemPrompt = `${systemPrompt}\\n\\n${contextMessage}`;
+
+  // Prepare messages for Claude
+  const messages: ChatMessage[] = [
+    ...conversationHistory.slice(-20), // Keep last 20 messages
+    { role: 'user', content: message }
+  ];
+
+  // \ud83d\udd25 STREAM RESPONSE from Claude
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        let fullText = '';
+        
+        // Create streaming request to Claude
+        const claudeStream = await anthropic.messages.create({
+          model: 'claude-3-5-sonnet-20241022',
+          max_tokens: 1024,
+          temperature: 0.7,
+          system: enhancedSystemPrompt,
+          messages: messages.map(msg => ({
+            role: msg.role,
+            content: msg.content
+          })),
+          stream: true
+        });
+
+        // Stream each chunk from Claude
+        for await (const chunk of claudeStream) {
+          if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+            const text = chunk.delta.text;
+            fullText += text;
+            
+            // Send text chunk to client
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+              type: 'chunk',
+              content: text
+            })}\\n\\n`));
+          }
+        }
+
+        // \ud83d\udd25 DECODE \\n correctly
+        const decodedText = fullText.replace(/\\\\n/g, '\\n');
+
+        // \ud83d\udd25 PARSE JSON response (if formatted as JSON)
+        let finalMessage = decodedText;
+        let extractedData = {};
+        let confidence = 0.7;
+
+        try {
+          const parsed = JSON.parse(decodedText);
+          if (parsed.messages && Array.isArray(parsed.messages) && parsed.messages.length > 0) {
+            // \u2757 FORCE ONLY FIRST MESSAGE
+            finalMessage = parsed.messages[0].content || parsed.messages[0].text || decodedText;
+          }
+          if (parsed.context_update) {
+            extractedData = parsed.context_update.data_collected || {};
+            confidence = parsed.context_update.confidence || 0.7;
+          }
+        } catch {
+          // Not JSON, use plain text
+          finalMessage = decodedText;
+        }
+
+        // Send final message metadata
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+          type: 'metadata',
+          extractedData,
+          confidence,
+          emotionalState: null
+        })}\\n\\n`));
+
+        // Signal completion
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\\n\\n`));
+        controller.close();
+        
+      } catch (error: any) {
+        console.error('Streaming error:', error);
+        
+        // Send error event
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+          type: 'error',
+          message: error.message || 'An error occurred'
+        })}\\n\\n`));
+        controller.close();
+      }
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
+}
+
+// ============================================================================
 // LEGACY MODE HANDLER (for old ChatWidgetAI.tsx)
 // ============================================================================
 
@@ -1053,7 +1231,7 @@ async function processWithAgent(
 }
 
 // ============================================================================
-// API ROUTE HANDLER
+// API ROUTE HANDLER - SSE STREAMING (like supafriends.ai)
 // ============================================================================
 import characterDataRaw from "./character.json";
 
@@ -1080,6 +1258,7 @@ export async function POST(request: NextRequest) {
       sectionDescription,
       locale: requestLocale, // New: locale from request
       mode, // New: 'roleplay' | 'agent' | 'lead'
+      stream = true, // Enable streaming by default
     } = body;
 
     // Detect and normalize locale from request or Accept-Language header
@@ -1090,6 +1269,19 @@ export async function POST(request: NextRequest) {
     // Detect mode
     const isRoleplayMode = mode === 'roleplay' && characterData !== undefined;
     const isLegacyMode = leadData !== undefined && clientContext === undefined;
+
+    // 🔥 NEW: SSE STREAMING MODE (like supafriends.ai)
+    if (stream && !isLegacyMode) {
+      return createStreamingResponse({
+        message,
+        conversationHistory,
+        clientContext,
+        locale,
+        isFirstMessage,
+        isRoleplayMode,
+        characterData
+      });
+    }
 
     // Initialize or restore context
     let context: ConversationContext = clientContext ? {

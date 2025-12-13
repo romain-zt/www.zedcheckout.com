@@ -909,6 +909,7 @@ export default function ChatWidgetAI() {
         }, DELAY_OPTIONS[Math.floor(Math.random() * DELAY_OPTIONS.length)]);
       }
       
+      // 🔥 NEW: SSE STREAMING (like supafriends.ai)
       const response = await fetch('/api/chat-ai', {
         method: 'POST',
         headers: {
@@ -916,11 +917,12 @@ export default function ChatWidgetAI() {
         },
         body: JSON.stringify({
           message: userMessage,
-          conversationHistory,
+          conversationHistory: conversationHistory.slice(-20), // Keep last 20
           leadData,
           sectionContext: currentSection,
           sectionDescription: sectionContext,
-          locale, // Pass locale for prompt selection
+          locale,
+          stream: true, // Enable streaming
         }),
       });
 
@@ -934,134 +936,111 @@ export default function ChatWidgetAI() {
         throw new Error(errorData.error || 'Erreur de connexion');
       }
 
-      const data = await response.json();
-      
-      // Clear slow response timeout and stop slow typing simulation on success
+      // 🔥 CONSUME SSE STREAM
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let streamedText = '';
+      let botMessageId = '';
+
+      if (!reader) {
+        throw new Error('No response body');
+      }
+
+      // Clear slow response timeout once streaming starts
       if (slowResponseTimeoutRef.current) {
         clearTimeout(slowResponseTimeoutRef.current);
         slowResponseTimeoutRef.current = null;
       }
       stopSlowTypingSimulation();
-      
-      if (data.success && data.response) {
-        const aiResponse = data.response;
+
+      // Show typing indicator
+      setIsTyping(true);
+
+      while (true) {
+        const { done, value } = await reader.read();
         
-        // Reset retry count on success
-        setRetryCount(0);
-        
-        // Now show typing indicator, then AI message
-        // addBotMessage already handles typing with setIsTyping(true)
-        addBotMessage(aiResponse.message, aiResponse.suggestedReplies);
-        
-        // Update conversation history
-        setConversationHistory(prev => [
-          ...prev,
-          { role: 'user', content: userMessage },
-          { role: 'assistant', content: aiResponse.message },
-        ]);
-        
-        // Merge extracted data with existing lead data
-        if (aiResponse.extractedData && Object.keys(aiResponse.extractedData).length > 0) {
-          const newData = aiResponse.extractedData;
-          setLeadData(prev => {
-            const merged = { ...prev, ...newData };
-            
-            // Track data collection progress
-            const fieldsCollected = Object.keys(merged).length;
-            trackEvent('lead_data_updated', {
-              fieldsCollected,
-              newFields: Object.keys(newData),
-              confidence: aiResponse.confidence,
-              emotionalState: aiResponse.emotionalState,
-              hasWebsite: !!newData.website,
-            });
-            
-            return merged;
-          });
-        }
-        
-        // Track emotional state for analytics
-        if (aiResponse.emotionalState) {
-          trackEvent('emotional_state_detected', {
-            state: aiResponse.emotionalState,
-            messageNumber: conversationHistory.length / 2,
-          });
-        }
-        
-        // Check if qualification is complete
-        if (aiResponse.isQualificationComplete) {
-          trackEvent('qualification_complete', {
-            fieldsCollected: Object.keys(leadData).length,
-            conversationLength: conversationHistory.length,
-          });
-          
-          setTimeout(() => {
-            completeQualification();
-          }, 2000);
-        }
-        
-        trackEvent('ai_response_received', {
-          hasExtractedData: !!(aiResponse.extractedData && Object.keys(aiResponse.extractedData).length > 0),
-          hasSuggestions: !!(aiResponse.suggestedReplies && aiResponse.suggestedReplies.length > 0),
-          confidence: aiResponse.confidence,
-        });
-        
-        // 🔥 MAGIC: Check if AI needs research
-        if (aiResponse.needsResearch && aiResponse.researchType && aiResponse.researchQuery) {
-          const researchId = `research_${Date.now()}`;
-          
-          // Set pending research state
-          setPendingResearch({
-            id: researchId,
-            type: aiResponse.researchType,
-            query: aiResponse.researchQuery,
-            context: `User: ${userMessage}\nAI: ${aiResponse.message}\n\nConversation context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}`,
-            startedAt: Date.now(),
-            status: 'pending',
-          });
-          
-          trackEvent('research_triggered', {
-            type: aiResponse.researchType,
-            confidence: aiResponse.confidence,
-          });
-          
-          // Start research in background
-          handleResearch(researchId, aiResponse.researchType, aiResponse.researchQuery, userMessage);
-        } 
-        // 🔥 FORCE AUTOMATIC RESEARCH if URL detected but AI didn't trigger research
-        else {
-          const urlDetection = detectAndExtractURL(userMessage);
-          
-          // If URL detected and not already in leadData.website, force research
-          if (urlDetection.isURL && urlDetection.url && urlDetection.url !== leadData.website) {
-            const researchId = `research_auto_${Date.now()}`;
-            
-            // Update leadData immediately with the detected URL
-            setLeadData(prev => ({ ...prev, website: urlDetection.url }));
-            
-            // Set pending research state
-            setPendingResearch({
-              id: researchId,
-              type: 'website_check',
-              query: `Analyze website ${urlDetection.url} - business type, products, e-commerce platform, customer experience`,
-              context: `User message: "${userMessage}"\n\nConversation context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}`,
-              startedAt: Date.now(),
-              status: 'pending',
-            });
-            
-            trackEvent('research_auto_triggered', {
-              type: 'website_check',
-              url: urlDetection.url,
-              domain: urlDetection.domain,
-            });
-            
-            // Start research in background
-            handleResearch(researchId, 'website_check', `Analyze website ${urlDetection.url} - business type, products, e-commerce platform, customer experience`, userMessage);
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === 'chunk') {
+                // Accumulate streamed text
+                streamedText += data.content;
+
+                // Create or update bot message
+                if (!botMessageId) {
+                  botMessageId = `bot-${Date.now()}`;
+                  setMessages(prev => [...prev, {
+                    id: botMessageId,
+                    text: streamedText,
+                    sender: 'bot',
+                    timestamp: new Date(),
+                  }]);
+                } else {
+                  setMessages(prev => prev.map(m =>
+                    m.id === botMessageId ? { ...m, text: streamedText } : m
+                  ));
+                }
+
+                // Auto-scroll to bottom
+                if (messagesEndRef.current) {
+                  messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
+
+              if (data.type === 'metadata') {
+                // Update lead data with extracted data
+                if (data.extractedData && Object.keys(data.extractedData).length > 0) {
+                  setLeadData(prev => {
+                    const merged = { ...prev, ...data.extractedData };
+                    trackEvent('lead_data_updated', {
+                      fieldsCollected: Object.keys(merged).length,
+                      confidence: data.confidence,
+                    });
+                    return merged;
+                  });
+                }
+              }
+
+              if (data.type === 'done') {
+                // Stop typing indicator
+                setIsTyping(false);
+
+                // Update conversation history
+                setConversationHistory(prev => [
+                  ...prev,
+                  { role: 'user', content: userMessage },
+                  { role: 'assistant', content: streamedText },
+                ]);
+
+                // Reset retry count
+                setRetryCount(0);
+
+                trackEvent('ai_response_received', {
+                  hasExtractedData: true,
+                  confidence: 0.7,
+                });
+              }
+
+              if (data.type === 'error') {
+                throw new Error(data.message);
+              }
+            } catch (parseError) {
+              console.error('Failed to parse SSE data:', parseError);
+            }
           }
         }
-      } else {
-        throw new Error('Réponse invalide du serveur');
       }
+
+      
+      // 🔥 REMOVED: Old research handling (causing double responses)
+      // Research will be integrated into SSE stream later
       
     } catch (error: any) {
       console.error('Error calling AI:', error);
