@@ -1287,39 +1287,91 @@ Now provide a natural follow-up message to the user based on these research find
 
   return (
     <>
-      {/* Floating Write Icon - Closed State */}
+      {/* Floating Edit Icon - Styled to match Hero CTA for visual continuity */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button
             onClick={handleIconClick}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ scale: 1.1 }}
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.95 }}
             transition={{ 
               type: 'spring', 
-              stiffness: 200, 
+              stiffness: 300, 
               damping: 25 
             }}
             className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-40 group"
             aria-label={hasUnreadToast ? "Ouvrir le chat (1 message non lu)" : "Ouvrir le chat"}
             aria-expanded={isOpen}
           >
-            {/* Glow effect */}
-            <div className="absolute -inset-3 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] rounded-full opacity-50 group-hover:opacity-70 blur-xl transition-opacity animate-pulse" />
+            {/* Outer glow ring - pulsing (matches Hero CTA glow) */}
+            <motion.div 
+              className="absolute -inset-3 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] rounded-full blur-xl"
+              animate={{
+                opacity: [0.3, 0.6, 0.3],
+                scale: [0.95, 1.08, 0.95]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              }}
+            />
             
-            {/* Icon button */}
-            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#FFC9B9] flex items-center justify-center shadow-2xl">
+            {/* Secondary pulse ring for depth */}
+            <motion.div 
+              className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] to-[#D4766A] rounded-full"
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.5, 0, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: 'easeOut'
+              }}
+            />
+            
+            {/* Main button container - matches Hero CTA gradient */}
+            <motion.div 
+              className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#D4766A] flex items-center justify-center shadow-2xl overflow-hidden cursor-pointer"
+              whileHover={{ 
+                boxShadow: '0 20px 40px -10px rgba(232, 139, 122, 0.5)'
+              }}
+            >
+              {/* Animated gradient background - same as Hero CTA */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-br from-[#FFC9B9] via-[#E88B7A] to-[#D4766A]"
+                animate={{
+                  rotate: [0, 360]
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: 'linear'
+                }}
+                style={{ opacity: 0.7, transformOrigin: 'center' }}
+              />
+              
+              {/* Shine effect on hover */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100"
+                initial={{ x: '-100%' }}
+                whileHover={{ x: '100%' }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              />
+              
               {/* Pencil/Write icon */}
               <motion.svg 
-                className="w-7 h-7 text-white" 
+                className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
                 animate={shouldAnimate ? {
                   x: [0, -3, 3, -3, 3, -2, 2, 0],
-                  rotate: [0, -5, 5, -5, 5, -3, 3, 0]
+                  rotate: [0, -8, 8, -8, 8, -4, 4, 0]
                 } : {
                   x: 0,
                   rotate: 0
@@ -1331,18 +1383,46 @@ Now provide a natural follow-up message to the user based on these research find
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </motion.svg>
-              
-              {/* Unread badge */}
-              {hasUnreadToast && (
+            </motion.div>
+            
+            {/* Unread badge - enhanced */}
+            {hasUnreadToast && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg"
+              >
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center"
-                >
-                  <span className="text-white text-xs font-bold">1</span>
-                </motion.div>
-              )}
-            </div>
+                  className="w-2 h-2 bg-emerald-300 rounded-full"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [1, 0.5, 1]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity
+                  }}
+                />
+              </motion.div>
+            )}
+            
+            {/* Tooltip on hover - Desktop */}
+            <motion.div
+              initial={{ opacity: 0, x: 10, scale: 0.9 }}
+              whileHover={{ opacity: 1, x: 0, scale: 1 }}
+              className="hidden sm:group-hover:block absolute right-full mr-4 top-1/2 -translate-y-1/2 whitespace-nowrap pointer-events-none"
+            >
+              <div className="bg-[#1E2A47] text-white text-sm font-medium px-4 py-2 rounded-xl shadow-xl">
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-[#FFC9B9]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                  </svg>
+                  <span>Discutons de votre projet</span>
+                </div>
+                {/* Arrow pointing right */}
+                <div className="absolute top-1/2 -translate-y-1/2 -right-2 w-0 h-0 border-l-8 border-l-[#1E2A47] border-t-4 border-t-transparent border-b-4 border-b-transparent" />
+              </div>
+            </motion.div>
           </motion.button>
         )}
       </AnimatePresence>
