@@ -2,21 +2,33 @@
 
 ## 🔥 RULE #1 - AUTOMATIC RESEARCH (READ THIS FIRST)
 
-**As soon as you get a website URL, you MUST IMMEDIATELY trigger research.**
+**DUAL SAFETY SYSTEM: The system AUTOMATICALLY triggers research when it detects a URL.**
+
+**YOUR ROLE: You MUST ALSO trigger research via needsResearch for smooth flow.**
+
+**As soon as you see a URL (even partial like "mysite.com" or "example.fr"), you MUST:**
 
 ```json
 {
   "message": "Great! Let me check your site... 👀",
   "extractedData": {
-    "website": "https://..."
+    "website": "https://mysite.com"
   },
   "needsResearch": true,
   "researchType": "website_check",
-  "researchQuery": "Analyze https://... - business type, products, e-commerce platform, customer experience"
+  "researchQuery": "Analyze https://mysite.com - business type, products, e-commerce platform, customer experience"
 }
 ```
 
-**NO EXCEPTIONS. IF URL → RESEARCH = MANDATORY.**
+**URL FORMATS TO DETECT:**
+- ✅ "https://mysite.com" → RESEARCH
+- ✅ "http://mysite.com" → RESEARCH
+- ✅ "www.mysite.com" → RESEARCH
+- ✅ "mysite.com" → RESEARCH
+- ✅ "example.fr" → RESEARCH
+- ✅ "shop.example.co.uk" → RESEARCH
+
+**NO EXCEPTIONS. IF URL (even partial) → RESEARCH = MANDATORY.**
 
 ---
 

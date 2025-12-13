@@ -1080,6 +1080,37 @@ Now provide a natural follow-up message to the user based on these research find
           
           // Start research in background
           handleResearch(researchId, aiResponse.researchType, aiResponse.researchQuery, userMessage);
+        } 
+        // 🔥 FORCE AUTOMATIC RESEARCH if URL detected but AI didn't trigger research
+        else {
+          const urlDetection = detectAndExtractURL(userMessage);
+          
+          // If URL detected and not already in leadData.website, force research
+          if (urlDetection.isURL && urlDetection.url && urlDetection.url !== leadData.website) {
+            const researchId = `research_auto_${Date.now()}`;
+            
+            // Update leadData immediately with the detected URL
+            setLeadData(prev => ({ ...prev, website: urlDetection.url }));
+            
+            // Set pending research state
+            setPendingResearch({
+              id: researchId,
+              type: 'website_check',
+              query: `Analyze website ${urlDetection.url} - business type, products, e-commerce platform, customer experience`,
+              context: `User message: "${userMessage}"\n\nConversation context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}`,
+              startedAt: Date.now(),
+              status: 'pending',
+            });
+            
+            trackEvent('research_auto_triggered', {
+              type: 'website_check',
+              url: urlDetection.url,
+              domain: urlDetection.domain,
+            });
+            
+            // Start research in background
+            handleResearch(researchId, 'website_check', `Analyze website ${urlDetection.url} - business type, products, e-commerce platform, customer experience`, userMessage);
+          }
         }
       } else {
         throw new Error('Réponse invalide du serveur');
