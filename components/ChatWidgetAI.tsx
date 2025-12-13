@@ -926,10 +926,9 @@ export default function ChatWidgetAI() {
       console.log('🔵 [Frontend] Sending to API:', {
         userMessage: userMessage.substring(0, 50),
         historyCount: validHistory.length,
-        stream: true
       });
 
-      // 🔥 NEW: SSE STREAMING (like supafriends.ai)
+      // 🔥 REVERT: Back to JSON mode (SSE was causing 404 errors)
       const response = await fetch('/api/chat-ai', {
         method: 'POST',
         headers: {
@@ -942,7 +941,7 @@ export default function ChatWidgetAI() {
           sectionContext: currentSection,
           sectionDescription: sectionContext,
           locale,
-          stream: true, // Enable streaming
+          // stream: false, // SSE disabled
         }),
       });
 
@@ -956,117 +955,80 @@ export default function ChatWidgetAI() {
         throw new Error(errorData.error || 'Erreur de connexion');
       }
 
-      // 🔥 CONSUME SSE STREAM
-      console.log('🔵 Starting SSE stream consumption...');
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let streamedText = '';
-      let botMessageId = '';
-
-      if (!reader) {
-        throw new Error('No response body');
-      }
-
-      // Clear slow response timeout once streaming starts
+      const data = await response.json();
+      
+      // Clear slow response timeout and stop slow typing simulation on success
       if (slowResponseTimeoutRef.current) {
         clearTimeout(slowResponseTimeoutRef.current);
         slowResponseTimeoutRef.current = null;
       }
       stopSlowTypingSimulation();
-
-      // Show typing indicator
-      setIsTyping(true);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        
-        if (done) {
-          console.log('🔵 SSE stream ended');
-          break;
-        }
-
-        const chunk = decoder.decode(value, { stream: true });
-        console.log('🔵 Received chunk:', chunk);
-        const lines = chunk.split('\\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              console.log('🔵 Parsed SSE data:', data);
-
-              if (data.type === 'chunk') {
-                // Accumulate streamed text
-                streamedText += data.content;
-
-                // Create or update bot message
-                if (!botMessageId) {
-                  botMessageId = `bot-${Date.now()}`;
-                  setMessages(prev => [...prev, {
-                    id: botMessageId,
-                    text: streamedText,
-                    sender: 'bot',
-                    timestamp: new Date(),
-                  }]);
-                } else {
-                  setMessages(prev => prev.map(m =>
-                    m.id === botMessageId ? { ...m, text: streamedText } : m
-                  ));
-                }
-
-                // Auto-scroll to bottom
-                if (messagesEndRef.current) {
-                  messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                }
-              }
-
-              if (data.type === 'metadata') {
-                // Update lead data with extracted data
-                if (data.extractedData && Object.keys(data.extractedData).length > 0) {
-                  setLeadData(prev => {
-                    const merged = { ...prev, ...data.extractedData };
-                    trackEvent('lead_data_updated', {
-                      fieldsCollected: Object.keys(merged).length,
-                      confidence: data.confidence,
-                    });
-                    return merged;
-                  });
-                }
-              }
-
-              if (data.type === 'done') {
-                // Stop typing indicator
-                setIsTyping(false);
-
-                // Update conversation history
-                setConversationHistory(prev => [
-                  ...prev,
-                  { role: 'user', content: userMessage },
-                  { role: 'assistant', content: streamedText },
-                ]);
-
-                // Reset retry count
-                setRetryCount(0);
-
-                trackEvent('ai_response_received', {
-                  hasExtractedData: true,
-                  confidence: 0.7,
-                });
-              }
-
-              if (data.type === 'error') {
-                throw new Error(data.message);
-              }
-            } catch (parseError) {
-              console.error('Failed to parse SSE data:', parseError);
-            }
-          }
-        }
-      }
-
       
-      // 🔥 REMOVED: Old research handling (causing double responses)
-      // Research will be integrated into SSE stream later
+      if (data.success && data.response) {
+        const aiResponse = data.response;
+        
+        // Reset retry count on success
+        setRetryCount(0);
+        
+        // Now show typing indicator, then AI message
+        // addBotMessage already handles typing with setIsTyping(true)
+        addBotMessage(aiResponse.message, aiResponse.suggestedReplies);
+        
+        // Update conversation history
+        setConversationHistory(prev => [
+          ...prev,
+          { role: 'user', content: userMessage },
+          { role: 'assistant', content: aiResponse.message },
+        ]);
+        
+        // Merge extracted data with existing lead data
+        if (aiResponse.extractedData && Object.keys(aiResponse.extractedData).length > 0) {
+          const newData = aiResponse.extractedData;
+          setLeadData(prev => {
+            const merged = { ...prev, ...newData };
+            
+            // Track data collection progress
+            const fieldsCollected = Object.keys(merged).length;
+            trackEvent('lead_data_updated', {
+              fieldsCollected,
+              newFields: Object.keys(newData),
+              confidence: aiResponse.confidence,
+              emotionalState: aiResponse.emotionalState,
+              hasWebsite: !!newData.website,
+            });
+            
+            return merged;
+          });
+        }
+        
+        // Track emotional state for analytics
+        if (aiResponse.emotionalState) {
+          trackEvent('emotional_state_detected', {
+            state: aiResponse.emotionalState,
+            messageNumber: conversationHistory.length / 2,
+          });
+        }
+        
+        // Check if qualification is complete
+        if (aiResponse.isQualificationComplete) {
+          trackEvent('qualification_complete', {
+            fieldsCollected: Object.keys(leadData).length,
+            conversationLength: conversationHistory.length,
+          });
+          
+          setTimeout(() => {
+            completeQualification();
+          }, 2000);
+        }
+        
+        trackEvent('ai_response_received', {
+          hasExtractedData: !!(aiResponse.extractedData && Object.keys(aiResponse.extractedData).length > 0),
+          hasSuggestions: !!(aiResponse.suggestedReplies && aiResponse.suggestedReplies.length > 0),
+          confidence: aiResponse.confidence,
+        });
+      } else {
+        throw new Error('Réponse invalide du serveur');
+      }
       
     } catch (error: any) {
       console.error('Error calling AI:', error);

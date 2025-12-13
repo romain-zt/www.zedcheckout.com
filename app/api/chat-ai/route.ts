@@ -1295,22 +1295,22 @@ export async function POST(request: NextRequest) {
 
     // Detect mode
     const isRoleplayMode = mode === 'roleplay' && characterData !== undefined;
-    // 🔥 FIX: If stream is explicitly enabled, FORCE streaming mode (ignore legacy detection)
-    const isLegacyMode = !stream && leadData !== undefined && clientContext === undefined;
+    // 🔥 REVERT: Disable SSE streaming (unstable), back to JSON mode
+    const isLegacyMode = leadData !== undefined && clientContext === undefined;
 
-    // 🔥 NEW: SSE STREAMING MODE (like supafriends.ai)
-    if (stream) {
-      console.log('🔵 [API] SSE Streaming enabled, calling createStreamingResponse()');
-      return createStreamingResponse({
-        message,
-        conversationHistory,
-        clientContext,
-        locale,
-        isFirstMessage,
-        isRoleplayMode,
-        characterData
-      });
-    }
+    // 🔥 SSE STREAMING DISABLED (causes 404 errors, will fix later)
+    // if (stream) {
+    //   console.log('🔵 [API] SSE Streaming enabled, calling createStreamingResponse()');
+    //   return createStreamingResponse({
+    //     message,
+    //     conversationHistory,
+    //     clientContext,
+    //     locale,
+    //     isFirstMessage,
+    //     isRoleplayMode,
+    //     characterData
+    //   });
+    // }
 
     // Initialize or restore context
     let context: ConversationContext = clientContext ? {
