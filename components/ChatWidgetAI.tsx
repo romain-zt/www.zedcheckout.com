@@ -242,6 +242,8 @@ export default function ChatWidgetAI() {
   const slowResponseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const slowTypingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const shouldContinueSlowTyping = useRef<boolean>(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingMessagesRef = useRef<string[]>([]);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -1291,6 +1293,7 @@ Now provide a natural follow-up message to the user based on these research find
 
     const userInput = inputValue.trim();
     
+    // Add user message to UI
     const messageId = addUserMessage(userInput);
     setInputValue('');
     
@@ -1299,8 +1302,28 @@ Now provide a natural follow-up message to the user based on these research find
       inputRef.current.style.height = '44px';
     }
 
-    // Call AI to process the message
-    await callAI(userInput, false, messageId);
+    // Add message to pending queue
+    pendingMessagesRef.current.push(userInput);
+    
+    // Clear existing debounce timer
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    
+    // Set new debounce timer (1 second wait after last message)
+    debounceTimeoutRef.current = setTimeout(async () => {
+      // Take all pending messages
+      const messagesToSend = [...pendingMessagesRef.current];
+      pendingMessagesRef.current = [];
+      
+      // If multiple messages, combine them naturally
+      const combinedMessage = messagesToSend.length > 1 
+        ? messagesToSend.join('\\n') 
+        : messagesToSend[0];
+      
+      // Call AI with combined/single message
+      await callAI(combinedMessage, false, messageId);
+    }, 1000);
   };
 
   const handleToastClick = () => {
@@ -1777,7 +1800,24 @@ Now provide a natural follow-up message to the user based on these research find
                   
                   <div className="flex-1 min-w-0 text-left">
                     <div className="text-white font-medium text-base">ZedCheckout</div>
-                    <div className="text-white/80 text-xs">en ligne · {isMobile ? 'Toucher pour continuer' : 'Cliquer pour QR'}</div>
+                    <div className="text-white/80 text-xs">
+                      {pendingResearch ? (
+                        <span className="flex items-center gap-1">
+                          <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          {pendingResearch.type === 'website_check' && 'Analyse du site...'}
+                          {pendingResearch.type === 'platform_compatibility' && 'Vérification plateforme...'}
+                          {pendingResearch.type === 'market_info' && 'Recherche marché...'}
+                          {pendingResearch.type === 'technical_details' && 'Analyse technique...'}
+                          {pendingResearch.type === 'competitor_analysis' && 'Analyse concurrence...'}
+                          {pendingResearch.type === 'pricing_research' && 'Recherche tarifs...'}
+                        </span>
+                      ) : (
+                        <>en ligne · {isMobile ? 'Toucher pour continuer' : 'Cliquer pour QR'}</>
+                      )}
+                    </div>
                   </div>
                 </button>
                 
@@ -1978,26 +2018,7 @@ Now provide a natural follow-up message to the user based on these research find
                   </motion.div>
                 )}
                 
-                {/* 🔥 Research indicator - The magic visual feedback */}
-                {pendingResearch && pendingResearch.status === 'pending' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-center"
-                  >
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700 flex items-center gap-2">
-                      <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                      <span>
-                        {pendingResearch.type === 'website_check' && '🔍 Je vérifie ton site...'}
-                        {pendingResearch.type === 'platform_compatibility' && '⚙️ Je check la compatibilité...'}
-                        {pendingResearch.type === 'market_info' && '📊 Je regarde les stats...'}
-                        {pendingResearch.type === 'technical_details' && '🔧 Je demande aux devs...'}
-                        {pendingResearch.type === 'competitor_analysis' && '🎯 J\'analyse le marché...'}
-                        {pendingResearch.type === 'pricing_research' && '💰 Je check les prix...'}
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
+                {/* Research indicator removed - now shown in header status */}
                 
                 {/* Error state */}
                 {error && (
