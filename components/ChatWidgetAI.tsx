@@ -1026,6 +1026,34 @@ export default function ChatWidgetAI() {
           hasSuggestions: !!(aiResponse.suggestedReplies && aiResponse.suggestedReplies.length > 0),
           confidence: aiResponse.confidence,
         });
+
+        // 🔥 FIX: Trigger automatic research if URL detected
+        const urlDetection = detectAndExtractURL(userMessage);
+        if (urlDetection.isURL && urlDetection.url && urlDetection.url !== leadData.website) {
+          const researchId = `research_auto_${Date.now()}`;
+          
+          // Update leadData immediately with the detected URL
+          setLeadData(prev => ({ ...prev, website: urlDetection.url }));
+          
+          // Set pending research state
+          setPendingResearch({
+            id: researchId,
+            type: 'website_check',
+            query: `Analyze website ${urlDetection.url} - business type, products, e-commerce platform, customer experience`,
+            context: `User message: "${userMessage}"\n\nConversation context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}`,
+            startedAt: Date.now(),
+            status: 'pending',
+          });
+          
+          trackEvent('research_auto_triggered', {
+            type: 'website_check',
+            url: urlDetection.url,
+            domain: urlDetection.domain,
+          });
+          
+          // Start research in background
+          handleResearch(researchId, 'website_check', `Analyze website ${urlDetection.url} - business type, products, e-commerce platform, customer experience`, userMessage);
+        }
       } else {
         throw new Error('Réponse invalide du serveur');
       }
@@ -1246,6 +1274,7 @@ export default function ChatWidgetAI() {
   const handleIconClick = () => {
     setIsOpen(true);
     setHasUnreadToast(false);
+    setHasGreeted(true); // 🔥 FIX: Mark as greeted when chat opens
     
     trackEvent('icon_clicked', {
       hasUnread: hasUnreadToast,
