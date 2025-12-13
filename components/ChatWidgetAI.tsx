@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { createZedHumAIn, type Message as ZedMessage } from '@/lib/zedhumain-core';
 
 const DELAY_OPTIONS = [
   300,600,800, 900,1200
@@ -244,6 +245,9 @@ export default function ChatWidgetAI() {
   const shouldContinueSlowTyping = useRef<boolean>(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pendingMessagesRef = useRef<string[]>([]);
+  
+  // ZedHumAIn engine instance
+  const zedEngineRef = useRef(createZedHumAIn());
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -1010,11 +1014,34 @@ Now provide a natural follow-up message to the user based on these research find
         addBotMessage(aiResponse.message, aiResponse.suggestedReplies);
         
         // Update conversation history
-        setConversationHistory(prev => [
-          ...prev,
-          { role: 'user', content: userMessage },
-          { role: 'assistant', content: aiResponse.message },
-        ]);
+        setConversationHistory(prev => {
+          const updated: ConversationMessage[] = [
+            ...prev,
+            { role: 'user' as const, content: userMessage },
+            { role: 'assistant' as const, content: aiResponse.message },
+          ];
+          
+          // ✨ ZedHumAIn: Sync facts with lead data
+          const zedEngine = zedEngineRef.current;
+          
+          // Update facts from lead data
+          Object.entries(leadData).forEach(([key, value]) => {
+            if (value) {
+              zedEngine.updateFact(key, value, 0.9, 'conversation');
+            }
+          });
+          
+          // Update facts from extracted data
+          if (aiResponse.extractedData) {
+            Object.entries(aiResponse.extractedData).forEach(([key, value]) => {
+              if (value) {
+                zedEngine.updateFact(key, value, aiResponse.confidence || 0.8, 'ai_extraction');
+              }
+            });
+          }
+          
+          return updated;
+        });
         
         // Merge extracted data with existing lead data
         if (aiResponse.extractedData && Object.keys(aiResponse.extractedData).length > 0) {
@@ -1302,28 +1329,25 @@ Now provide a natural follow-up message to the user based on these research find
       inputRef.current.style.height = '44px';
     }
 
-    // Add message to pending queue
-    pendingMessagesRef.current.push(userInput);
+    // ✨ ZedHumAIn: Process message with intelligent batching & context
+    const zedEngine = zedEngineRef.current;
     
-    // Clear existing debounce timer
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
+    // Setup callback to handle AI response generation
+    zedEngine.onResponse(async (responseMessages) => {
+      // ZedHumAIn returns multiple messages if needed
+      // For now, we combine them into a single call
+      const combinedText = responseMessages.join('\\n');
+      await callAI(combinedText, false, messageId);
+    });
     
-    // Set new debounce timer (1 second wait after last message)
-    debounceTimeoutRef.current = setTimeout(async () => {
-      // Take all pending messages
-      const messagesToSend = [...pendingMessagesRef.current];
-      pendingMessagesRef.current = [];
-      
-      // If multiple messages, combine them naturally
-      const combinedMessage = messagesToSend.length > 1 
-        ? messagesToSend.join('\\n') 
-        : messagesToSend[0];
-      
-      // Call AI with combined/single message
-      await callAI(combinedMessage, false, messageId);
-    }, 1000);
+    // Push message to intelligent queue
+    await zedEngine.processMessage({
+      id: messageId,
+      text: userInput,
+      sender: 'user',
+      timestamp: new Date().toISOString(),
+      processed: false
+    });
   };
 
   const handleToastClick = () => {
