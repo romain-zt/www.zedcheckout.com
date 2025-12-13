@@ -205,6 +205,7 @@ const STORAGE_KEY = 'zed_chat_state';
 
 export default function ChatWidgetAI() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showHeroInput, setShowHeroInput] = useState(true); // Hero input visibility
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -632,6 +633,18 @@ export default function ChatWidgetAI() {
       };
     }
   }, [hasGreeted, isOpen, showToastNotification]);
+
+  // Scroll detection for hero input
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      // Hide hero input after scrolling 100px
+      setShowHeroInput(scrollY < 100);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Periodic icon wobble animation (every 3-5 seconds)
   useEffect(() => {
@@ -1290,9 +1303,127 @@ Now provide a natural follow-up message to the user based on these research find
 
   return (
     <>
+      {/* Hero Glassmorphic Input - Visible in Hero section before scroll */}
+      <AnimatePresence>
+        {!isOpen && showHeroInput && (
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            exit={{ opacity: 0, scaleX: 0 }}
+            transition={{ 
+              duration: 0.5,
+              ease: [0.4, 0, 0.2, 1]
+            }}
+            className="fixed w-[calc(100%_-_2rem)] md:w-[calc(100%_-_6rem)] bottom-2 md:bottom-6 left-[1rem] md:left-[4rem] z-40 rounded-full"
+            style={{ 
+              transformOrigin: 'right center'
+            }}
+          >
+            <div className="relative flex items-center gap-3 md:p-2 !pl-4 rounded-full backdrop-blur-xl bg-white/40 border border-white/60 shadow-2xl hover:shadow-3xl transition-shadow">
+              {/* Glassmorphic gradient overlay */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/50 via-white/30 to-transparent pointer-events-none" />
+              
+              {/* Subtle shimmer effect */}
+              <motion.div
+                className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                animate={{
+                  x: ['-200%', '200%']
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'linear',
+                  repeatDelay: 2
+                }}
+              />
+              
+              {/* Input field */}
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onFocus={() => {
+                  setIsOpen(true);
+                  trackEvent('hero_input_focused');
+                }}
+                placeholder={locale === 'fr' ? "Posez-moi une question..." : "Ask me anything..."}
+                className="relative z-10 flex-1 bg-transparent border-none outline-none text-[#1E2A47] placeholder-[#1E2A47]/50 text-base font-medium min-w-[200px] sm:min-w-[300px]"
+              />
+              
+              {/* Chat button */}
+              <motion.button
+                onClick={handleIconClick}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-[#E88B7A] to-[#D4766A] flex items-center justify-center shadow-lg"
+              >
+                {/* Outer glow */}
+                <motion.div 
+                  className="absolute -inset-2 bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] rounded-full blur-lg"
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [0.95, 1.08, 0.95]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut'
+                  }}
+                />
+                
+                {/* Animated gradient background */}
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-gradient-to-br from-[#FFC9B9] via-[#E88B7A] to-[#D4766A]"
+                  animate={{
+                    rotate: [0, 360]
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: 'linear'
+                  }}
+                  style={{ opacity: 0.7 }}
+                />
+                
+                {/* Pencil icon */}
+                <svg 
+                  className="w-6 h-6 text-white relative z-10" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </motion.button>
+              
+              {/* Unread badge */}
+              {hasUnreadToast && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg z-20"
+                >
+                  <motion.div
+                    className="w-2 h-2 bg-emerald-300 rounded-full"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [1, 0.5, 1]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity
+                    }}
+                  />
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating Edit Icon - Styled to match Hero CTA for visual continuity */}
       <AnimatePresence>
-        {!isOpen && (
+        {!isOpen && !showHeroInput && (
           <motion.button
             onClick={handleIconClick}
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
