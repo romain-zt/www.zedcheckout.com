@@ -839,49 +839,15 @@ export default function ChatWidgetAI() {
   // Inject research results back into conversation
   const injectResearchResults = async (researchData: any, originalUserMessage: string) => {
     try {
-      // Add a natural follow-up message from bot
-      const followUpContext = `[SYSTEM: You just completed a research. Here are the results:
-${JSON.stringify(researchData.data, null, 2)}
-
-Summary: ${researchData.summary}
-
-Now provide a natural follow-up message to the user based on these research findings. Be conversational, like "Ah j'ai fini de checker ton site !" or "Ok j'ai vérifié avec l'équipe..."]`;
+      // ⚠️ FIX: DON'T generate new AI message after research
+      // Just clear the research status - user will continue conversation naturally
       
-      const response = await fetch('/api/chat-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: followUpContext,
-          conversationHistory: [
-            ...conversationHistory,
-            { role: 'user', content: originalUserMessage },
-          ],
-          leadData,
-          sectionContext: currentSection,
-          locale, // Pass locale for prompt selection
-        }),
+      // Clear pending research
+      setPendingResearch(null);
+      
+      trackEvent('research_injected', {
+        completed: true,
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (data.success && data.response) {
-          // Add the research-enhanced response
-          addBotMessage(data.response.message, data.response.suggestedReplies);
-          
-          setConversationHistory(prev => [
-            ...prev,
-            { role: 'assistant', content: data.response.message },
-          ]);
-          
-          // Clear pending research
-          setPendingResearch(null);
-          
-          trackEvent('research_injected', {
-            hasNewData: !!(data.response.extractedData && Object.keys(data.response.extractedData).length > 0),
-          });
-        }
-      }
       
     } catch (error) {
       console.error('Error injecting research:', error);
