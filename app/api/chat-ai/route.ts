@@ -78,6 +78,14 @@ interface ChatMessage {
   content: string | any[];
 }
 
+interface RoleplayCharacter {
+  name: string;
+  profile: string;
+  background: string;
+  scenario: string;
+  dialogueSample: string;
+}
+
 // ============================================================================
 // AGENT TOOLS - Functions the AI can call
 // ============================================================================
@@ -474,6 +482,19 @@ function getLegacySystemPrompt(locale: Locale): string {
   return CACHED_PROMPTS[cacheKey];
 }
 
+function getRoleplaySystemPrompt(locale: Locale, characterData: RoleplayCharacter): string {
+  // Don't cache roleplay prompts since they're personalized per character
+  const basePrompt = loadPrompt('roleplay-character', locale);
+  
+  // Replace placeholder variables with actual character data
+  return basePrompt
+    .replace(/\$fromdb_name/g, characterData.name || 'Character')
+    .replace(/\$fromdb_profile/g, characterData.profile || '')
+    .replace(/\$fromdb_background/g, characterData.background || '')
+    .replace(/\$fromdb_scenario/g, characterData.scenario || '')
+    .replace(/\$fromdb_sample/g, characterData.dialogueSample || '');
+}
+
 
 // ============================================================================
 // CONTEXT BUILDER
@@ -774,6 +795,89 @@ async function handleLegacyRequest(
 }
 
 // ============================================================================
+// ROLEPLAY MODE HANDLER
+// ============================================================================
+
+async function handleRoleplayRequest(
+  message: string,
+  conversationHistory: ChatMessage[],
+  characterData: RoleplayCharacter,
+  locale: Locale = 'fr-FR'
+): Promise<NextResponse> {
+  
+  // Get the roleplay system prompt with character data
+  const systemPrompt = getRoleplaySystemPrompt(locale, characterData);
+  
+  // Prepare messages for Claude
+  const messages: ChatMessage[] = [
+    ...conversationHistory,
+    {
+      role: 'user',
+      content: message
+    }
+  ];
+
+  // Call Claude for roleplay
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    max_tokens: 2048,
+    temperature: 0.9, // Higher temperature for more creative/natural roleplay
+    system: systemPrompt,
+    messages: messages.map(msg => ({
+      role: msg.role,
+      content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
+    }))
+  });
+
+  // Extract text response
+  const textContent = response.content.find((block): block is Anthropic.TextBlock => 
+    block.type === 'text'
+  );
+
+  if (!textContent) {
+    throw new Error('No text response from Claude');
+  }
+
+  const responseText = textContent.text.trim();
+
+  // Parse emotion from response format: [EMOTION]\n***narration***\ndialogue
+  let emotion = 'Neutral';
+  let narration = '';
+  let dialogue = '';
+  
+  // Extract emotion tag
+  const emotionMatch = responseText.match(/^\[(\w+)\]/);
+  if (emotionMatch) {
+    emotion = emotionMatch[1];
+  }
+  
+  // Remove emotion tag and split into narration and dialogue
+  const contentWithoutEmotion = responseText.replace(/^\[(\w+)\]\s*/, '');
+  const narrationMatch = contentWithoutEmotion.match(/^\*\*\*([\s\S]*?)\*\*\*\s*/);
+  
+  if (narrationMatch) {
+    narration = narrationMatch[1].trim();
+    dialogue = contentWithoutEmotion.replace(/^\*\*\*([\s\S]*?)\*\*\*\s*/, '').trim();
+  } else {
+    dialogue = contentWithoutEmotion.trim();
+  }
+
+  return NextResponse.json({
+    success: true,
+    response: {
+      emotion,
+      narration,
+      dialogue,
+      fullText: responseText
+    },
+    usage: {
+      inputTokens: response.usage.input_tokens,
+      outputTokens: response.usage.output_tokens,
+    },
+  });
+}
+
+// ============================================================================
 // AGENT ORCHESTRATOR
 // ============================================================================
 
@@ -928,6 +1032,16 @@ async function processWithAgent(
 // ============================================================================
 // API ROUTE HANDLER
 // ============================================================================
+import characterDataRaw from "./character.json";
+
+// Extract character data to match RoleplayCharacter interface
+const characterData: RoleplayCharacter = {
+  name: characterDataRaw.character.name,
+  profile: characterDataRaw.character.profile,
+  background: characterDataRaw.character.background,
+  scenario: characterDataRaw.scenarios.map(s => `${s.id}: ${s.goal}`).join('; '),
+  dialogueSample: characterDataRaw.response_structure.format
+};
 
 export async function POST(request: NextRequest) {
 
@@ -941,7 +1055,8 @@ export async function POST(request: NextRequest) {
       leadData, // Legacy support
       sectionContext,
       sectionDescription,
-      locale: requestLocale // New: locale from request
+      locale: requestLocale, // New: locale from request
+      mode, // New: 'roleplay' | 'agent' | 'lead'
     } = body;
 
     // Detect and normalize locale from request or Accept-Language header
@@ -949,7 +1064,8 @@ export async function POST(request: NextRequest) {
     const rawLocale = requestLocale || (acceptLanguage.startsWith('en') ? 'en' : 'fr');
     const locale: Locale = normalizeLocale(rawLocale);
 
-    // Detect legacy mode (old ChatWidgetAI.tsx)
+    // Detect mode
+    const isRoleplayMode = mode === 'roleplay' && characterData !== undefined;
     const isLegacyMode = leadData !== undefined && clientContext === undefined;
 
     // Initialize or restore context
@@ -1001,6 +1117,11 @@ export async function POST(request: NextRequest) {
         { error: 'Message too long' },
         { status: 400 }
       );
+    }
+
+    // ROLEPLAY MODE: Ultra-realistic WhatsApp-style character roleplay
+    if (isRoleplayMode) {
+      return await handleRoleplayRequest(message, conversationHistory, characterData, locale);
     }
 
     // LEGACY MODE: Use old simplified prompt for backward compatibility

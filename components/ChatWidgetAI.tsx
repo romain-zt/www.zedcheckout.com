@@ -1248,7 +1248,7 @@ Now provide a natural follow-up message to the user based on these research find
   }, [stopSlowTypingSimulation]);
 
   const handleQuickReply = (reply: string) => {
-    if (isTyping || isComplete) return;
+    if (isComplete) return;
     
     if (reply === "Continuer par email") {
       // Handle email fallback
@@ -1275,7 +1275,7 @@ Now provide a natural follow-up message to the user based on these research find
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!inputValue.trim() || isTyping || isComplete) return;
+    if (!inputValue.trim() || isComplete) return;
 
     const userInput = inputValue.trim();
     
@@ -1995,10 +1995,9 @@ Now provide a natural follow-up message to the user based on these research find
                             handleSubmit(e as any);
                           }
                         }}
-                        disabled={isTyping}
                         placeholder="Message"
                         rows={1}
-                        className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-white border-none outline-none text-[15px] text-gray-900 placeholder-gray-500 disabled:opacity-50 resize-none max-h-[120px] overflow-y-auto"
+                        className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-white border-none outline-none text-[15px] text-gray-900 placeholder-gray-500 resize-none max-h-[120px] overflow-y-auto"
                         style={{ height: '44px' }}
                         autoComplete="off"
                       />
@@ -2013,7 +2012,7 @@ Now provide a natural follow-up message to the user based on these research find
                     </div>
                     <button
                       type="submit"
-                      disabled={!inputValue.trim() || isTyping}
+                      disabled={!inputValue.trim()}
                       aria-label="Envoyer"
                       className="flex-shrink-0 w-11 h-11 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:bg-[#20BA5A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                     >

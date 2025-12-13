@@ -16,20 +16,23 @@ This setup follows the research recommendation that Claude 3.5 Sonnet excels at 
 
 ```
 prompts/
-├── chat-agent.fr-FR.md      # Main checkout agent (French)
-├── chat-agent.en-EN.md      # Main checkout agent (English)
-├── chat-lead.fr-FR.md       # Lead generation agent (French)
-├── chat-lead.en-EN.md       # Lead generation agent (English)
-├── research.fr-FR.md        # Research agent (French)
-├── research.en-EN.md        # Research agent (English)
-└── README.md                # This file
+├── chat-agent.fr-FR.md           # Main checkout agent (French)
+├── chat-agent.en-EN.md           # Main checkout agent (English)
+├── chat-lead.fr-FR.md            # Lead generation agent (French)
+├── chat-lead.en-EN.md            # Lead generation agent (English)
+├── research.fr-FR.md             # Research agent (French)
+├── research.en-EN.md             # Research agent (English)
+├── roleplay-character.fr-FR.md   # Character roleplay (French)
+├── roleplay-character.en-EN.md   # Character roleplay (English)
+├── ROLEPLAY_INTEGRATION.md       # Roleplay integration guide
+└── README.md                     # This file
 ```
 
 ### Naming Convention
 
 `<PROMPT_NAME>.<LOCALE>.<EXT>`
 
-- **PROMPT_NAME**: `chat-agent`, `chat-lead`, `research`
+- **PROMPT_NAME**: `chat-agent`, `chat-lead`, `research`, `roleplay-character`
 - **LOCALE**: `fr-FR` (French) or `en-EN` (English)
 - **EXT**: `.md` (Markdown for readability and structure)
 
@@ -117,6 +120,45 @@ prompts/
   "citations": [...]
 }
 ```
+
+---
+
+### 4. Roleplay Character (`roleplay-character`)
+**Purpose:** Ultra-realistic WhatsApp-style character conversations.
+
+**Key Characteristics:**
+- **Model:** Claude 3.5 Sonnet (claude-3-5-sonnet-20241022)
+- **Focus:** Immersive, natural roleplay conversations with emotion/narration
+- **Tone:** WhatsApp-like, spontaneous, authentic
+- **Features:** Emotion tags, narration, character consistency, 10-25 word responses
+
+**API Route:** `/app/api/chat-ai/route.ts` (roleplay mode)
+
+**Input:** Dynamic character data from database
+```typescript
+{
+  mode: 'roleplay',
+  characterData: {
+    name: 'Sophie',
+    profile: 'Une barista parisienne de 25 ans',
+    background: 'Sophie a grandi à Paris...',
+    scenario: 'Tu entres dans le café...',
+    dialogueSample: '"La même chose?" *sourit*'
+  }
+}
+```
+
+**Output:** Structured emotion + narration + dialogue
+```json
+{
+  "emotion": "Happy",
+  "narration": "smiles warmly",
+  "dialogue": "Hey there!",
+  "fullText": "[Happy]\n***smiles warmly***\nHey there!"
+}
+```
+
+**See:** `ROLEPLAY_INTEGRATION.md` for full integration guide and `examples/RoleplayExample.tsx`
 
 ---
 
@@ -228,12 +270,14 @@ From 2024-2025 industry benchmarks:
 
 ### Chat AI (`/api/chat-ai`)
 
-**Handles both:**
-1. **New Mode**: Checkout agent (Sonnet) with tools
-2. **Legacy Mode**: Lead generation (Haiku)
+**Handles three modes:**
+1. **Agent Mode**: Checkout agent (Sonnet) with tools
+2. **Roleplay Mode**: Character conversations (Sonnet) with emotions
+3. **Legacy Mode**: Lead generation (Haiku)
 
 **Detection:**
 ```typescript
+const isRoleplayMode = mode === 'roleplay' && characterData !== undefined;
 const isLegacyMode = leadData !== undefined && clientContext === undefined;
 ```
 

@@ -6,7 +6,8 @@ export type Locale = 'fr-FR' | 'en-EN';
 export type PromptType = 
   | 'chat-agent'
   | 'chat-lead'
-  | 'research';
+  | 'research'
+  | 'roleplay-character';
 
 /**
  * Load a prompt file based on type and locale
