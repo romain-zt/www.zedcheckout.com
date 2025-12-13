@@ -7,7 +7,8 @@ export type PromptType =
   | 'chat-agent'
   | 'chat-lead'
   | 'research'
-  | 'roleplay-character';
+  | 'roleplay-character'
+  | 'zed-lead-qualification';
 
 /**
  * Load a prompt file based on type and locale

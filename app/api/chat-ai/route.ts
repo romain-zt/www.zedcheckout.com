@@ -467,9 +467,9 @@ const GREETING_SEQUENCE: AgentMessage[] = [
 let CACHED_PROMPTS: Record<string, string> = {};
 
 function getSystemPrompt(locale: Locale): string {
-  const cacheKey = `chat-agent-${locale}`;
+  const cacheKey = `zed-lead-qualification-${locale}`;
   if (!CACHED_PROMPTS[cacheKey]) {
-    CACHED_PROMPTS[cacheKey] = loadPrompt('chat-agent', locale);
+    CACHED_PROMPTS[cacheKey] = loadPrompt('zed-lead-qualification', locale);
   }
   return CACHED_PROMPTS[cacheKey];
 }
