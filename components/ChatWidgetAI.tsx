@@ -231,6 +231,7 @@ export default function ChatWidgetAI() {
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [shouldSendHeroGreeting, setShouldSendHeroGreeting] = useState(false);
   const hasShownHeroGreeting = useRef(false); // Track if hero greeting was shown this session
+  const [isDevMode, setIsDevMode] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -244,6 +245,14 @@ export default function ChatWidgetAI() {
   const shouldContinueSlowTyping = useRef<boolean>(false);
   const submitDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const isUserTypingRef = useRef<boolean>(false);
+
+  // Check for dev mode query parameter
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      setIsDevMode(searchParams.get('dev') === '1');
+    }
+  }, []);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -1729,7 +1738,7 @@ export default function ChatWidgetAI() {
                 </button>
                 
                 <div className="flex items-center gap-4">
-                  {process.env.NODE_ENV === 'development' && messages.length > 0 && (
+                  { isDevMode && messages.length > 0 && (
                     <button
                       onClick={resetConversation}
                       className="text-white/70 hover:text-white transition-colors"
