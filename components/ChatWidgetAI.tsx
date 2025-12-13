@@ -456,18 +456,8 @@ export default function ChatWidgetAI() {
         section: currentSection,
         toastMessage
       });
-    } else if (isOpen && messages.length === 0 && !toastMessage && !shouldSendHeroGreeting) {
-      // Fallback if opened without toast (direct icon click) - show greeting
-      const greetingMessage = locale === 'fr'
-        ? "Salut ! 👋\n\nC'est quoi ton site e-commerce ?"
-        : "Hey! 👋\n\nWhat's your e-commerce site?";
-        
-      setTimeout(() => {
-        addBotMessage(greetingMessage, []);
-      }, 300);
-      
-      trackEvent('chat_opened_direct');
     }
+    // Greeting is now handled by the API backend only (no frontend duplication)
   }, [isOpen, locale, addBotMessage, shouldSendHeroGreeting]);
 
   // Keyboard shortcuts
@@ -785,23 +775,7 @@ export default function ChatWidgetAI() {
     return messageId;
   };
 
-  // Handle hero CTA greeting - placed after addBotMessage is defined
-  useEffect(() => {
-    if (shouldSendHeroGreeting && !hasShownHeroGreeting.current && isOpen) {
-      setTimeout(() => {
-        const greetingMessage = locale === 'fr'
-          ? "Salut ! 👋\n\nJe suis l'assistant ZedCheckout. Partage-moi l'URL de ton site e-commerce et je t'aide à améliorer ton tunnel de vente."
-          : "Hey! 👋\n\nI'm the ZedCheckout assistant. Share your e-commerce site URL and I'll help you improve your checkout flow.";
-
-        addBotMessage(greetingMessage, [
-          locale === 'fr' ? "C'est parti !" : "Let's go!"
-        ]);
-
-        setShouldSendHeroGreeting(false);
-        hasShownHeroGreeting.current = true; // Mark as shown for this session
-      }, 500);
-    }
-  }, [shouldSendHeroGreeting, isOpen, locale, addBotMessage]);
+  // Greeting is now 100% handled by API backend (no frontend greeting duplication)
 
   // 🔥 RESEARCH HANDLER - The magic happens here
   const handleResearch = async (
@@ -1789,7 +1763,23 @@ Now provide a natural follow-up message to the user based on these research find
                   
                   <div className="flex-1 min-w-0 text-left">
                     <div className="text-white font-medium text-base">ZedCheckout</div>
-                    <div className="text-white/80 text-xs">en ligne · {isMobile ? 'Toucher pour continuer' : 'Cliquer pour QR'}</div>
+                    <div className="text-white/80 text-xs">
+                      {/* Dynamic status: typing, researching, or online */}
+                      {isTyping ? (
+                        'écrit...'
+                      ) : pendingResearch && pendingResearch.status === 'pending' ? (
+                        <>
+                          {pendingResearch.type === 'website_check' && '🔍 vérifie ton site...'}
+                          {pendingResearch.type === 'platform_compatibility' && '⚙️ check compatibilité...'}
+                          {pendingResearch.type === 'market_info' && '📊 analyse les stats...'}
+                          {pendingResearch.type === 'technical_details' && '🔧 demande aux devs...'}
+                          {pendingResearch.type === 'competitor_analysis' && '🎯 analyse le marché...'}
+                          {pendingResearch.type === 'pricing_research' && '💰 check les prix...'}
+                        </>
+                      ) : (
+                        `en ligne · ${isMobile ? 'Toucher pour continuer' : 'Cliquer pour QR'}`
+                      )}
+                    </div>
                   </div>
                 </button>
                 
@@ -1989,28 +1979,7 @@ Now provide a natural follow-up message to the user based on these research find
                     </div>
                   </motion.div>
                 )}
-                
-                {/* 🔥 Research indicator - The magic visual feedback */}
-                {pendingResearch && pendingResearch.status === 'pending' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-center"
-                  >
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700 flex items-center gap-2">
-                      <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                      <span>
-                        {pendingResearch.type === 'website_check' && '🔍 Je vérifie ton site...'}
-                        {pendingResearch.type === 'platform_compatibility' && '⚙️ Je check la compatibilité...'}
-                        {pendingResearch.type === 'market_info' && '📊 Je regarde les stats...'}
-                        {pendingResearch.type === 'technical_details' && '🔧 Je demande aux devs...'}
-                        {pendingResearch.type === 'competitor_analysis' && '🎯 J\'analyse le marché...'}
-                        {pendingResearch.type === 'pricing_research' && '💰 Je check les prix...'}
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
-                
+
                 {/* Error state */}
                 {error && (
                   <motion.div

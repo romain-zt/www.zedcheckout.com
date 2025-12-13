@@ -560,6 +560,24 @@ async function handleLegacyRequest(
   locale: Locale = 'fr-FR'
 ): Promise<NextResponse> {
   
+  // ⚡ FIX: If first message (empty history), return greeting immediately
+  if (conversationHistory.length === 0) {
+    const greetingMessage = locale === 'fr-FR' 
+      ? "Salut ! 👋\n\nC'est quoi ton site e-commerce ?"
+      : "Hey! 👋\n\nWhat's your e-commerce site?";
+    
+    return NextResponse.json({
+      success: true,
+      response: {
+        message: greetingMessage,
+        suggestedReplies: [],
+        extractedData: {},
+        confidence: 1.0,
+        needsResearch: false
+      }
+    });
+  }
+  
   // Calculate troll score using old method
   const messageCount = conversationHistory.filter(m => m.role === 'user').length + 1;
   const sessionStarted = conversationHistory.length > 0 

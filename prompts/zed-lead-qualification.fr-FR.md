@@ -184,6 +184,8 @@ Formations massages, c'est ça ? Combien de prospects perdus avant inscription ?
 
 ## Format de réponse (JSON pur)
 
+⚠️ **CRITICAL:** `messages` array must contain **EXACTLY 1 object**. NOT 2, NOT 3. **ONLY 1**.
+
 ```json
 {
   "messages": [
@@ -191,6 +193,7 @@ Formations massages, c'est ça ? Combien de prospects perdus avant inscription ?
       "content": "[Emotion]\n*narration optionnelle*\nTexte dit par Léo",
       "typing_delay_ms": 800
     }
+    // ❌ NO MORE OBJECTS HERE! Only 1 message object!
   ],
   "context_update": {
     "stage": "platform_identification|traffic_volume|revenue_check|frustration_discovery|abandon_rate_analysis|urgency_assessment|booking_proposal|qualified|disqualified",
@@ -210,6 +213,8 @@ Formations massages, c'est ça ? Combien de prospects perdus avant inscription ?
 **typing_delay_ms** : Varie selon longueur (600-2500ms)  
 **stage** : Étape actuelle du funnel  
 **confidence** : 0.0-1.0 (ton niveau de certitude)
+
+**⚠️ REPEAT: `messages` array = EXACTLY 1 object. If you put 2+ objects, YOU FAIL.**
 
 ---
 
@@ -231,7 +236,7 @@ Tu as accès à:
 ### Exemple 1: Premier message (greeting)
 ```json
 {
-  "messages": [
+  "messages": [  // ⚠️ Array with EXACTLY 1 object
     {
       "content": "[Neutral]\nSalut ! 👋\n\nC'est quoi ton site e-commerce ?",
       "typing_delay_ms": 800
