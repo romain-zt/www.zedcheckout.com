@@ -242,6 +242,8 @@ export default function ChatWidgetAI() {
   const slowResponseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const slowTypingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const shouldContinueSlowTyping = useRef<boolean>(false);
+  const submitDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const isUserTypingRef = useRef<boolean>(false);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -338,6 +340,10 @@ export default function ChatWidgetAI() {
   const addBotMessage = useCallback((text: string, suggestedReplies?: string[]) => {
     setError(null);
     
+    // ⚡ FIX: Decode escaped newlines (\\n → real newlines)
+    // Claude sometimes returns literal \\n instead of actual line breaks
+    const decodedText = text.replace(/\\n/g, '\n');
+    
     // Clear any existing timeouts
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -346,7 +352,7 @@ export default function ChatWidgetAI() {
     simulationTimeouts.current = [];
 
     // Calculate total typing time based on message length
-    const wordCount = text.split(/\s+/).length;
+    const wordCount = decodedText.split(/\s+/).length;
     const baseDelay = Math.min(wordCount * 400, 2500); // 200ms per word, max 2.5s
     const variance = Math.random() * 500; // up to 300ms random
     const totalTypingTime = baseDelay + variance;
@@ -395,7 +401,7 @@ export default function ChatWidgetAI() {
               ...prev,
               {
                 id: Date.now().toString(),
-                text,
+                text: decodedText, // Use decoded text
                 sender: 'bot',
                 timestamp: new Date(),
                 suggestedReplies,
@@ -1291,6 +1297,7 @@ Now provide a natural follow-up message to the user based on these research find
 
     const userInput = inputValue.trim();
     
+    // Add user message to UI immediately
     const messageId = addUserMessage(userInput);
     setInputValue('');
     
@@ -1299,6 +1306,11 @@ Now provide a natural follow-up message to the user based on these research find
       inputRef.current.style.height = '44px';
     }
 
+    // ⚡ HUMAN-LIKE DELAY: Wait 600ms before calling AI
+    // This makes the bot feel more natural (like a human reading the message)
+    // and prevents feeling like "talking to a wall"
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
     // Call AI to process the message
     await callAI(userInput, false, messageId);
   };

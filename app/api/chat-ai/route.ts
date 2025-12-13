@@ -1007,7 +1007,12 @@ async function processWithAgent(
 
   try {
     const parsed = JSON.parse(finalText);
-    agentMessages = parsed.messages || [{ text: finalText }];
+    
+    // ⚠️ CRITICAL FIX: Force ONLY 1 message (first one)
+    // Prevents bot from sending multiple messages without waiting for user
+    const allMessages = parsed.messages || [{ text: finalText }];
+    agentMessages = [allMessages[0]]; // Take ONLY first message
+    
     newState = parsed.state || context.state;
   } catch {
     // Fallback: plain text response
