@@ -1,4 +1,20 @@
-# Research Update Summary
+# Research & UX Update Summary
+
+## 3 Critical Fixes
+
+### ✅ Fix #1: Automatic Greeting
+**Problem:** No greeting when opening chat directly
+**Solution:** Added automatic greeting message: "Salut ! 👋 C'est quoi ton site e-commerce ?"
+
+### ✅ Fix #2: Better First Question  
+**Problem:** AI asked about technical platform first ("Tu es sur quelle plateforme ?")
+**Solution:** Now asks for site/business first to understand customer needs, not tech stack
+
+### ✅ Fix #3: Mandatory Research Trigger
+**Problem:** Research wasn't triggered even when URL was provided
+**Solution:** Made research MANDATORY and impossible to miss with clear rules at top of prompt
+
+---
 
 ## Changes Made
 
@@ -28,8 +44,35 @@ If the answer is "no" to any → `needsResearch: true`
 
 ## Files Updated
 
-- ✅ `prompts/chat-lead.fr-FR.md` - French prompt (lead generation)
-- ✅ `prompts/chat-lead.en-EN.md` - English prompt (lead generation)
+### Lead Generation Prompts (LEGACY MODE - Currently Active)
+- ✅ `prompts/chat-lead.fr-FR.md` - French prompt - **MAJOR REWRITE**
+  - Added 🔥 RÈGLE #1 at the top (impossible to miss)
+  - Changed first question approach (site before platform)
+  - Added mandatory research triggers
+  - Updated all examples with research flows
+  
+- ✅ `prompts/chat-lead.en-EN.md` - English prompt - **MAJOR REWRITE**
+  - Same changes as French version
+  
+### Research Prompts (Used by both modes)
+- ✅ `prompts/research.fr-FR.md` - French research prompt - **ENHANCED**
+  - Added "💡 INSIGHTS POUR L'AI" section in response format
+  - Now provides actionable hooks, questions, and arguments
+  - Better output structure for AI personalization
+  
+- ✅ `prompts/research.en-EN.md` - English research prompt - **ENHANCED**
+  - Same enhancements as French version
+
+### Frontend Component
+- ✅ `components/ChatWidgetAI.tsx` - Added automatic greeting on chat open
+
+### Checkout Agent Prompts (NEW MODE - Not Yet Active)
+- ℹ️ `prompts/chat-agent.fr-FR.md` - NO CHANGES NEEDED
+  - These are for e-commerce checkout (shopping cart), not lead generation
+  - Will be used when the new agent mode is activated
+  
+- ℹ️ `prompts/chat-agent.en-EN.md` - NO CHANGES NEEDED
+  - Same as above
 
 ## New Behavior
 
@@ -69,11 +112,28 @@ AI: [doesn't know their platform/setup]
 
 ## Impact
 
+### Chat AI Improvements
 The AI will now:
 - Personalize responses better (knows the actual business)
 - Qualify leads more accurately (real data, not guesses)
 - Provide more relevant suggestions (based on research)
 - Build trust faster (shows it actually checked)
+- Ask for SITE first, not technical platform
+- Show greeting immediately on chat open
+
+### Research Improvements
+The research will now provide:
+- **Actionable hooks** - Specific phrases the AI can use ("I saw you're Ecocert certified...")
+- **Smart questions** - Business-relevant questions to ask ("How many cart abandonments?")
+- **Tailored arguments** - ZedCheckout benefits adapted to their business
+- **Pain points** - Customer problems the business is trying to solve
+- **Decision factors** - What matters most to their audience
+
+**Result:** The AI doesn't just know "it's a cosmetics site" - it knows:
+- Their customers care about certifications
+- They should highlight their French origin
+- Their high cart value means abandonment hurts more
+- They could benefit from ingredient questions in checkout
 
 ## Testing
 

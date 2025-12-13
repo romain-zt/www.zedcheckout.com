@@ -205,9 +205,11 @@
   },
   "zedcheckout": {
     "hero": {
-      "title": "Le checkout conversationnel qui reste sur votre boutique.",
-      "subtitle": "Oui pour la visibilité des marketplaces. Non pour perdre vos clients.",
-      "description": "ZedCheckout apporte l'intelligence conversationnelle moderne directement sur VOTRE site — pendant que ChatGPT, Amazon et Shop veulent les emmener ailleurs.",
+      "title": "Vos clients détestent votre checkout.",
+      "subtitle": "Laissez-les parler.",
+      "description": "Plutôt qu'une longue présentation, une démo live ! Tout de suite, sans inscription...",
+      "inputPlaceholder": "Posez-moi une question",
+      "socialProof": "24+ entreprises testent déjà",
       "cta_primary": "Voir comment ça marche",
       "cta_secondary": "Pourquoi rester chez vous",
       "h1": "68% de vos clients abandonnent au checkout.",

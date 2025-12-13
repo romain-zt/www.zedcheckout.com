@@ -334,6 +334,83 @@ export default function ChatWidgetAI() {
     }
   }, []);
 
+  const addBotMessage = useCallback((text: string, suggestedReplies?: string[]) => {
+    setError(null);
+    
+    // Clear any existing timeouts
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
+    simulationTimeouts.current = [];
+
+    // Calculate total typing time based on message length
+    const wordCount = text.split(/\s+/).length;
+    const baseDelay = Math.min(wordCount * 400, 2500); // 200ms per word, max 2.5s
+    const variance = Math.random() * 500; // up to 300ms random
+    const totalTypingTime = baseDelay + variance;
+
+    // Create hesitation pattern: typing pauses to simulate human-like thinking
+    const hesitations = Math.floor(Math.random() * 3) + 1; // 1-3 hesitations
+    
+    interface TypingPhase {
+      isTyping: boolean;
+      duration: number;
+    }
+    
+    const sequence: TypingPhase[] = [];
+    let remainingTime = totalTypingTime;
+
+    // Build alternating pause/typing sequence
+    for (let i = 0; i < hesitations; i++) {
+      const pauseDuration = 150 + Math.random() * 120; // 150-270ms pause
+      const typingDuration = (totalTypingTime / (hesitations + 1)) + Math.random() * 140;
+
+      if (remainingTime < pauseDuration + typingDuration) break;
+
+      sequence.push({ isTyping: false, duration: pauseDuration });
+      sequence.push({ isTyping: true, duration: typingDuration });
+
+      remainingTime -= (pauseDuration + typingDuration);
+    }
+    
+    // Final pause before last typing burst
+    sequence.push({ isTyping: false, duration: 120 + Math.random() * 90 });
+    // Final typing phase with remaining time
+    const finalTypingDuration = Math.max(200, remainingTime);
+    sequence.push({ isTyping: true, duration: finalTypingDuration });
+
+    // Execute the typing sequence
+    let cumulativeDelay = 0;
+
+    sequence.forEach((phase, index) => {
+      const timeout = setTimeout(() => {
+        setIsTyping(phase.isTyping);
+
+        // On the last phase, show the message after the typing duration
+        if (index === sequence.length - 1) {
+          typingTimeoutRef.current = setTimeout(() => {
+            setMessages(prev => [
+              ...prev,
+              {
+                id: Date.now().toString(),
+                text,
+                sender: 'bot',
+                timestamp: new Date(),
+                suggestedReplies,
+              },
+            ]);
+            setIsTyping(false);
+            typingTimeoutRef.current = null;
+          }, phase.duration);
+        }
+      }, cumulativeDelay);
+      
+      simulationTimeouts.current.push(timeout);
+      cumulativeDelay += phase.duration;
+    });
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
@@ -372,11 +449,19 @@ export default function ChatWidgetAI() {
         section: currentSection,
         toastMessage
       });
-    } else if (isOpen && messages.length === 0 && !toastMessage) {
-      // Fallback if opened without toast (direct icon click)
+    } else if (isOpen && messages.length === 0 && !toastMessage && !shouldSendHeroGreeting) {
+      // Fallback if opened without toast (direct icon click) - show greeting
+      const greetingMessage = locale === 'fr'
+        ? "Salut ! 👋\n\nC'est quoi ton site e-commerce ?"
+        : "Hey! 👋\n\nWhat's your e-commerce site?";
+        
+      setTimeout(() => {
+        addBotMessage(greetingMessage, []);
+      }, 300);
+      
       trackEvent('chat_opened_direct');
     }
-  }, [isOpen]);
+  }, [isOpen, locale, addBotMessage, shouldSendHeroGreeting]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -676,83 +761,6 @@ export default function ChatWidgetAI() {
       return () => clearTimeout(timeoutId);
     }
   }, [isOpen]);
-
-  const addBotMessage = useCallback((text: string, suggestedReplies?: string[]) => {
-    setError(null);
-    
-    // Clear any existing timeouts
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
-    simulationTimeouts.current = [];
-
-    // Calculate total typing time based on message length
-    const wordCount = text.split(/\s+/).length;
-    const baseDelay = Math.min(wordCount * 400, 2500); // 200ms per word, max 2.5s
-    const variance = Math.random() * 500; // up to 300ms random
-    const totalTypingTime = baseDelay + variance;
-
-    // Create hesitation pattern: typing pauses to simulate human-like thinking
-    const hesitations = Math.floor(Math.random() * 3) + 1; // 1-3 hesitations
-    
-    interface TypingPhase {
-      isTyping: boolean;
-      duration: number;
-    }
-    
-    const sequence: TypingPhase[] = [];
-    let remainingTime = totalTypingTime;
-
-    // Build alternating pause/typing sequence
-    for (let i = 0; i < hesitations; i++) {
-      const pauseDuration = 150 + Math.random() * 120; // 150-270ms pause
-      const typingDuration = (totalTypingTime / (hesitations + 1)) + Math.random() * 140;
-
-      if (remainingTime < pauseDuration + typingDuration) break;
-
-      sequence.push({ isTyping: false, duration: pauseDuration });
-      sequence.push({ isTyping: true, duration: typingDuration });
-
-      remainingTime -= (pauseDuration + typingDuration);
-    }
-    
-    // Final pause before last typing burst
-    sequence.push({ isTyping: false, duration: 120 + Math.random() * 90 });
-    // Final typing phase with remaining time
-    const finalTypingDuration = Math.max(200, remainingTime);
-    sequence.push({ isTyping: true, duration: finalTypingDuration });
-
-    // Execute the typing sequence
-    let cumulativeDelay = 0;
-
-    sequence.forEach((phase, index) => {
-      const timeout = setTimeout(() => {
-        setIsTyping(phase.isTyping);
-
-        // On the last phase, show the message after the typing duration
-        if (index === sequence.length - 1) {
-          typingTimeoutRef.current = setTimeout(() => {
-            setMessages(prev => [
-              ...prev,
-              {
-                id: Date.now().toString(),
-                text,
-                sender: 'bot',
-                timestamp: new Date(),
-                suggestedReplies,
-              },
-            ]);
-            setIsTyping(false);
-            typingTimeoutRef.current = null;
-          }, phase.duration);
-        }
-      }, cumulativeDelay);
-      
-      simulationTimeouts.current.push(timeout);
-      cumulativeDelay += phase.duration;
-    });
-  }, []);
 
   const addUserMessage = (text: string) => {
     const messageId = Date.now().toString();
