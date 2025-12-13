@@ -30,7 +30,7 @@ import WhatsAppTransformationDemo from './WhatsAppTransformationDemo';
  */
 
 export default function ZedHero() {
-  const t = useTranslations('home.hero');
+  const t = useTranslations('zedcheckout.hero');
   const heroRef = useRef<HTMLDivElement>(null);
   
   // Track scroll for parallax

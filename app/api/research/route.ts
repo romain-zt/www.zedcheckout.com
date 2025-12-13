@@ -50,34 +50,45 @@ function buildPerplexityQuery(request: ResearchRequest): string {
   
   switch (type) {
     case 'website_check':
-      return `Analyze the website ${userWebsite || 'mentioned'} with a customer-first approach. 
+      return `🔍 VISIT AND ANALYZE: ${userWebsite || 'mentioned'}
 
-CRITICAL: Focus on understanding the ACTUAL business, not just surface appearances.
+⚠️ CRITICAL INSTRUCTIONS:
+1. **VISIT THE ACTUAL WEBSITE** - Don't just search about it, GO TO IT
+2. Access the homepage and read the real content
+3. Look at navigation menus, product categories, about page
+4. If the site redirects (e.g., to www version), follow it
+5. DO NOT make assumptions based on domain name alone
 
-Priority 1 - BUSINESS UNDERSTANDING:
-1. What does this business ACTUALLY do? (Be specific - don't guess based on design)
-   - What products/services do they sell?
-   - What industry are they in? (e.g., beauty/wellness, fashion, home goods, services)
-   - Are they B2C, B2B, or both?
+BUSINESS ANALYSIS (Priority 1):
+1. What does this business ACTUALLY sell? (Be specific - don't guess)
+   - Exact products/services listed on the site
+   - Industry: beauty/wellness, fashion, home goods, food, services, etc.
+   - B2C, B2B, or both?
 2. Who are their target customers?
    - Demographics, needs, pain points
 3. What is their unique value proposition?
    - What makes them different?
-   - What problem do they solve for customers?
-4. What are their main product/service categories?
+   - What problem do they solve?
+4. Main product/service categories visible on the site
 
-Priority 2 - E-COMMERCE SETUP:
-5. Does the website exist and is it accessible?
-6. What e-commerce platform is it using (Shopify, WooCommerce, PrestaShop, custom, etc.)?
-7. Is it a professional setup or basic?
-8. What's their current customer experience like? (navigation, checkout flow if visible)
+TECHNICAL SETUP (Priority 2):
+5. Website accessibility (does it work?)
+6. E-commerce platform (Shopify, WooCommerce, PrestaShop, custom, etc.)
+7. Professional vs basic setup
+8. Customer experience quality (navigation, checkout flow)
 
 Context: ${context}
 Query: ${query}
 
-IMPORTANT: Read the actual content carefully. A beauty institute is NOT decoration. A wellness spa is NOT fashion. Be precise about what the business ACTUALLY offers.
+⚠️ VALIDATION CHECKLIST:
+- [ ] Did you actually visit the site?
+- [ ] Did you read real product names/categories?
+- [ ] Did you check the About section?
+- [ ] Are you being specific (not generic)?
 
-Provide a structured analysis focusing on customer needs first, technical details second.`;
+IMPORTANT: A beauty salon is NOT home decor. A wellness spa is NOT fashion. Read the ACTUAL content!
+
+Provide a detailed, factual analysis based on what you SEE on the site.`;
 
     case 'platform_compatibility':
       return `Check if ZedCheckout (a conversational AI checkout solution) is compatible with ${query}.
@@ -143,6 +154,64 @@ Be concise and factual.`;
 }
 
 // ============================================================================
+// DIRECT WEBSITE DETECTION (Fallback when Perplexity can't access)
+// ============================================================================
+
+interface WebsiteDetectionResult {
+  accessible: boolean;
+  platform?: string;
+  shopifyId?: string;
+  redirectUrl?: string;
+  error?: string;
+}
+
+async function detectWebsiteDirect(url: string): Promise<WebsiteDetectionResult> {
+  try {
+    // Normalize URL
+    let normalizedUrl = url;
+    if (!url.match(/^https?:\/\//)) {
+      normalizedUrl = 'https://' + url;
+    }
+
+    const response = await fetch(normalizedUrl, {
+      method: 'HEAD',
+      redirect: 'manual',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; ZedCheckout/1.0; +https://zedcheckout.com)',
+      },
+    });
+
+    const headers: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+      headers[key.toLowerCase()] = value;
+    });
+
+    const result: WebsiteDetectionResult = {
+      accessible: response.ok || response.status === 301 || response.status === 302,
+    };
+
+    // Detect Shopify
+    if (headers['x-shopid'] || headers['x-sorting-hat-shopid']) {
+      result.platform = 'Shopify';
+      result.shopifyId = headers['x-shopid'] || headers['x-sorting-hat-shopid'];
+    }
+
+    // Check redirect
+    if (headers['location']) {
+      result.redirectUrl = headers['location'];
+    }
+
+    return result;
+
+  } catch (error: any) {
+    return {
+      accessible: false,
+      error: error.message,
+    };
+  }
+}
+
+// ============================================================================
 // PERPLEXITY API CALL
 // ============================================================================
 
@@ -202,16 +271,110 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build Perplexity query
-    const perplexityQuery = buildPerplexityQuery(body);
-
     console.log(`[Research] Starting ${type} research (${locale}):`, query);
+
+    // 🔥 NEW: Direct website detection for website_check
+    let directDetection: WebsiteDetectionResult | null = null;
+    if (type === 'website_check' && userWebsite) {
+      console.log(`[Research] Attempting direct detection for ${userWebsite}`);
+      directDetection = await detectWebsiteDirect(userWebsite);
+      console.log(`[Research] Direct detection result:`, directDetection);
+    }
+
+    // Build Perplexity query (enriched with direct detection if available)
+    let perplexityQuery = buildPerplexityQuery(body);
+    
+    // Enrich query with direct detection results
+    if (directDetection && directDetection.accessible) {
+      const detectionInfo = [
+        `\n\n[TECHNICAL INFO DETECTED]:`,
+        `- Site accessible: YES`,
+        directDetection.platform ? `- Platform: ${directDetection.platform}` : null,
+        directDetection.shopifyId ? `- Shopify ID: ${directDetection.shopifyId}` : null,
+        directDetection.redirectUrl ? `- Redirects to: ${directDetection.redirectUrl}` : null,
+      ].filter(Boolean).join('\n');
+      
+      perplexityQuery += detectionInfo;
+      perplexityQuery += `\n\nNow visit the site ${directDetection.redirectUrl || userWebsite} and analyze the ACTUAL business content (products, services, industry).`;
+    }
 
     // Call Perplexity with locale
     const perplexityResponse = await callPerplexity(perplexityQuery, locale);
 
     // Extract the response content
-    const researchResult = perplexityResponse.choices?.[0]?.message?.content || '';
+    let researchResult = perplexityResponse.choices?.[0]?.message?.content || '';
+
+    // 🔥 FALLBACK: If Perplexity fails to provide useful info and we have direct detection
+    if (directDetection && directDetection.accessible && type === 'website_check') {
+      // Check if Perplexity response is too generic or says it can't access
+      const isGenericResponse = 
+        researchResult.includes('Impossible à déterminer') ||
+        researchResult.includes('Non identifiable') ||
+        researchResult.includes('Cannot determine') ||
+        researchResult.includes('Unable to access') ||
+        researchResult.length < 200;
+
+      if (isGenericResponse) {
+        console.log(`[Research] Perplexity response too generic, using direct detection fallback`);
+        
+        // Generate a better response based on direct detection
+        const fallbackResponse = `## ANALYSE TECHNIQUE (Détection Directe)
+
+**Accessibilité :** ✅ Site accessible
+${directDetection.redirectUrl ? `**URL finale :** ${directDetection.redirectUrl}` : ''}
+${directDetection.platform ? `**Plateforme détectée :** ${directDetection.platform}` : ''}
+${directDetection.shopifyId ? `**Shopify Store ID :** ${directDetection.shopifyId}` : ''}
+
+## COMPATIBILITÉ ZEDCHECKOUT
+
+${directDetection.platform === 'Shopify' ? `
+✅ **Excellente compatibilité** - Shopify est pleinement supporté par ZedCheckout
+
+**Intégration estimée :** 2-3 jours ouvrés
+**Support API :** Complet (Storefront API, Admin API, Webhooks)
+**Complexité :** Faible - Intégration standard
+
+**Avantages pour ce site :**
+- Checkout conversationnel peut remplacer le checkout Shopify standard
+- Réduction estimée d'abandons de panier : -25 à -35%
+- Support natif des produits, variantes, et inventaire
+- Webhooks pour synchronisation en temps réel
+` : `
+**Plateforme détectée :** ${directDetection.platform || 'Non identifiée'}
+**Statut de compatibilité :** À vérifier
+
+Le site est accessible et fonctionnel. Pour une analyse complète, une visite manuelle est recommandée.
+`}
+
+## 💡 INSIGHTS POUR L'AI
+
+**Accroches à utiliser :**
+${directDetection.platform === 'Shopify' 
+  ? `- "Super, je vois que tu es sur Shopify ! 🎉 C'est la plateforme qu'on supporte le mieux."
+- "Shopify + ZedCheckout, c'est une intégration ultra rapide - 2-3 jours max."
+- "Ton checkout Shopify actuel, tu as combien d'abandons de panier ?"` 
+  : `- "J'ai vérifié, ton site est bien en ligne et fonctionnel ✅"
+- "Peux-tu me parler un peu de ton business ? Qu'est-ce que tu vends exactement ?"`
+}
+
+**Questions pertinentes à poser :**
+- "Quel est ton principal défi actuellement avec ton checkout ?"
+- "Tu as une idée de ton taux d'abandon de panier ?"
+- "Combien de commandes tu traites par mois environ ?"
+
+**Prochaines étapes recommandées :**
+1. Comprendre le business exact (produits/services vendus)
+2. Identifier les pain points checkout actuels
+3. Estimer le volume de transactions
+4. Qualifier l'intérêt et l'urgence
+
+---
+
+**Note :** L'analyse complète du business nécessite de visiter le site manuellement. Les infos ci-dessus sont basées sur la détection technique automatique.`;
+
+        researchResult = fallbackResponse;
+      }
+    }
 
     console.log(`[Research] Completed ${type} research`);
 
@@ -221,6 +384,7 @@ export async function POST(request: NextRequest) {
       type,
       query,
       timestamp: new Date().toISOString(),
+      directDetection: directDetection || undefined,
     };
 
     // Try to extract JSON if present in the response

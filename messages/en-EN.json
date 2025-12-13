@@ -205,6 +205,9 @@
   },
   "zedcheckout": {
     "hero": {
+      "labPositioning": "Conversational AI channel · On your site",
+      "headline": "The experience your customers were waiting for",
+      "subheadline": "And it stays on your site. Try now",
       "title": "Your customers hate your checkout.",
       "subtitle": "Let them talk instead.",
       "description": "Rather than a long presentation, a live demo! Right now, no signup required...",
