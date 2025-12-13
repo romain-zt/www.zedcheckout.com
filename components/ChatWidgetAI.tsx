@@ -856,16 +856,23 @@ export default function ChatWidgetAI() {
       const researchSummary = researchData.summary || researchData.insights || 'Analyse terminée.';
       
       // Build enhanced prompt for Claude with research context
-      const researchPrompt = `Voici les résultats de ma recherche sur ${leadData.website} :
+      const researchPrompt = `🔍 RÉSULTATS DE RECHERCHE PERPLEXITY sur ${leadData.website} :
 
 ${researchSummary}
 
-Contexte de conversation : "${originalUserMessage}"
-
-📊 Ce que j'ai découvert :
+📊 DONNÉES BRUTES (NE PAS INVENTER, UTILISER SEULEMENT CES INFOS) :
 ${researchData.data ? JSON.stringify(researchData.data, null, 2) : 'Analyse en cours...'}
 
-Maintenant, réponds naturellement à l'utilisateur en intégrant ces infos. Sois direct, mentionne 1-2 insights clés, et pose UNE question pour continuer la qualification.`;
+⚠️ INSTRUCTIONS CRITIQUES :
+1. UTILISE SEULEMENT les infos ci-dessus (NE PAS inventer)
+2. Mentionne 1-2 insights clés trouvés
+3. Si incertain → Pose UNE question pour clarifier
+4. VOUVOIEMENT OBLIGATOIRE ("vous", "votre site")
+5. Max 25 mots
+
+Contexte utilisateur : "${originalUserMessage}"
+
+Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
 
       // Call AI with research context
       const response = await fetch('/api/chat-ai', {
@@ -1082,32 +1089,42 @@ Maintenant, réponds naturellement à l'utilisateur en intégrant ces infos. Soi
           confidence: aiResponse.confidence,
         });
 
-        // 🔥 FIX: Trigger automatic research if URL detected
+        // 🔥 FIX: Trigger automatic research if URL detected OR if website exists but not researched yet
         const urlDetection = detectAndExtractURL(userMessage);
-        if (urlDetection.isURL && urlDetection.url && urlDetection.url !== leadData.website) {
-          const researchId = `research_auto_${Date.now()}`;
+        const hasWebsite = leadData.website && leadData.website.length > 0;
+        const hasNoResearch = !pendingResearch; // No research in progress
+        const needsResearch = urlDetection.isURL || (hasWebsite && hasNoResearch && conversationHistory.length >= 4);
+        
+        if (needsResearch) {
+          const targetUrl = urlDetection.url || leadData.website;
           
-          // Update leadData immediately with the detected URL
-          setLeadData(prev => ({ ...prev, website: urlDetection.url }));
+          if (targetUrl && targetUrl !== leadData.website) {
+            // Update leadData if new URL
+            setLeadData(prev => ({ ...prev, website: targetUrl }));
+          }
           
-          // Set pending research state
-          setPendingResearch({
-            id: researchId,
-            type: 'website_check',
-            query: `Analyze website ${urlDetection.url} - business type, products, e-commerce platform, customer experience`,
-            context: `User message: "${userMessage}"\n\nConversation context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}`,
-            startedAt: Date.now(),
-            status: 'pending',
-          });
-          
-          trackEvent('research_auto_triggered', {
-            type: 'website_check',
-            url: urlDetection.url,
-            domain: urlDetection.domain,
-          });
-          
-          // Start research in background
-          handleResearch(researchId, 'website_check', `Analyze website ${urlDetection.url} - business type, products, e-commerce platform, customer experience`, userMessage);
+          if (targetUrl) {
+            const researchId = `research_auto_${Date.now()}`;
+            
+            // Set pending research state
+            setPendingResearch({
+              id: researchId,
+              type: 'website_check',
+              query: `Analyze website ${targetUrl} - EXACT business type, real products/services, e-commerce platform, target customers. BE FACTUAL.`,
+              context: `User message: "${userMessage}"\n\nConversation context: ${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}`,
+              startedAt: Date.now(),
+              status: 'pending',
+            });
+            
+            trackEvent('research_auto_triggered', {
+              type: 'website_check',
+              url: targetUrl,
+              trigger: urlDetection.isURL ? 'url_detected' : 'conversation_depth',
+            });
+            
+            // Start research in background
+            handleResearch(researchId, 'website_check', `Analyze website ${targetUrl} - EXACT business type, real products/services, e-commerce platform, target customers. BE FACTUAL, DON'T GUESS.`, userMessage);
+          }
         }
       } else {
         throw new Error('Réponse invalide du serveur');
