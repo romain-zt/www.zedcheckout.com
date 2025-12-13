@@ -924,5 +924,27 @@
       "invalidUrl": "Invalid URL (e.g., https://example.com)",
       "invalidPhone": "Invalid phone number"
     }
+  },
+  "emotionHero": {
+    "exclusivityBadge": "Limited Early Access · January 2026",
+    "headline": {
+      "line1": "Your customers hate your checkout.",
+      "line2": "Let them talk instead."
+    },
+    "subheadline": "Stop losing 70% of sales at the payment page. Transform friction into conversation.",
+    "inputPlaceholder": "Enter your store URL...",
+    "ctaButton": "See How It Works",
+    "inputHelper": "We'll analyze your checkout and show you opportunities",
+    "trustIndicators": {
+      "noCode": "No coding required",
+      "setupTime": "2-day setup",
+      "limitedSpots": "Only 10 spots"
+    },
+    "socialProof": "Join 24+ beta testers already improving their checkout",
+    "scrollHint": "Discover more"
+  },
+  "stickyCTA": {
+    "buttonText": "Get Early Access",
+    "buttonTextMobile": "Get Access"
   }
 }

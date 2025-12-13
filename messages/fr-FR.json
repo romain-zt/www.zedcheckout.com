@@ -924,5 +924,27 @@
       "invalidUrl": "URL invalide (ex: https://example.com)",
       "invalidPhone": "Numéro de téléphone invalide"
     }
+  },
+  "emotionHero": {
+    "exclusivityBadge": "Accès Anticipé Limité · Janvier 2026",
+    "headline": {
+      "line1": "Vos clients détestent votre checkout.",
+      "line2": "Laissez-les parler."
+    },
+    "subheadline": "Arrêtez de perdre 70% des ventes au moment du paiement. Transformez la friction en conversation.",
+    "inputPlaceholder": "Entrez l'URL de votre boutique...",
+    "ctaButton": "Voir comment ça marche",
+    "inputHelper": "On analyse votre checkout et on vous montre les opportunités",
+    "trustIndicators": {
+      "noCode": "Aucun code requis",
+      "setupTime": "Installation en 2 jours",
+      "limitedSpots": "Seulement 10 places"
+    },
+    "socialProof": "Rejoignez 24+ bêta-testeurs qui améliorent déjà leur checkout",
+    "scrollHint": "Découvrir plus"
+  },
+  "stickyCTA": {
+    "buttonText": "Accès Anticipé",
+    "buttonTextMobile": "Accès"
   }
 }

@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { 
+  EmotionDetectionEngine, 
+  EmotionOutput,
+  KINESTHETIC_RESPONSE_TEMPLATES,
+  toKinestheticLanguage
+} from '@/lib/emotion-detection-engine';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
+
+// Initialize emotion detection engine
+const emotionEngine = new EmotionDetectionEngine();
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -908,10 +917,11 @@ async function handleLegacyRequest(
   conversationHistory: ChatMessage[],
   leadData: any,
   sectionContext?: string,
-  sectionDescription?: string
+  sectionDescription?: string,
+  locale: 'fr' | 'en' = 'fr'
 ): Promise<NextResponse> {
   
-  // Calculate troll score
+  // Calculate troll score using old method
   const messageCount = conversationHistory.filter(m => m.role === 'user').length + 1;
   const sessionStarted = conversationHistory.length > 0 
     ? new Date(Date.now() - (conversationHistory.length * 30000)).toISOString() // Estimate session start
@@ -923,11 +933,68 @@ async function handleLegacyRequest(
     { messageCount, sessionStarted }
   );
   
+  // 🔥 NEW: Advanced emotion detection
+  let emotionAnalysis: EmotionOutput | null = null;
+  try {
+    emotionAnalysis = emotionEngine.analyze({
+      message,
+      conversationHistory: conversationHistory.map(m => ({
+        role: m.role,
+        content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content)
+      })),
+      context: {
+        messageCount,
+        sessionDuration: Math.floor((Date.now() - new Date(sessionStarted).getTime()) / 1000),
+        previousScore: trollScore.score,
+        locale
+      }
+    });
+  } catch (err) {
+    console.error('Emotion analysis failed:', err);
+  }
+  
   // Build context message for lead data
   let contextMessage = '';
   
-  // Add troll score context
-  if (trollScore.score > 0) {
+  // 🔥 NEW: Add advanced emotion analysis context
+  if (emotionAnalysis) {
+    contextMessage += `\n\n## ANALYSE ÉMOTIONNELLE AVANCÉE :`;
+    contextMessage += `\n- État émotionnel principal : ${emotionAnalysis.emotionalState.primary.toUpperCase()} (confiance: ${Math.round(emotionAnalysis.emotionalState.confidence * 100)}%)`;
+    contextMessage += `\n- Score comportemental : ${emotionAnalysis.behaviorScore.current}/100 (Tier ${emotionAnalysis.behaviorScore.tier})`;
+    contextMessage += `\n- Tendance : ${emotionAnalysis.behaviorScore.trend}`;
+    contextMessage += `\n- Rédemption possible : ${emotionAnalysis.behaviorScore.redemptionPossible ? 'Oui' : 'Non'}`;
+    
+    // Intent breakdown
+    contextMessage += `\n\n### Analyse d'intention :`;
+    contextMessage += `\n- Intention authentique : ${Math.round(emotionAnalysis.intentScore.genuine * 100)}%`;
+    contextMessage += `\n- Intention troll : ${Math.round(emotionAnalysis.intentScore.trolling * 100)}%`;
+    contextMessage += `\n- Confusion : ${Math.round(emotionAnalysis.intentScore.confused * 100)}%`;
+    
+    // Kinesthetic signals detected
+    if (emotionAnalysis.emotionalState.kinestheticSignals.length > 0) {
+      contextMessage += `\n\n### Signaux kinesthésiques détectés :`;
+      emotionAnalysis.emotionalState.kinestheticSignals.forEach(signal => {
+        contextMessage += `\n- ${signal}`;
+      });
+    }
+    
+    // Suggested response style
+    contextMessage += `\n\n### STYLE DE RÉPONSE RECOMMANDÉ :`;
+    contextMessage += `\n- Ton : ${emotionAnalysis.suggestedResponse.tone}`;
+    contextMessage += `\n- Exemple : "${emotionAnalysis.suggestedResponse.example}"`;
+    contextMessage += `\n- Éléments kinesthésiques à utiliser : ${emotionAnalysis.suggestedResponse.kinestheticElements.join(', ')}`;
+    
+    // Patterns detected
+    if (emotionAnalysis.detectionPatterns.positive.length > 0) {
+      contextMessage += `\n\n✅ Patterns positifs : ${emotionAnalysis.detectionPatterns.positive.slice(0, 3).join(', ')}`;
+    }
+    if (emotionAnalysis.detectionPatterns.negative.length > 0) {
+      contextMessage += `\n⚠️ Patterns négatifs : ${emotionAnalysis.detectionPatterns.negative.slice(0, 3).join(', ')}`;
+    }
+  }
+  
+  // Add troll score context (legacy fallback)
+  if (trollScore.score > 0 && !emotionAnalysis) {
     contextMessage += `\n\n## SCORE DE TROLL : ${trollScore.score}/100`;
     
     if (trollScore.score >= 50) {
@@ -1058,9 +1125,26 @@ async function handleLegacyRequest(
     aiResponse.message = "Désolé, peux-tu reformuler ? Je veux bien comprendre. 😊";
   }
 
+  // 🔥 Enrich response with emotion analysis data
+  const enrichedResponse = {
+    ...aiResponse,
+    // Add emotion analysis if available
+    emotionAnalysis: emotionAnalysis ? {
+      emotionalState: emotionAnalysis.emotionalState.primary,
+      emotionConfidence: emotionAnalysis.emotionalState.confidence,
+      behaviorScore: emotionAnalysis.behaviorScore.current,
+      behaviorTier: emotionAnalysis.behaviorScore.tier,
+      behaviorTrend: emotionAnalysis.behaviorScore.trend,
+      redemptionPossible: emotionAnalysis.behaviorScore.redemptionPossible,
+      intentScore: emotionAnalysis.intentScore,
+      suggestedTone: emotionAnalysis.suggestedResponse.tone,
+      kinestheticSignals: emotionAnalysis.emotionalState.kinestheticSignals,
+    } : null
+  };
+
   return NextResponse.json({
     success: true,
-    response: aiResponse,
+    response: enrichedResponse,
     usage: {
       inputTokens: response.usage.input_tokens,
       outputTokens: response.usage.output_tokens,
@@ -1231,8 +1315,13 @@ export async function POST(request: NextRequest) {
       isFirstMessage = false,
       leadData, // Legacy support
       sectionContext,
-      sectionDescription
+      sectionDescription,
+      locale: requestLocale // New: locale from request
     } = body;
+
+    // Detect locale from request or Accept-Language header
+    const acceptLanguage = request.headers.get('accept-language') || '';
+    const locale: 'fr' | 'en' = requestLocale || (acceptLanguage.startsWith('en') ? 'en' : 'fr');
 
     // Detect legacy mode (old ChatWidgetAI.tsx)
     const isLegacyMode = leadData !== undefined && clientContext === undefined;
@@ -1290,7 +1379,7 @@ export async function POST(request: NextRequest) {
 
     // LEGACY MODE: Use old simplified prompt for backward compatibility
     if (isLegacyMode) {
-      return await handleLegacyRequest(message, conversationHistory, leadData, sectionContext, sectionDescription);
+      return await handleLegacyRequest(message, conversationHistory, leadData, sectionContext, sectionDescription, locale);
     }
 
     // NEW MODE: Use agent orchestrator

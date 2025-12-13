@@ -509,10 +509,44 @@ export default function ChatWidgetAI() {
       simulateTyping(textToType);
     };
     
+    // 🔥 NEW: Listen for openChatWithURL event (from EmotionDrivenHero)
+    const handleOpenChatWithURL = (event: CustomEvent) => {
+      const url = event.detail?.url;
+      if (url) {
+        setIsOpen(true);
+        // Pre-fill input with URL
+        setInputValue(url);
+        trackEvent('chat_opened_with_url', { url });
+        
+        // Auto-focus input after opening
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 300);
+      }
+    };
+    
+    // 🔥 NEW: Listen for openChatWidget event (from StickyCTA)
+    const handleOpenChatWidget = (event: CustomEvent) => {
+      setIsOpen(true);
+      setHasUnreadToast(false);
+      trackEvent('chat_opened_from_cta', { 
+        source: event.detail?.source || 'sticky_cta' 
+      });
+      
+      // Auto-focus input after opening
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
+    };
+    
     window.addEventListener('simulateTyping' as any, handleSimulateTyping as EventListener);
+    window.addEventListener('openChatWithURL' as any, handleOpenChatWithURL as EventListener);
+    window.addEventListener('openChatWidget' as any, handleOpenChatWidget as EventListener);
     
     return () => {
       window.removeEventListener('simulateTyping' as any, handleSimulateTyping as EventListener);
+      window.removeEventListener('openChatWithURL' as any, handleOpenChatWithURL as EventListener);
+      window.removeEventListener('openChatWidget' as any, handleOpenChatWidget as EventListener);
       // Clean up all simulation timeouts
       simulationTimeouts.current.forEach(timeout => clearTimeout(timeout));
       // Clean up slow response timeout
