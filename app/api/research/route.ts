@@ -166,49 +166,67 @@ interface WebsiteDetectionResult {
 }
 
 async function detectWebsiteDirect(url: string): Promise<WebsiteDetectionResult> {
-  try {
-    // Normalize URL
-    let normalizedUrl = url;
-    if (!url.match(/^https?:\/\//)) {
-      normalizedUrl = 'https://' + url;
+  // Normalize URL and generate variants to try
+  let baseUrl = url.trim();
+  
+  // Remove protocol if present
+  baseUrl = baseUrl.replace(/^https?:\/\//, '');
+  
+  // Generate URL variants to try (in priority order)
+  const urlVariants = [
+    `https://www.${baseUrl.replace(/^www\./, '')}`, // Try with www first (most common)
+    `https://${baseUrl.replace(/^www\./, '')}`,     // Try without www
+    `http://www.${baseUrl.replace(/^www\./, '')}`,  // Fallback to http with www
+    `http://${baseUrl.replace(/^www\./, '')}`,      // Fallback to http without www
+  ];
+
+  console.log(`[Research] Trying URL variants for ${url}:`, urlVariants);
+
+  // Try each variant until one works
+  for (const testUrl of urlVariants) {
+    try {
+      const response = await fetch(testUrl, {
+        method: 'HEAD',
+        redirect: 'follow', // FOLLOW redirects automatically
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; ZedCheckout/1.0; +https://zedcheckout.com)',
+        },
+      });
+
+      const headers: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        headers[key.toLowerCase()] = value;
+      });
+
+      if (response.ok) {
+        console.log(`[Research] ✅ Success with ${testUrl}`);
+        
+        const result: WebsiteDetectionResult = {
+          accessible: true,
+          redirectUrl: response.url !== testUrl ? response.url : undefined,
+        };
+
+        // Detect Shopify
+        if (headers['x-shopid'] || headers['x-sorting-hat-shopid']) {
+          result.platform = 'Shopify';
+          result.shopifyId = headers['x-shopid'] || headers['x-sorting-hat-shopid'];
+        }
+
+        return result;
+      }
+
+    } catch (error) {
+      // Continue to next variant
+      console.log(`[Research] ❌ Failed with ${testUrl}:`, error instanceof Error ? error.message : 'Unknown error');
+      continue;
     }
-
-    const response = await fetch(normalizedUrl, {
-      method: 'HEAD',
-      redirect: 'manual',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; ZedCheckout/1.0; +https://zedcheckout.com)',
-      },
-    });
-
-    const headers: Record<string, string> = {};
-    response.headers.forEach((value, key) => {
-      headers[key.toLowerCase()] = value;
-    });
-
-    const result: WebsiteDetectionResult = {
-      accessible: response.ok || response.status === 301 || response.status === 302,
-    };
-
-    // Detect Shopify
-    if (headers['x-shopid'] || headers['x-sorting-hat-shopid']) {
-      result.platform = 'Shopify';
-      result.shopifyId = headers['x-shopid'] || headers['x-sorting-hat-shopid'];
-    }
-
-    // Check redirect
-    if (headers['location']) {
-      result.redirectUrl = headers['location'];
-    }
-
-    return result;
-
-  } catch (error: any) {
-    return {
-      accessible: false,
-      error: error.message,
-    };
   }
+
+  // All variants failed
+  return {
+    accessible: false,
+    error: 'All URL variants failed to connect',
+  };
 }
 
 // ============================================================================
@@ -286,16 +304,22 @@ export async function POST(request: NextRequest) {
     
     // Enrich query with direct detection results
     if (directDetection && directDetection.accessible) {
+      const finalUrl = directDetection.redirectUrl || userWebsite;
+      
       const detectionInfo = [
         `\n\n[TECHNICAL INFO DETECTED]:`,
-        `- Site accessible: YES`,
+        `- Site accessible: ✅ YES`,
+        `- Working URL: ${finalUrl}`,
         directDetection.platform ? `- Platform: ${directDetection.platform}` : null,
         directDetection.shopifyId ? `- Shopify ID: ${directDetection.shopifyId}` : null,
-        directDetection.redirectUrl ? `- Redirects to: ${directDetection.redirectUrl}` : null,
       ].filter(Boolean).join('\n');
       
       perplexityQuery += detectionInfo;
-      perplexityQuery += `\n\nNow visit the site ${directDetection.redirectUrl || userWebsite} and analyze the ACTUAL business content (products, services, industry).`;
+      perplexityQuery += `\n\n⚠️ IMPORTANT: The working URL is ${finalUrl} - USE THIS URL to visit and analyze the site.
+      
+Visit ${finalUrl} RIGHT NOW and read the ACTUAL content (homepage, products, about page, categories).`;
+    } else if (directDetection && !directDetection.accessible) {
+      perplexityQuery += `\n\n[TECHNICAL INFO]: Direct connection to ${userWebsite} failed. Try to find information about this business through other means (search, public records, etc.).`;
     }
 
     // Call Perplexity with locale
@@ -317,12 +341,14 @@ export async function POST(request: NextRequest) {
       if (isGenericResponse) {
         console.log(`[Research] Perplexity response too generic, using direct detection fallback`);
         
+        const finalUrl = directDetection.redirectUrl || userWebsite;
+        
         // Generate a better response based on direct detection
         const fallbackResponse = `## ANALYSE TECHNIQUE (Détection Directe)
 
-**Accessibilité :** ✅ Site accessible
-${directDetection.redirectUrl ? `**URL finale :** ${directDetection.redirectUrl}` : ''}
-${directDetection.platform ? `**Plateforme détectée :** ${directDetection.platform}` : ''}
+**Accessibilité :** ✅ Site accessible et fonctionnel
+**URL vérifiée :** ${finalUrl}
+${directDetection.platform ? `**Plateforme e-commerce :** ${directDetection.platform}` : ''}
 ${directDetection.shopifyId ? `**Shopify Store ID :** ${directDetection.shopifyId}` : ''}
 
 ## COMPATIBILITÉ ZEDCHECKOUT

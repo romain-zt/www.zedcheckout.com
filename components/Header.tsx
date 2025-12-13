@@ -29,11 +29,11 @@ export default function Header() {
             : 'bg-white/80 backdrop-blur-md border-b border-[#1E2A47]/5'
         }`}
       >
-        <nav className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <nav className="max-w-7xl mx-auto px-6 py-2 md:py-4 flex justify-between items-center">
           {/* Logo */}
           <a
             href={`/${locale}`}
-            className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#1E2A47] to-[#E88B7A] bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+            className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#1E2A47] to-[#E88B7A] bg-clip-text text-transparent hover:opacity-80 transition-opacity"
           >
             ZedCheckout
           </a>
@@ -41,7 +41,7 @@ export default function Header() {
           {/* CTA Button */}
           <button
             onClick={() => setIsFormOpen(true)}
-            className="bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white px-6 py-3 min-h-[44px] rounded-full font-semibold text-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
+            className="bg-gradient-to-r from-[#E88B7A] to-[#FFC9B9] text-white px-6 py-1  md:py-3 min-h-[36px] md:min-h-[44px] rounded-full font-semibold text-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
           >
             {t('cta')}
           </button>
