@@ -1370,7 +1370,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (message.length > 2000) {
+    if (message.length > 200_000) {
       return NextResponse.json(
         { error: 'Message too long' },
         { status: 400 }

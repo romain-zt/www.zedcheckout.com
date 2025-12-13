@@ -232,7 +232,7 @@ export default function ZedHero() {
               </motion.button>
               
               {/* SECONDARY CTA */}
-              <button
+              {/* <button
                 onClick={() => {
                   const whyStaySection = document.getElementById('why-stay');
                   if (whyStaySection) {
@@ -242,11 +242,11 @@ export default function ZedHero() {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 min-h-[44px] bg-[#F5EDE4] text-[#1E2A47] rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg border-2 border-[#1E2A47] hover:bg-[#1E2A47] hover:text-[#F5EDE4] active:scale-95 sm:hover:scale-105 transition-all duration-300"
               >
                 {t('cta_secondary')}
-              </button>
+              </button> */}
             </motion.div>
 
             {/* Visual connection hint - Arrow pointing to bottom right */}
-            <motion.div
+            {/* <motion.div
               className="hidden sm:flex items-center gap-2 text-sm text-[#1E2A47]/50 pt-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -270,7 +270,7 @@ export default function ZedHero() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l4 4m0 0l-4 4m4-4H3" />
               </motion.svg>
-            </motion.div>
+            </motion.div> */}
 
             {/* Trust Bar */}
             <motion.div
