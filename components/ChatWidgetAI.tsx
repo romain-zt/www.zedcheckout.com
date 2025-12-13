@@ -1346,21 +1346,54 @@ Now provide a natural follow-up message to the user based on these research find
               transformOrigin: 'right center'
             }}
           >
-            <div className="relative flex items-center gap-3 md:p-2 !pl-4 rounded-full backdrop-blur-xl bg-white/40 border border-white/60 shadow-2xl hover:shadow-3xl transition-shadow">
-              {/* Glassmorphic gradient overlay */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/50 via-white/30 to-transparent pointer-events-none" />
+            {/* Outer glow + pulsing ring */}
+            <motion.div
+              className="absolute -inset-1 bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#E88B7A] rounded-full blur-md"
+              animate={{
+                opacity: [0.4, 0.6, 0.4],
+                scale: [1, 1.02, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              }}
+            />
+            
+            {/* Animated border ring */}
+            <motion.div
+              className="absolute inset-0 rounded-full bg-gradient-to-r from-[#E88B7A] via-[#FFC9B9] to-[#D4766A]"
+              animate={{
+                rotate: [0, showHeroInput ? 0 : 360]
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: 'linear'
+              }}
+              style={{
+                padding: '2px',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude'
+              }}
+            />
+            
+            <div className="relative flex items-center gap-3 md:p-2 !pl-4 rounded-full backdrop-blur-xl bg-white/90 border-2 border-[#E88B7A]/30 shadow-2xl hover:shadow-3xl transition-all">
+              {/* Enhanced gradient overlay */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#FFC9B9]/20 via-white/40 to-transparent pointer-events-none" />
               
-              {/* Subtle shimmer effect */}
+              {/* Enhanced shimmer effect */}
               <motion.div
-                className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-[#E88B7A]/30 to-transparent"
                 animate={{
                   x: ['-200%', '200%']
                 }}
                 transition={{
-                  duration: 3,
+                  duration: 2.5,
                   repeat: Infinity,
                   ease: 'linear',
-                  repeatDelay: 2
+                  repeatDelay: 1
                 }}
               />
               
