@@ -440,17 +440,21 @@ export default function ChatWidgetAI() {
     }
   }, [isOpen]);
 
-  // Auto-fill first message when opening from toast
+  // Auto-fill first message when opening from toast OR direct icon click
   useEffect(() => {
-    if (isOpen && toastMessage && messages.length === 0) {
-      // Add toast message as first bot message with contextual suggestions
+    if (isOpen && messages.length === 0) {
+      // 🔥 FIX: Send initial greeting even if opened directly (not from toast)
+      const greetingMessage = toastMessage || (locale === 'fr' 
+        ? "Salut ! 👋\n\nC'est quoi ton site e-commerce ?"
+        : "Hey! 👋\n\nWhat's your e-commerce site?");
+        
       const suggestions = currentSection === 'zed-cta' 
         ? ["https://mon-site.com", "Je veux en savoir plus", "Combien ça coûte ?"]
         : ["https://mon-site.com", "Pourquoi ?", "C'est quoi ZedCheckout ?"];
         
       setMessages([{
         id: Date.now().toString(),
-        text: toastMessage,
+        text: greetingMessage,
         sender: 'bot',
         timestamp: new Date(),
         suggestedReplies: suggestions
@@ -458,16 +462,16 @@ export default function ChatWidgetAI() {
       
       setConversationHistory([{
         role: 'assistant',
-        content: toastMessage,
+        content: greetingMessage,
       }]);
       
-      trackEvent('chat_opened_from_toast', {
+      trackEvent('chat_opened', {
         section: currentSection,
-        toastMessage
+        fromToast: !!toastMessage,
+        message: greetingMessage
       });
     }
-    // Greeting is now handled by the API backend only (no frontend duplication)
-  }, [isOpen, locale, addBotMessage, shouldSendHeroGreeting]);
+  }, [isOpen, locale, toastMessage, currentSection, messages.length]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -848,8 +852,59 @@ export default function ChatWidgetAI() {
   // Inject research results back into conversation
   const injectResearchResults = async (researchData: any, originalUserMessage: string) => {
     try {
-      // ⚠️ FIX: DON'T generate new AI message after research
-      // Just clear the research status - user will continue conversation naturally
+      // 🔥 FIX: Generate AI message with research results
+      const researchSummary = researchData.summary || researchData.insights || 'Analyse terminée.';
+      
+      // Build enhanced prompt for Claude with research context
+      const researchPrompt = `Voici les résultats de ma recherche sur ${leadData.website} :
+
+${researchSummary}
+
+Contexte de conversation : "${originalUserMessage}"
+
+📊 Ce que j'ai découvert :
+${researchData.data ? JSON.stringify(researchData.data, null, 2) : 'Analyse en cours...'}
+
+Maintenant, réponds naturellement à l'utilisateur en intégrant ces infos. Sois direct, mentionne 1-2 insights clés, et pose UNE question pour continuer la qualification.`;
+
+      // Call AI with research context
+      const response = await fetch('/api/chat-ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: researchPrompt,
+          conversationHistory: conversationHistory.slice(-10),
+          leadData,
+          sectionContext: currentSection,
+          locale,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to inject research results');
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.response) {
+        const aiResponse = data.response;
+        
+        // Add AI message with research insights
+        addBotMessage(aiResponse.message, aiResponse.suggestedReplies);
+        
+        // Update conversation history
+        setConversationHistory(prev => [
+          ...prev,
+          { role: 'assistant', content: aiResponse.message },
+        ]);
+        
+        // Update lead data if extracted
+        if (aiResponse.extractedData && Object.keys(aiResponse.extractedData).length > 0) {
+          setLeadData(prev => ({ ...prev, ...aiResponse.extractedData }));
+        }
+      }
       
       // Clear pending research
       setPendingResearch(null);
