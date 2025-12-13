@@ -106,10 +106,10 @@ export default function ZedHero() {
         className="relative z-10 w-full max-w-7xl mx-auto"
         style={{ opacity: contentOpacity }}
       >
-        <div className="grid lg:grid-cols-[55%_45%] gap-8 lg:gap-12 items-center">
+        <div className="grid md:grid-cols-[55%_45%] gap-8 lg:gap-12 items-center">
           
           {/* LEFT: Content */}
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-6 sm:space-y-8 md:space-y-12 md:h-full md:pb-16 md:flex md:flex-col md:justify-between">
             
             {/* Title */}
             <motion.div
@@ -118,7 +118,7 @@ export default function ZedHero() {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="space-y-3 sm:space-y-4"
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-[#1E2A47]">
+              <h1 className="md:mb-8 md:w-[550px] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight text-[#1E2A47]">
                 {t('title')}
               </h1>
               <motion.h2 
@@ -145,7 +145,7 @@ export default function ZedHero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="pt-2 flex flex-col sm:flex-row gap-4"
+              className="pt-2 flex flex-col sm:flex-row gap-4 hidden"
             >
               {/* PRIMARY CTA - Matches the floating edit icon style */}
               <motion.button
@@ -273,7 +273,7 @@ export default function ZedHero() {
             </motion.div> */}
 
             {/* Trust Bar */}
-            <motion.div
+            {/* <motion.div
               className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-6 pt-2 sm:pt-4"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -291,7 +291,7 @@ export default function ZedHero() {
                   </span>
                 </motion.div>
               ))}
-            </motion.div>
+            </motion.div> */}
           </div>
 
           {/* RIGHT: WhatsApp Demo (Desktop only) */}
@@ -319,7 +319,7 @@ export default function ZedHero() {
       </motion.div>
 
       {/* Scroll indicator */}
-      <motion.div
+      {/* <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -335,7 +335,7 @@ export default function ZedHero() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </motion.div>
-      </motion.div>
+      </motion.div> */}
 
       <LeadCaptureForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
     </section>
