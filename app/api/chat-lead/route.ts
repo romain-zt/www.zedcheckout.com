@@ -32,13 +32,9 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // At least one contact method required
+    // Log warning if no contact method (but still process the lead)
     if (!email && !leadData.phone) {
-      console.error('❌ [chat-lead] No contact method provided');
-      return NextResponse.json(
-        { error: 'Email or phone is required' },
-        { status: 400 }
-      );
+      console.warn('⚠️ [chat-lead] No direct contact method provided, but lead has company info');
     }
 
     // Check environment variables
@@ -242,8 +238,8 @@ export async function POST(request: NextRequest) {
     await transporter.sendMail(adminMailOptions);
     console.log('✅ [chat-lead] Admin email sent successfully');
 
-    // Send auto-response to non-qualified leads
-    if (!isQualified) {
+    // Send auto-response to non-qualified leads (only if email provided)
+    if (!isQualified && email) {
       console.log('📤 [chat-lead] Sending auto-response to non-qualified lead...');
       const userMailOptions = {
         from: process.env.CONTACT_MAIL_ADDRESS,
@@ -347,6 +343,8 @@ export async function POST(request: NextRequest) {
 
       await transporter.sendMail(userMailOptions);
       console.log('✅ [chat-lead] Auto-response email sent successfully');
+    } else if (!isQualified && !email) {
+      console.log('⚠️ [chat-lead] Skipping auto-response - no email provided');
     }
 
     console.log('🎉 [chat-lead] Lead processed successfully!');
