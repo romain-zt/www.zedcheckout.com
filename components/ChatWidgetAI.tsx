@@ -228,6 +228,7 @@ export default function ChatWidgetAI() {
   const [isMobile, setIsMobile] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [shouldSendHeroGreeting, setShouldSendHeroGreeting] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -528,11 +529,17 @@ export default function ChatWidgetAI() {
     
     // 🔥 NEW: Listen for openChatWidget event (from StickyCTA)
     const handleOpenChatWidget = (event: CustomEvent) => {
+      const source = event.detail?.source || 'sticky_cta';
       setIsOpen(true);
       setHasUnreadToast(false);
       trackEvent('chat_opened_from_cta', { 
-        source: event.detail?.source || 'sticky_cta' 
+        source 
       });
+      
+      // Trigger greeting if opened from hero_cta
+      if (source === 'hero_cta') {
+        setShouldSendHeroGreeting(true);
+      }
       
       // Auto-focus input after opening
       setTimeout(() => {
@@ -634,17 +641,20 @@ export default function ChatWidgetAI() {
     }
   }, [hasGreeted, isOpen, showToastNotification]);
 
-  // Scroll detection for hero input
+  // Scroll detection for hero input - also check when chat opens/closes
   useEffect(() => {
-    const handleScroll = () => {
+    const updateHeroInputVisibility = () => {
       const scrollY = window.scrollY;
-      // Hide hero input after scrolling 100px
-      setShowHeroInput(scrollY < 100);
+      // Show hero input only if scrolled less than 100px AND chat is closed
+      setShowHeroInput(scrollY < 100 && !isOpen);
     };
     
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    // Update on mount and when isOpen changes
+    updateHeroInputVisibility();
+    
+    window.addEventListener('scroll', updateHeroInputVisibility);
+    return () => window.removeEventListener('scroll', updateHeroInputVisibility);
+  }, [isOpen]);
 
   // Periodic icon wobble animation (every 3-5 seconds)
   useEffect(() => {
@@ -666,7 +676,7 @@ export default function ChatWidgetAI() {
     }
   }, [isOpen]);
 
-  const addBotMessage = (text: string, suggestedReplies?: string[]) => {
+  const addBotMessage = useCallback((text: string, suggestedReplies?: string[]) => {
     setError(null);
     
     // Clear any existing timeouts
@@ -741,7 +751,7 @@ export default function ChatWidgetAI() {
       simulationTimeouts.current.push(timeout);
       cumulativeDelay += phase.duration;
     });
-  };
+  }, []);
 
   const addUserMessage = (text: string) => {
     const messageId = Date.now().toString();
@@ -758,6 +768,23 @@ export default function ChatWidgetAI() {
     
     return messageId;
   };
+
+  // Handle hero CTA greeting - placed after addBotMessage is defined
+  useEffect(() => {
+    if (shouldSendHeroGreeting && messages.length === 0 && isOpen) {
+      setTimeout(() => {
+        const greetingMessage = locale === 'fr' 
+          ? "Salut ! 👋\n\nJe suis l'assistant ZedCheckout. Partage-moi l'URL de ton site e-commerce et je t'aide à améliorer ton tunnel de vente."
+          : "Hey! 👋\n\nI'm the ZedCheckout assistant. Share your e-commerce site URL and I'll help you improve your checkout flow.";
+        
+        addBotMessage(greetingMessage, [
+          locale === 'fr' ? "C'est parti !" : "Let's go!"
+        ]);
+        
+        setShouldSendHeroGreeting(false);
+      }, 500);
+    }
+  }, [shouldSendHeroGreeting, messages.length, isOpen, locale, addBotMessage]);
 
   // 🔥 RESEARCH HANDLER - The magic happens here
   const handleResearch = async (
