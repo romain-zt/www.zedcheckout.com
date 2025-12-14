@@ -669,7 +669,7 @@ async function createStreamingResponse(options: {
         const claudeStream = await anthropic.messages.create({
           model: 'claude-sonnet-4-5',
           max_tokens: 1024,
-          temperature: 0.3,
+          temperature: 0.6,
           system: enhancedSystemPrompt,
           messages: messages.map(msg => ({
             role: msg.role,
@@ -1121,7 +1121,7 @@ async function handleRoleplayRequest(
   const response = await anthropic.messages.create({
     model: 'claude-sonnet-4-5',
     max_tokens: 2048,
-    temperature: 0.9, // Higher temperature for more creative/natural roleplay
+    temperature: 0.5, // Higher temperature for more creative/natural roleplay
     system: systemPrompt,
     messages: messages.map(msg => ({
       role: msg.role,
@@ -1229,7 +1229,7 @@ async function processWithAgent(
   let response = await anthropic.messages.create({
     model: 'claude-sonnet-4-5',
     max_tokens: 1024,
-    temperature: 0.3,
+    temperature: 0.5,
     system: enhancedSystemPrompt,
     tools: AGENT_TOOLS,
     messages: messages.map(msg => ({
@@ -1284,7 +1284,7 @@ async function processWithAgent(
     response = await anthropic.messages.create({
       model: 'claude-sonnet-4-5',
       max_tokens: 1024,
-      temperature: 0.3,
+      temperature: 0.5,
       system: enhancedSystemPrompt,
       tools: AGENT_TOOLS,
       messages: messages.map(msg => ({
