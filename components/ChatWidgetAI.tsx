@@ -245,6 +245,10 @@ export default function ChatWidgetAI() {
   const shouldContinueSlowTyping = useRef<boolean>(false);
   const submitDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const isUserTypingRef = useRef<boolean>(false);
+  
+  // 🔥 NEW: AbortController for stream interruption
+  const streamAbortControllerRef = useRef<AbortController | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   // Check for dev mode query parameter
   useEffect(() => {
@@ -849,6 +853,21 @@ export default function ChatWidgetAI() {
     }
   };
 
+  // 🔥 NEW: Cancel current stream (interruption)
+  const cancelStream = () => {
+    if (streamAbortControllerRef.current) {
+      console.log('🔴 [Stream] Canceling stream...');
+      streamAbortControllerRef.current.abort();
+      streamAbortControllerRef.current = null;
+    }
+    setIsStreaming(false);
+    setIsTyping(false);
+    
+    trackEvent('stream_interrupted', {
+      conversationLength: conversationHistory.length,
+    });
+  };
+
   // Inject research results back into conversation
   const injectResearchResults = async (researchData: any, originalUserMessage: string) => {
     try {
@@ -990,7 +1009,14 @@ Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
         historyCount: validHistory.length,
       });
 
-      // 🔥 REVERT: Back to JSON mode (SSE was causing 404 errors)
+      // 🔥 NEW: Create AbortController for interruption support
+      if (streamAbortControllerRef.current) {
+        streamAbortControllerRef.current.abort(); // Cancel previous stream if exists
+      }
+      streamAbortControllerRef.current = new AbortController();
+      setIsStreaming(true);
+
+      // ✅ SSE STREAMING ENABLED (supafriends.ai style)
       const response = await fetch('/api/chat-ai', {
         method: 'POST',
         headers: {
@@ -999,15 +1025,30 @@ Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
         body: JSON.stringify({
           message: userMessage,
           conversationHistory: validHistory,
-          leadData,
+          // 🔥 NEW MODE: Send context instead of leadData to use zed-lead-qualification prompt
+          context: {
+            state: 'discovery',
+            cart: [],
+            userInfo: leadData || {},
+            metadata: {
+              sessionStarted: new Date().toISOString(),
+              lastInteraction: new Date().toISOString(),
+              messageCount: validHistory.length + 1,
+              intentHistory: []
+            },
+            trollScore: 0,
+            trollHistory: []
+          },
           sectionContext: currentSection,
           sectionDescription: sectionContext,
           locale,
-          // stream: false, // SSE disabled
+          stream: true, // ✅ SSE ENABLED
         }),
+        signal: streamAbortControllerRef.current.signal, // 🔥 Interruption support
       });
 
       if (!response.ok) {
+        setIsStreaming(false);
         const errorData = await response.json().catch(() => ({}));
         
         if (response.status === 429) {
@@ -1017,14 +1058,143 @@ Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
         throw new Error(errorData.error || 'Erreur de connexion');
       }
 
-      const data = await response.json();
+      // 🔥 SSE STREAM PROCESSING (supafriends.ai style)
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedText = '';
+      let metadata: any = null;
       
-      // Clear slow response timeout and stop slow typing simulation on success
+      console.log('🔵 [Stream] Starting SSE stream consumption...');
+      
+      if (!reader) {
+        throw new Error('No readable stream');
+      }
+      
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) {
+            console.log('🔵 [Stream] Stream completed');
+            break;
+          }
+          
+          // Decode chunk
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            if (!line.trim() || !line.startsWith('data: ')) continue;
+            
+            try {
+              const jsonStr = line.slice(6); // Remove 'data: ' prefix
+              const data = JSON.parse(jsonStr);
+              
+              console.log('🔵 [Stream] Received:', data.type, data);
+              
+              if (data.type === 'metadata') {
+                // STEP 1: Metadata received (emotion, needsResearch, extractedData)
+                metadata = data;
+                console.log('🔵 [Stream] Metadata:', {
+                  emotion: data.emotion,
+                  needsResearch: data.needsResearch
+                });
+                
+                // Update leadData with extractedData
+                if (data.extractedData && Object.keys(data.extractedData).length > 0) {
+                  setLeadData(prev => ({ ...prev, ...data.extractedData }));
+                  trackEvent('lead_data_updated', {
+                    fieldsCollected: Object.keys(data.extractedData).length,
+                    newFields: Object.keys(data.extractedData),
+                    confidence: data.confidence,
+                    emotionalState: data.emotion,
+                  });
+                }
+              } else if (data.type === 'split') {
+                // STEP 2: [SPLIT] marker - start showing typing indicator
+                setIsTyping(true);
+              } else if (data.type === 'chunk') {
+                // STEP 3: Text chunks - accumulate message
+                accumulatedText += data.content;
+              } else if (data.type === 'done') {
+                // STEP 4: Stream finished
+                setIsStreaming(false);
+                setIsTyping(false);
+                
+                const finalMessage = data.message || accumulatedText;
+                
+                // Add bot message
+                addBotMessage(finalMessage, []);
+                
+                // Update conversation history
+                setConversationHistory(prev => [
+                  ...prev,
+                  { role: 'user', content: userMessage },
+                  { role: 'assistant', content: finalMessage },
+                ]);
+                
+                // Track completion
+                trackEvent('ai_response_received', {
+                  emotion: data.emotion || metadata?.emotion,
+                  messageLength: finalMessage.length,
+                  hasMetadata: !!metadata,
+                });
+                
+                // Trigger research if needed
+                if (metadata?.needsResearch) {
+                  console.log('🔵 [Stream] Research needed, triggering...');
+                  const urlDetection = detectAndExtractURL(userMessage);
+                  if (urlDetection.isURL) {
+                    const researchId = `research-${Date.now()}`;
+                    const researchQuery = `Analyze ${urlDetection.url} - business type, products, platform, customer experience`;
+                    setPendingResearch({
+                      id: researchId,
+                      type: 'website_check',
+                      query: researchQuery,
+                      context: userMessage,
+                      startedAt: Date.now(),
+                      status: 'pending'
+                    });
+                    setTimeout(() => handleResearch(researchId, 'website_check', researchQuery, userMessage), 500);
+                  }
+                }
+                
+                break;
+              } else if (data.type === 'error') {
+                throw new Error(data.message || 'Stream error');
+              }
+            } catch (parseError) {
+              console.error('Failed to parse SSE data:', parseError, line);
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock();
+        setIsStreaming(false);
+      }
+      
+      // Clear slow response timeout
       if (slowResponseTimeoutRef.current) {
         clearTimeout(slowResponseTimeoutRef.current);
         slowResponseTimeoutRef.current = null;
       }
       stopSlowTypingSimulation();
+      setRetryCount(0);
+      
+      return; // Exit early, don't process old JSON response
+      
+      // OLD JSON MODE (kept for fallback)
+      const data = await response.json();
+      
+      // Clear slow response timeout and stop slow typing simulation on success
+      if (slowResponseTimeoutRef.current) {
+        clearTimeout(slowResponseTimeoutRef.current as NodeJS.Timeout);
+        slowResponseTimeoutRef.current = null;
+      }
+      stopSlowTypingSimulation();
+      
+      // Reset retry count
+      setRetryCount(0);
       
       if (data.success && data.response) {
         const aiResponse = data.response;
@@ -1091,7 +1261,7 @@ Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
 
         // 🔥 FIX: Trigger automatic research if URL detected OR if website exists but not researched yet
         const urlDetection = detectAndExtractURL(userMessage);
-        const hasWebsite = leadData.website && leadData.website.length > 0;
+        const hasWebsite = Boolean((leadData?.website || '').length > 0);
         const hasNoResearch = !pendingResearch; // No research in progress
         const needsResearch = urlDetection.isURL || (hasWebsite && hasNoResearch && conversationHistory.length >= 4);
         
@@ -2002,7 +2172,7 @@ Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
                   <motion.div
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-start"
+                    className="flex justify-start flex-col gap-2"
                   >
                     <div className="bg-white rounded-lg rounded-bl-none px-4 py-3 shadow-sm">
                       <div className="flex gap-1">
@@ -2011,6 +2181,19 @@ Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
                     </div>
+                    
+                    {/* 🔥 NEW: Stop Generation Button */}
+                    {isStreaming && (
+                      <button
+                        onClick={cancelStream}
+                        className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-full transition-colors border border-red-200 shadow-sm"
+                      >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <rect x="6" y="6" width="8" height="8" rx="1" />
+                        </svg>
+                        Arrêter
+                      </button>
+                    )}
                   </motion.div>
                 )}
 

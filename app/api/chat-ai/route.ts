@@ -1329,22 +1329,23 @@ export async function POST(request: NextRequest) {
 
     // Detect mode
     const isRoleplayMode = mode === 'roleplay' && characterData !== undefined;
-    // 🔥 REVERT: Disable SSE streaming (unstable), back to JSON mode
+    // Legacy mode: using old chat-lead prompt (tutoiement, no [EMOTION])
     const isLegacyMode = leadData !== undefined && clientContext === undefined;
 
-    // 🔥 SSE STREAMING DISABLED (causes 404 errors, will fix later)
-    // if (stream) {
-    //   console.log('🔵 [API] SSE Streaming enabled, calling createStreamingResponse()');
-    //   return createStreamingResponse({
-    //     message,
-    //     conversationHistory,
-    //     clientContext,
-    //     locale,
-    //     isFirstMessage,
-    //     isRoleplayMode,
-    //     characterData
-    //   });
-    // }
+    // ✅ SSE STREAMING ENABLED (supafriends.ai style)
+    // Priority: stream > legacy mode
+    if (stream && !isLegacyMode) {
+      console.log('🔵 [API] SSE Streaming enabled, calling createStreamingResponse()');
+      return createStreamingResponse({
+        message,
+        conversationHistory,
+        clientContext,
+        locale,
+        isFirstMessage,
+        isRoleplayMode,
+        characterData
+      });
+    }
 
     // Initialize or restore context
     let context: ConversationContext = clientContext ? {
