@@ -244,7 +244,7 @@ async function callPerplexity(query: string, locale: Locale = 'fr-FR'): Promise<
       'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'sonar',
+      model: 'sonar-deep-research',
       messages: [
         {
           role: 'system',
@@ -255,8 +255,9 @@ async function callPerplexity(query: string, locale: Locale = 'fr-FR'): Promise<
           content: query
         }
       ],
-      temperature: 0.1,
-      max_tokens: 4096,
+      reasoning_effort: "high",
+      temperature: 0.8,
+      max_tokens: 2048,
     }),
   });
 
