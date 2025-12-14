@@ -1531,6 +1531,33 @@ Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
     });
   };
 
+  // Parse emotion from message and return cleaned text + optional emoji
+  const parseMessageEmotion = (text: string): { cleanText: string; emoji?: string } => {
+    const emotionMatch = text.match(/^\[(.*?)\]\s*/);
+    if (!emotionMatch) {
+      return { cleanText: text };
+    }
+    
+    const emotion = emotionMatch[1].toLowerCase();
+    const cleanText = text.replace(/^\[(.*?)\]\s*/, '');
+    
+    // Map emotions to emojis (optional, can be removed if not needed)
+    const emotionEmojis: Record<string, string> = {
+      'happy': '😊',
+      'excited': '🎉',
+      'curious': '🤔',
+      'empathetic': '💙',
+      'professional': '👔',
+      'friendly': '👋',
+      'enthusiastic': '✨',
+    };
+    
+    return {
+      cleanText,
+      emoji: emotionEmojis[emotion]
+    };
+  };
+
   // Get WhatsApp message based on conversation context
   const getWhatsAppMessage = () => {
     const baseMsg = "Bonjour ZedCheckout 👋\n\n";
@@ -2106,7 +2133,19 @@ Réponds naturellement en intégrant SEULEMENT ce que tu as trouvé.`;
                               : 'bg-white text-gray-900 rounded-bl-none'
                           }`}
                         >
-                          <div className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{message.text}</div>
+                          {message.sender === 'bot' ? (() => {
+                            const { cleanText, emoji } = parseMessageEmotion(message.text);
+                            return (
+                              <>
+                                <div className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">
+                                  {emoji && <span className="mr-1">{emoji}</span>}
+                                  {cleanText}
+                                </div>
+                              </>
+                            );
+                          })() : (
+                            <div className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{message.text}</div>
+                          )}
                           <div className={`text-[11px] mt-1 flex items-center justify-end gap-1 ${
                             message.sender === 'user' ? 'text-gray-500' : 'text-gray-500'
                           }`}>
