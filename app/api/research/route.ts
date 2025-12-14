@@ -233,9 +233,14 @@ async function detectWebsiteDirect(url: string): Promise<WebsiteDetectionResult>
 // PERPLEXITY API CALL
 // ============================================================================
 
-async function callPerplexity(query: string, locale: Locale = 'fr-FR'): Promise<any> {
+async function callPerplexity(query: string, locale: Locale = 'fr-FR', useDeepResearch: boolean = false): Promise<any> {
   // Load the research system prompt for the appropriate locale
   const systemPrompt = getResearchSystemPrompt(locale);
+  
+  // Use sonar-deep-research for website checks (better quality), sonar-pro for others (cheaper)
+  const model = useDeepResearch ? 'sonar-deep-research' : 'sonar-pro';
+  
+  console.log(`[Research] Using model: ${model}`);
   
   const response = await fetch('https://api.perplexity.ai/chat/completions', {
     method: 'POST',
@@ -244,7 +249,7 @@ async function callPerplexity(query: string, locale: Locale = 'fr-FR'): Promise<
       'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'sonar-deep-research',
+      model,
       messages: [
         {
           role: 'system',
@@ -255,7 +260,7 @@ async function callPerplexity(query: string, locale: Locale = 'fr-FR'): Promise<
           content: query
         }
       ],
-      reasoning_effort: "high",
+      ...(useDeepResearch ? { reasoning_effort: "high" } : {}),
       temperature: 0.6,
       max_tokens: 2048,
     }),
@@ -323,8 +328,10 @@ Visit ${finalUrl} RIGHT NOW and read the ACTUAL content (homepage, products, abo
       perplexityQuery += `\n\n[TECHNICAL INFO]: Direct connection to ${userWebsite} failed. Try to find information about this business through other means (search, public records, etc.).`;
     }
 
-    // Call Perplexity with locale
-    const perplexityResponse = await callPerplexity(perplexityQuery, locale);
+    // Call Perplexity with locale and model selection
+    // Use deep research only for website_check (better quality but more expensive)
+    const useDeepResearch = type === 'website_check';
+    const perplexityResponse = await callPerplexity(perplexityQuery, locale, useDeepResearch);
 
     // Extract the response content
     let researchResult = perplexityResponse.choices?.[0]?.message?.content || '';
