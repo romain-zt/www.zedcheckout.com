@@ -255,7 +255,7 @@ async function callPerplexity(query: string, locale: Locale = 'fr-FR'): Promise<
           content: query
         }
       ],
-      temperature: 0.8,
+      temperature: 0.1,
       max_tokens: 4096,
     }),
   });

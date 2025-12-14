@@ -696,18 +696,61 @@ async function createStreamingResponse(options: {
         let confidence = 0.7;
 
         try {
-          const parsed = JSON.parse(decodedText);
+          // Strip markdown code blocks if present (```json ... ``` or ``` ... ```)
+          let jsonText = decodedText.trim();
+          const codeBlockMatch = jsonText.match(/^```(?:json)?\s*([\s\S]*?)```$/);
+          if (codeBlockMatch) {
+            jsonText = codeBlockMatch[1].trim();
+          }
+          
+          // Try to extract JSON object from text (in case there's extra text around it)
+          const jsonObjectMatch = jsonText.match(/\{[\s\S]*\}/);
+          if (jsonObjectMatch) {
+            jsonText = jsonObjectMatch[0];
+          }
+
+          const parsed = JSON.parse(jsonText);
+          
+          // Extract message content from structured response
           if (parsed.messages && Array.isArray(parsed.messages) && parsed.messages.length > 0) {
             // ❗ FORCE ONLY FIRST MESSAGE (supafriends.ai rule)
-            finalMessage = parsed.messages[0].content || parsed.messages[0].text || decodedText;
+            const firstMessage = parsed.messages[0];
+            finalMessage = firstMessage.content || firstMessage.text || '';
+            
+            // If message is empty, fallback to plain text (but not the raw JSON)
+            if (!finalMessage.trim()) {
+              finalMessage = decodedText.replace(/```json?[\s\S]*?```/g, '').trim();
+              // If still empty or just whitespace, use a default message
+              if (!finalMessage.trim()) {
+                finalMessage = 'Je traite votre demande...';
+              }
+            }
+          } else {
+            // If it's JSON but no messages array, don't show the JSON - use plain text fallback
+            finalMessage = decodedText.replace(/```json?[\s\S]*?```/g, '').trim();
+            if (!finalMessage.trim()) {
+              finalMessage = 'Je traite votre demande...';
+            }
           }
+          
+          // Extract context update data
           if (parsed.context_update) {
             extractedData = parsed.context_update.data_collected || {};
             confidence = parsed.context_update.confidence || 0.7;
           }
         } catch {
-          // Not JSON, use plain text
-          finalMessage = decodedText;
+          // Not JSON or invalid JSON - check if it looks like JSON wrapped in markdown
+          const codeBlockMatch = decodedText.match(/^```(?:json)?\s*([\s\S]*?)```$/);
+          if (codeBlockMatch) {
+            // If it's a code block but not valid JSON, strip it and use plain text
+            finalMessage = decodedText.replace(/```json?[\s\S]*?```/g, '').trim();
+            if (!finalMessage.trim()) {
+              finalMessage = 'Je traite votre demande...';
+            }
+          } else {
+            // Plain text response - use as is
+            finalMessage = decodedText;
+          }
         }
 
         // 🔥 EXTRACT EMOTION from message (e.g., "[Happy] text" or "[Curious] text")
@@ -1263,17 +1306,41 @@ async function processWithAgent(
   let newState: AgentState = context.state;
 
   try {
-    const parsed = JSON.parse(finalText);
+    // Strip markdown code blocks if present (```json ... ``` or ``` ... ```)
+    let jsonText = finalText.trim();
+    const codeBlockMatch = jsonText.match(/^```(?:json)?\s*([\s\S]*?)```$/);
+    if (codeBlockMatch) {
+      jsonText = codeBlockMatch[1].trim();
+    }
+    
+    // Try to extract JSON object from text (in case there's extra text around it)
+    const jsonObjectMatch = jsonText.match(/\{[\s\S]*\}/);
+    if (jsonObjectMatch) {
+      jsonText = jsonObjectMatch[0];
+    }
+
+    const parsed = JSON.parse(jsonText);
     
     // ⚠️ CRITICAL FIX: Force ONLY 1 message (first one)
     // Prevents bot from sending multiple messages without waiting for user
     const allMessages = parsed.messages || [{ text: finalText }];
-    agentMessages = [allMessages[0]]; // Take ONLY first message
+    const firstMessage = allMessages[0];
+    
+    // Extract message content (handle both 'text' and 'content' properties)
+    const messageText = firstMessage.content || firstMessage.text || '';
+    
+    // If message is empty after parsing, use fallback
+    if (!messageText.trim()) {
+      agentMessages = [{ text: finalText.replace(/```json?[\s\S]*?```/g, '').trim() || 'Je traite votre demande...' }];
+    } else {
+      agentMessages = [{ text: messageText }];
+    }
     
     newState = parsed.state || context.state;
   } catch {
-    // Fallback: plain text response
-    agentMessages = [{ text: finalText }];
+    // Fallback: plain text response (strip any code blocks)
+    const cleanText = finalText.replace(/```json?[\s\S]*?```/g, '').trim();
+    agentMessages = [{ text: cleanText || finalText }];
   }
 
   // Update metadata
