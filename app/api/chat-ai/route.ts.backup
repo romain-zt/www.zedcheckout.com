@@ -678,19 +678,27 @@ async function createStreamingResponse(options: {
           stream: true
         });
 
-        // 🔵 STEP 1: Collect full response from Claude
-        console.log('🔵 [Stream] Collecting response from Claude...');
+        // Stream each chunk from Claude
+        console.log('🔵 [Stream] Starting to stream from Claude...');
         for await (const chunk of claudeStream) {
           if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-            fullText += chunk.delta.text;
+            const text = chunk.delta.text;
+            fullText += text;
+            
+            // Send text chunk to client
+            console.log('🔵 [Stream] Sending chunk:', text.substring(0, 50));
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+              type: 'chunk',
+              content: text
+            })}\\n\\n`));
           }
         }
-        console.log('🔵 [Stream] Response collected:', fullText.substring(0, 100));
+        console.log('🔵 [Stream] Finished streaming, fullText length:', fullText.length);
 
-        // 🔥 DECODE \n correctly
-        const decodedText = fullText.replace(/\\n/g, '\n');
+        // \ud83d\udd25 DECODE \\n correctly
+        const decodedText = fullText.replace(/\\\\n/g, '\\n');
 
-        // 🔥 PARSE JSON response (if formatted as JSON)
+        // \ud83d\udd25 PARSE JSON response (if formatted as JSON)
         let finalMessage = decodedText;
         let extractedData = {};
         let confidence = 0.7;
@@ -698,7 +706,7 @@ async function createStreamingResponse(options: {
         try {
           const parsed = JSON.parse(decodedText);
           if (parsed.messages && Array.isArray(parsed.messages) && parsed.messages.length > 0) {
-            // ❗ FORCE ONLY FIRST MESSAGE (supafriends.ai rule)
+            // \u2757 FORCE ONLY FIRST MESSAGE
             finalMessage = parsed.messages[0].content || parsed.messages[0].text || decodedText;
           }
           if (parsed.context_update) {
@@ -710,58 +718,16 @@ async function createStreamingResponse(options: {
           finalMessage = decodedText;
         }
 
-        // 🔥 EXTRACT EMOTION from message (e.g., "[Happy] text" or "[Curious] text")
-        let emotion = 'Neutral';
-        const emotionMatch = finalMessage.match(/^\[([A-Za-z]+)\]/);
-        if (emotionMatch) {
-          emotion = emotionMatch[1];
-        }
-
-        // 🔥 CHECK IF RESEARCH NEEDED (if user mentioned a URL or website)
-        let needsResearch = false;
-        const urlRegex = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+\.[a-zA-Z]{2,})(?:\/[^\s]*)?/g;
-        const lastUserMessage = messages[messages.length - 1]?.content || '';
-        if (typeof lastUserMessage === 'string' && urlRegex.test(lastUserMessage)) {
-          needsResearch = true;
-        }
-
-        // 🔵 STEP 2: Send METADATA FIRST (supafriends.ai format)
+        // Send final message metadata
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({
           type: 'metadata',
-          emotion,
-          needsResearch,
           extractedData,
           confidence,
-          emotionalState: emotion
-        })}\n\n`));
-        console.log('🔵 [Stream] Metadata sent:', { emotion, needsResearch });
+          emotionalState: null
+        })}\\n\\n`));
 
-        // 🔵 STEP 3: Send [SPLIT] marker
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-          type: 'split'
-        })}\n\n`));
-
-        // 🔵 STEP 4: Stream message text in chunks (human-like typing)
-        const chunkSize = 5;
-        for (let i = 0; i < finalMessage.length; i += chunkSize) {
-          const chunk = finalMessage.substring(i, i + chunkSize);
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-            type: 'chunk',
-            content: chunk
-          })}\n\n`));
-          // Small delay for human-like typing effect
-          await new Promise(resolve => setTimeout(resolve, 30));
-        }
-
-        // 🔵 STEP 5: Signal completion
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-          type: 'done',
-          message: finalMessage,
-          extractedData,
-          confidence,
-          emotion
-        })}\n\n`));
-        console.log('🔵 [Stream] Stream completed successfully');
+        // Signal completion
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\\n\\n`));
         controller.close();
         
       } catch (error: any) {
@@ -771,7 +737,7 @@ async function createStreamingResponse(options: {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({
           type: 'error',
           message: error.message || 'An error occurred'
-        })}\n\n`));
+        })}\\n\\n`));
         controller.close();
       }
     }
