@@ -1,0 +1,53 @@
+---
+description: Booking domain safety rules — slot conflicts, race-safety, idempotency, multi-tenant scoping. Loaded when working with booking, slot, availability, room, resource, or reservation code.
+globs: "**/*{booking,slot,availability,reservation,resource,room,calendar}*.{ts,tsx,js,jsx,sql}"
+---
+
+# Booking Domain
+
+A confirmed booking is a contract with a customer's time and money. A double-booking, a leaked tenant, or a stale availability read is a brand-trust event.
+
+## Hard Rules
+
+1. **Race-proof at the database, not just in app code.** The Postgres `EXCLUDE` constraints on `(tenant_id, room_id, tstzrange)` and `(tenant_id, resource_id, tstzrange)` for `status = 'confirmed'` are the **only** thing that prevents double-booking. App-layer pre-checks are UX, not safety.
+2. **`tenant_id` on every booking-related row, every query, every join.** Direct `db` access is forbidden — go through `tenantScopedDb(tenantId)` from `packages/database`. ESLint enforces this.
+3. **Slot-acquisition is a transaction.** Read availability + insert booking must be in the same DB transaction or rely on the EXCLUDE constraint. Never two-step (check then insert) without the constraint catching the race.
+4. **Pending bookings expire.** Any `Booking(status='pending')` older than 15 minutes is released (booking → cancelled, pack hold → released, no Stripe charge). Background job runs every 5 minutes.
+5. **Booking confirmation is idempotent.** Replays of the same payment-confirm webhook never confirm twice (idempotency key = `Booking.id`).
+6. **Time is stored as UTC, displayed in tenant timezone.** `Booking.startsAt` and `endsAt` are `timestamptz`. UI converts at render time using `Tenant.timezone`. Never store local time.
+7. **Policy is a snapshot.** When a Booking is created, `Booking.policyId` points to the active Policy at that moment. Editing the global Policy later does not retroactively change refund behavior for existing bookings.
+8. **Cancellation flows return refunds to source.** Card portion → Stripe refund to original card; pack portion → pack credit increment; gift-card portion → gift-card balance increment. Splits are exact (no rounding loss). Hard rule, not configurable.
+9. **No silent overbooking on availability rule conflicts.** If recurring + override rules combine to produce ambiguous availability (e.g., recurring says "open", override says "closed"), the **closed/unavailable rule wins**.
+
+## Required Tests (Failure Paths)
+
+For every booking flow, test:
+
+- 100 concurrent customers competing for 10 slots → exactly 10 confirmed, 90 friendly 409s, zero double-bookings, zero orphaned pending rows.
+- Pending booking expiry: pending row older than 15 min → cancelled by job; pack hold released; no Stripe artifact.
+- Tenant isolation: query for tenant A returns zero tenant B rows under any DB load.
+- Reschedule race: customer A reschedules to slot X at the same instant customer B books slot X → exactly one wins, one gets 409.
+- Availability rule composition: recurring "open Mon 9-18" + override "Mon closed" → no slots returned for that Monday.
+- Policy snapshot: change global Policy mid-day → existing bookings retain old policy, new bookings use new.
+- Refund-to-source: payment of (€60 pack + €80 card) cancelled in window → exactly €60 to pack, €80 to card, zero rounding loss.
+
+## Forbidden Patterns
+
+- Two-step "check availability then insert" without DB constraint or transaction
+- `db.bookings.find(...)` without a `tenant_id` predicate
+- Storing `Booking.startsAt` as a local-time string
+- Mutating a Policy in place when bookings reference it (must version)
+- Catching `BOOKING_CONFLICT` (409) and silently retrying without a new slot acquisition
+- Sending confirmation email **before** the booking row is `confirmed` and the payment is `succeeded`
+- Refund logic that rounds with `Math.round` on cents — refunds must be byte-exact, no float math, ever
+
+## Autonomy Level
+
+Per operating model: **L1 (Draft only)** for any code touching slot acquisition, refund allocation, or tenant scoping. Human review before merge. The double-booking cost is too high for autonomous merges.
+
+## Reference
+
+- Architecture: `docs/architecture/zedslot-v0.md`
+- Feature spec: `docs/features/booking-pilot.md`
+- Story: `docs/stories/no-double-booking-guarantee.md`
+- Spec must include "Booking Failure Modes" section listing how each failure-paths test above is covered.
