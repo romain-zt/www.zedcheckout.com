@@ -5,6 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./templates": "./src/templates/index.ts",
+    "./render": "./src/render.ts",
+    "./resend": "./src/resend.ts",
     "./__test-double": "./src/__test-double/index.ts"
   },
   "scripts": {
@@ -13,10 +16,17 @@
   },
   "dependencies": {
     "@zedslot/domain": "workspace:*",
+    "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.0.8",
     "resend": "^4.0.0"
   },
   "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
   }
 }
