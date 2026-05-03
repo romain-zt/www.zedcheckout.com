@@ -1,11 +1,11 @@
 import type { Config } from 'tailwindcss';
-import { tailwindColors, cssCustomProperties as colorProperties } from './src/tokens/colors.js';
-import { tailwindSpacing, cssCustomProperties as spacingProperties } from './src/tokens/spacing.js';
+import { tailwindColors, cssCustomProperties as colorProperties } from './src/tokens/colors';
+import { tailwindSpacing, cssCustomProperties as spacingProperties } from './src/tokens/spacing';
 import {
   tailwindFontFamily,
   fontSize,
   cssCustomProperties as typographyProperties,
-} from './src/tokens/typography.js';
+} from './src/tokens/typography';
 
 /**
  * Tailwind preset for zedslot apps.

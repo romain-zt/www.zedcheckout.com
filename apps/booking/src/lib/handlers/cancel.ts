@@ -1,7 +1,7 @@
 import { applyPolicy, splitRefund } from '@zedslot/booking-engine';
 import type { Refund } from '@zedslot/domain';
-import type { RequestContext } from '../context.js';
-import { newId } from '../id.js';
+import type { RequestContext } from '../context';
+import { newId } from '../id';
 
 interface CancelInput {
   bookingId: string;

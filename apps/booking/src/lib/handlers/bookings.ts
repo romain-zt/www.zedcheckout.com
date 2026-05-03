@@ -1,8 +1,8 @@
 import { canBook, assignRoom, calculateSplitPayment } from '@zedslot/booking-engine';
 import type { Booking, Payment, Customer, PackHold, Slot } from '@zedslot/domain';
-import type { RequestContext } from '../context.js';
-import { newId } from '../id.js';
-import { getTenant } from '../tenant.js';
+import type { RequestContext } from '../context';
+import { newId } from '../id';
+import { getTenant } from '../tenant';
 
 const HOLD_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 

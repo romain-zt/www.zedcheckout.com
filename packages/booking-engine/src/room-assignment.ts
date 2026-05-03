@@ -1,5 +1,5 @@
 import type { Room, Booking } from '@zedslot/domain';
-import { hasOverlap } from './list-available-slots.js';
+import { hasOverlap } from './list-available-slots';
 
 /**
  * Auto-assign a room: first eligible room (sorted by ID) with no overlap.

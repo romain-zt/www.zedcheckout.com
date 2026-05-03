@@ -1,4 +1,4 @@
-import type { RequestContext } from '../context.js';
+import type { RequestContext } from '../context';
 
 const MAGIC_LINK_RATE_LIMIT = new Map<string, { count: number; windowStart: number }>();
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes

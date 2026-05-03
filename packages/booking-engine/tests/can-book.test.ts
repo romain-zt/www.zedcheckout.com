@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { canBook } from '../src/can-book.js';
+import { canBook } from '../src/can-book';
 import type { Slot, Booking, Service } from '@zedslot/domain';
 
 const baseService: Service = {

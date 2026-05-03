@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { calculateSplitPayment } from '../src/split-payment.js';
+import { calculateSplitPayment } from '../src/split-payment';
 
 describe('calculateSplitPayment', () => {
   it('uses pack credit first, then gift card, then card', () => {

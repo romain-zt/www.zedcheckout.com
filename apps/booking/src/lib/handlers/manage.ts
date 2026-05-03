@@ -1,5 +1,5 @@
 import { applyPolicy, canReschedule } from '@zedslot/booking-engine';
-import type { RequestContext } from '../context.js';
+import type { RequestContext } from '../context';
 
 interface ManageQuery {
   bookingId: string;

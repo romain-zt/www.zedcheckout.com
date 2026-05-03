@@ -1,5 +1,5 @@
 import type { PostHog } from 'posthog-js';
-import type { AnalyticsEvent } from './events.js';
+import type { AnalyticsEvent } from './events';
 
 export interface AnalyticsClientOptions {
   autocapture?: boolean;

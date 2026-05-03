@@ -4,7 +4,7 @@ import type {
   CustomerCredit,
   CreateOrderInput,
   ShopifyOrder,
-} from '../index.js';
+} from '../index';
 
 export class InMemoryShopifyClient implements ShopifyClient {
   readonly customers: Map<string, ShopifyCustomer & CustomerCredit> = new Map();

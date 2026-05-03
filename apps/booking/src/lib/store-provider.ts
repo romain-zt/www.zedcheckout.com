@@ -1,4 +1,4 @@
-import type { BookingStore } from './store.js';
+import type { BookingStore } from './store';
 
 let _store: BookingStore | null = null;
 

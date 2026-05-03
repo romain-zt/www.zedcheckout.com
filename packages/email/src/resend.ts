@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import type { EmailSender, SendEmailParams, SendEmailResult } from './index.js';
+import type { EmailSender, SendEmailParams, SendEmailResult } from './index';
 
 class ResendEmailSender implements EmailSender {
   private client: Resend;

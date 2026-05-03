@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { tenantScopedAccess } from '../hooks/tenant-scoping.js'
+import { tenantScopedAccess } from '../hooks/tenant-scoping'
 
 export const Customers: CollectionConfig = {
   slug: 'customers',

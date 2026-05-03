@@ -1,5 +1,5 @@
-import type { RequestContext } from '../context.js';
-import { scheduleConfirmationEmails } from './bookings.js';
+import type { RequestContext } from '../context';
+import { scheduleConfirmationEmails } from './bookings';
 
 interface WebhookInput {
   body: string;

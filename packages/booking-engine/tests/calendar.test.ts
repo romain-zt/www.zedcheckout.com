@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateICS, generateGoogleCalendarUrl } from '../src/calendar.js';
+import { generateICS, generateGoogleCalendarUrl } from '../src/calendar';
 
 const event = {
   id: 'booking-123',

@@ -1,4 +1,4 @@
-import type { RequestContext } from '../context.js';
+import type { RequestContext } from '../context';
 
 const MAX_ATTEMPTS = 3;
 const BATCH_SIZE = 50;

@@ -1,4 +1,4 @@
-import type { EmailSender, SendEmailParams, SendEmailResult } from '../index.js';
+import type { EmailSender, SendEmailParams, SendEmailResult } from '../index';
 
 export class InMemoryEmailSender implements EmailSender {
   readonly sentEmails: Array<SendEmailParams & { id: string }> = [];

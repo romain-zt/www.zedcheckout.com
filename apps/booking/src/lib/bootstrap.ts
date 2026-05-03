@@ -1,5 +1,5 @@
-import { InMemoryBookingStore } from './in-memory-store.js';
-import { initStore } from './store-provider.js';
+import { InMemoryBookingStore } from './in-memory-store';
+import { initStore } from './store-provider';
 
 let _initialized = false;
 

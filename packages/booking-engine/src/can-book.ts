@@ -1,6 +1,6 @@
 import type { Slot, Booking, Service, Result, ConflictReason } from '@zedslot/domain';
 import { ok, err } from '@zedslot/domain';
-import { hasOverlap } from './list-available-slots.js';
+import { hasOverlap } from './list-available-slots';
 
 /**
  * Application-layer pre-check. NOT a safety guarantee — the DB EXCLUDE constraint

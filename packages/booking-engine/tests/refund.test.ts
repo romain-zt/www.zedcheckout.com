@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { splitRefund } from '../src/refund.js';
+import { splitRefund } from '../src/refund';
 import type { Payment } from '@zedslot/domain';
 
 function makePayment(overrides: Partial<Payment> = {}): Payment {

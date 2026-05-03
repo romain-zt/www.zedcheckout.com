@@ -8,7 +8,7 @@ export type {
   PaymentFailedProps,
   BookingConfirmedProps,
   BookingCancelledProps,
-} from './events.js';
+} from './events';
 
 export {
   slotViewed,
@@ -19,7 +19,7 @@ export {
   paymentFailed,
   bookingConfirmed,
   bookingCancelled,
-} from './events.js';
+} from './events';
 
-export type { AnalyticsClient, AnalyticsClientOptions } from './client.js';
-export { PostHogAnalyticsClient, createAnalyticsClient } from './client.js';
+export type { AnalyticsClient, AnalyticsClientOptions } from './client';
+export { PostHogAnalyticsClient, createAnalyticsClient } from './client';

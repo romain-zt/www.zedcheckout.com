@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@react-email/render';
-import { BookingConfirmationEmail, getConfirmationSubject } from '../templates/booking-confirmation.js';
-import { BookingReminderEmail, getReminderSubject } from '../templates/booking-reminder.js';
-import { BookingCancellationEmail, getCancellationSubject } from '../templates/booking-cancellation.js';
-import type { BookingConfirmationProps, BookingReminderProps, BookingCancellationProps } from '../templates/types.js';
+import { BookingConfirmationEmail, getConfirmationSubject } from '../templates/booking-confirmation';
+import { BookingReminderEmail, getReminderSubject } from '../templates/booking-reminder';
+import { BookingCancellationEmail, getCancellationSubject } from '../templates/booking-cancellation';
+import type { BookingConfirmationProps, BookingReminderProps, BookingCancellationProps } from '../templates/types';
 
 const baseBranding = { logoUrl: 'https://example.com/logo.png', primaryColor: '#1E2A47' };
 const baseCalendarLinks = {

@@ -1,4 +1,4 @@
-import type { AuthClient, MagicLinkParams, MagicLinkResult, VerifyTokenResult } from '../index.js';
+import type { AuthClient, MagicLinkParams, MagicLinkResult, VerifyTokenResult } from '../index';
 
 export class InMemoryAuthClient implements AuthClient {
   readonly sentLinks: MagicLinkParams[] = [];

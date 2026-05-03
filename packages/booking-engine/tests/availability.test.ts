@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { getAvailableWindows, mergeWindows, subtractWindow } from '../src/availability.js';
+import { getAvailableWindows, mergeWindows, subtractWindow } from '../src/availability';
 import type { AvailabilityRule } from '@zedslot/domain';
 
 const tz = 'Europe/Paris';

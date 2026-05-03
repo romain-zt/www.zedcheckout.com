@@ -11,7 +11,7 @@ import type {
   Refund,
   ScheduledEmail,
 } from '@zedslot/domain';
-import type { BookingStore } from './store.js';
+import type { BookingStore } from './store';
 
 export class InMemoryBookingStore implements BookingStore {
   services: Service[] = [];

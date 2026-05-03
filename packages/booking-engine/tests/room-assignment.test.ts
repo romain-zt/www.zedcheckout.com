@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { assignRoom } from '../src/room-assignment.js';
+import { assignRoom } from '../src/room-assignment';
 import type { Room, Booking } from '@zedslot/domain';
 
 const rooms: Room[] = [

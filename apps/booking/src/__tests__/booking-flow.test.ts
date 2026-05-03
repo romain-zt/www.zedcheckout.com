@@ -11,17 +11,17 @@ import {
   seedTestTenant,
   TENANT_ID,
   futureDate,
-} from './helpers.js';
-import { handleCreateBooking } from '../lib/handlers/bookings.js';
-import { handleListServices } from '../lib/handlers/services.js';
-import { handleStripeWebhook } from '../lib/handlers/stripe-webhook.js';
-import { handleExpirePending } from '../lib/handlers/expire-pending.js';
-import { handleProcessEmails } from '../lib/handlers/process-emails.js';
-import { handleCancelBooking } from '../lib/handlers/cancel.js';
-import { handleRescheduleBooking } from '../lib/handlers/reschedule.js';
-import { handleMagicLink, handleVerify, resetRateLimiter } from '../lib/handlers/auth.js';
-import { handleGetBalance } from '../lib/handlers/customer-balance.js';
-import type { InMemoryBookingStore } from '../lib/in-memory-store.js';
+} from './helpers';
+import { handleCreateBooking } from '../lib/handlers/bookings';
+import { handleListServices } from '../lib/handlers/services';
+import { handleStripeWebhook } from '../lib/handlers/stripe-webhook';
+import { handleExpirePending } from '../lib/handlers/expire-pending';
+import { handleProcessEmails } from '../lib/handlers/process-emails';
+import { handleCancelBooking } from '../lib/handlers/cancel';
+import { handleRescheduleBooking } from '../lib/handlers/reschedule';
+import { handleMagicLink, handleVerify, resetRateLimiter } from '../lib/handlers/auth';
+import { handleGetBalance } from '../lib/handlers/customer-balance';
+import type { InMemoryBookingStore } from '../lib/in-memory-store';
 
 let store: InMemoryBookingStore;
 let deps: ReturnType<typeof createTestDeps>;

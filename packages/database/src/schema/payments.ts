@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core';
-import { tenants } from './tenants.js';
+import { tenants } from './tenants';
 
 export const paymentStatusEnum = pgEnum('payment_status', [
   'requires_action', 'processing', 'succeeded', 'failed', 'refunded', 'partially_refunded',

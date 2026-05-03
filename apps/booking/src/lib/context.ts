@@ -1,5 +1,5 @@
-import type { Dependencies } from './dependencies.js';
-import type { BookingStore } from './store.js';
+import type { Dependencies } from './dependencies';
+import type { BookingStore } from './store';
 
 /**
  * Request context passed to all route handlers.

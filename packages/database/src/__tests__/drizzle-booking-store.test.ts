@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BookingConflictError, handleExclusionViolation } from '../errors/index.js';
+import { BookingConflictError, handleExclusionViolation } from '../errors/index';
 
 describe('BookingConflictError', () => {
   it('has correct code and dimension for room conflicts', () => {

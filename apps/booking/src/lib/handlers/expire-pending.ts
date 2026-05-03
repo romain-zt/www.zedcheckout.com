@@ -1,4 +1,4 @@
-import type { RequestContext } from '../context.js';
+import type { RequestContext } from '../context';
 
 const HOLD_DURATION_MS = 15 * 60 * 1000;
 

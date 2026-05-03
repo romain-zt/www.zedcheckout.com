@@ -4,7 +4,7 @@ import type {
   PaymentIntentResult,
   CreateRefundParams,
   RefundResult,
-} from '../index.js';
+} from '../index';
 
 export class InMemoryPaymentsClient implements PaymentsClient {
   readonly intents: Map<string, PaymentIntentResult> = new Map();

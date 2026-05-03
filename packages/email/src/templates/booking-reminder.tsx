@@ -8,9 +8,9 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-import type { BookingReminderProps } from './types.js';
-import { getReminderCopy } from './copy.js';
-import { EmailLayout } from './email-layout.js';
+import type { BookingReminderProps } from './types';
+import { getReminderCopy } from './copy';
+import { EmailLayout } from './email-layout';
 
 export function BookingReminderEmail(props: BookingReminderProps) {
   const {

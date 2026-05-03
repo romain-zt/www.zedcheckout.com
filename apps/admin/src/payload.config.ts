@@ -7,15 +7,15 @@ import sharp from 'sharp'
 
 import * as schema from '@zedslot/database/schema'
 
-import { Users } from './collections/Users.js'
-import { Services } from './collections/Services.js'
-import { Resources } from './collections/Resources.js'
-import { Rooms } from './collections/Rooms.js'
-import { AvailabilityRules } from './collections/AvailabilityRules.js'
-import { Policies } from './collections/Policies.js'
-import { Bookings } from './collections/Bookings.js'
-import { Customers } from './collections/Customers.js'
-import { AuditLogs } from './collections/AuditLogs.js'
+import { Users } from './collections/Users'
+import { Services } from './collections/Services'
+import { Resources } from './collections/Resources'
+import { Rooms } from './collections/Rooms'
+import { AvailabilityRules } from './collections/AvailabilityRules'
+import { Policies } from './collections/Policies'
+import { Bookings } from './collections/Bookings'
+import { Customers } from './collections/Customers'
+import { AuditLogs } from './collections/AuditLogs'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)

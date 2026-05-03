@@ -3,10 +3,10 @@ import { InMemoryPaymentsClient } from '@zedslot/payments/__test-double';
 import { InMemoryEmailSender } from '@zedslot/email/__test-double';
 import { InMemoryAuthClient } from '@zedslot/auth/__test-double';
 import { InMemoryShopifyClient } from '@zedslot/shopify/__test-double';
-import { InMemoryBookingStore } from '../lib/in-memory-store.js';
-import type { RequestContext } from '../lib/context.js';
-import type { Dependencies } from '../lib/dependencies.js';
-import { seedTenant } from '../lib/tenant.js';
+import { InMemoryBookingStore } from '../lib/in-memory-store';
+import type { RequestContext } from '../lib/context';
+import type { Dependencies } from '../lib/dependencies';
+import { seedTenant } from '../lib/tenant';
 
 export const TENANT_ID = 'lb-tenant-001';
 

@@ -15,8 +15,8 @@ export interface EmailSender {
   send(params: SendEmailParams): Promise<SendEmailResult>;
 }
 
-export { createResendSender } from './resend.js';
-export { renderEmail, type RenderedEmail } from './render.js';
+export { createResendSender } from './resend';
+export { renderEmail, type RenderedEmail } from './render';
 export {
   BookingConfirmationEmail,
   getConfirmationSubject,
@@ -24,7 +24,7 @@ export {
   getReminderSubject,
   BookingCancellationEmail,
   getCancellationSubject,
-} from './templates/index.js';
+} from './templates/index';
 export type {
   BookingConfirmationProps,
   BookingReminderProps,
@@ -33,6 +33,6 @@ export type {
   Branding,
   CalendarLinks,
   Locale,
-} from './templates/index.js';
+} from './templates/index';
 
 export type { EmailSender as default };

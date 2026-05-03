@@ -1,5 +1,5 @@
-export * from './schema/index.js';
-export { BookingConflictError, handleExclusionViolation } from './errors/index.js';
-export { createDatabase } from './client.js';
-export type { Database } from './client.js';
-export { DrizzleBookingStore } from './drizzle-booking-store.js';
+export * from './schema/index';
+export { BookingConflictError, handleExclusionViolation } from './errors/index';
+export { createDatabase } from './client';
+export type { Database } from './client';
+export { DrizzleBookingStore } from './drizzle-booking-store';

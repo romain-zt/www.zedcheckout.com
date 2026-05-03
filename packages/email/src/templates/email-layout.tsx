@@ -8,7 +8,7 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-import type { Branding } from './types.js';
+import type { Branding } from './types';
 
 interface EmailLayoutProps {
   preview: string;

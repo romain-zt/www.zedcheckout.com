@@ -1,4 +1,4 @@
-import type { RequestContext } from '../context.js';
+import type { RequestContext } from '../context';
 
 interface BalanceInput {
   email: string;

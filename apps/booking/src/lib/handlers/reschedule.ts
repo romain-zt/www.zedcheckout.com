@@ -1,7 +1,7 @@
 import { canBook, canReschedule } from '@zedslot/booking-engine';
 import type { Slot } from '@zedslot/domain';
-import type { RequestContext } from '../context.js';
-import { newId } from '../id.js';
+import type { RequestContext } from '../context';
+import { newId } from '../id';
 
 interface RescheduleInput {
   bookingId: string;

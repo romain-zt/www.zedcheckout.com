@@ -1,10 +1,10 @@
 import { pgTable, uuid, timestamp, integer, pgEnum } from 'drizzle-orm/pg-core';
-import { tenants } from './tenants.js';
-import { services } from './services.js';
-import { resources } from './resources.js';
-import { rooms } from './rooms.js';
-import { customers } from './customers.js';
-import { policies } from './policies.js';
+import { tenants } from './tenants';
+import { services } from './services';
+import { resources } from './resources';
+import { rooms } from './rooms';
+import { customers } from './customers';
+import { policies } from './policies';
 
 export const bookingStatusEnum = pgEnum('booking_status', [
   'pending', 'confirmed', 'cancelled', 'completed', 'no_show',

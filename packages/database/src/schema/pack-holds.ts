@@ -1,7 +1,7 @@
 import { pgTable, uuid, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core';
-import { tenants } from './tenants.js';
-import { customers } from './customers.js';
-import { bookings } from './bookings.js';
+import { tenants } from './tenants';
+import { customers } from './customers';
+import { bookings } from './bookings';
 
 export const packHoldStatusEnum = pgEnum('pack_hold_status', ['held', 'debited', 'released']);
 

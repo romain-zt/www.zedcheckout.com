@@ -8,9 +8,9 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-import type { BookingConfirmationProps } from './types.js';
-import { getConfirmationCopy } from './copy.js';
-import { EmailLayout } from './email-layout.js';
+import type { BookingConfirmationProps } from './types';
+import { getConfirmationCopy } from './copy';
+import { EmailLayout } from './email-layout';
 
 export function BookingConfirmationEmail(props: BookingConfirmationProps) {
   const {

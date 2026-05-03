@@ -1,5 +1,5 @@
-import type { AnalyticsClient } from '../client.js';
-import type { AnalyticsEvent } from '../events.js';
+import type { AnalyticsClient } from '../client';
+import type { AnalyticsEvent } from '../events';
 
 export class InMemoryAnalyticsClient implements AnalyticsClient {
   readonly events: AnalyticsEvent[] = [];

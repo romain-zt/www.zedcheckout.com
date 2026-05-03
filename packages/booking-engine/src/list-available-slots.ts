@@ -1,5 +1,5 @@
 import type { Service, Resource, Room, Booking, AvailabilityRule, Slot } from '@zedslot/domain';
-import { getAvailableWindows } from './availability.js';
+import { getAvailableWindows } from './availability';
 
 export function listAvailableSlots(
   service: Service,

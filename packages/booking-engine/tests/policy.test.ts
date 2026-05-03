@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyPolicy, canReschedule, formatPolicyText } from '../src/policy.js';
+import { applyPolicy, canReschedule, formatPolicyText } from '../src/policy';
 import type { Booking, Policy } from '@zedslot/domain';
 
 const basePolicy: Policy = {

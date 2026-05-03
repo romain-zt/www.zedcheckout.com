@@ -1,6 +1,6 @@
 import { pgTable, uuid, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core';
-import { tenants } from './tenants.js';
-import { bookings } from './bookings.js';
+import { tenants } from './tenants';
+import { bookings } from './bookings';
 
 export const emailTypeEnum = pgEnum('email_type', [
   'booking_confirmation', 'booking_reminder', 'booking_cancellation',

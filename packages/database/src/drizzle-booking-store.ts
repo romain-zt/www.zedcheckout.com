@@ -1,5 +1,5 @@
 import { eq, and, lt, lte, inArray, sql } from 'drizzle-orm';
-import type { Database } from './client.js';
+import type { Database } from './client';
 import {
   services,
   serviceResources,
@@ -14,8 +14,8 @@ import {
   packHolds,
   refunds,
   scheduledEmails,
-} from './schema/index.js';
-import { handleExclusionViolation } from './errors/index.js';
+} from './schema/index';
+import { handleExclusionViolation } from './errors/index';
 import type {
   Service,
   Resource,

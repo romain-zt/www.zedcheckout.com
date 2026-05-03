@@ -1,5 +1,5 @@
 import { listAvailableSlots } from '@zedslot/booking-engine';
-import type { RequestContext } from '../context.js';
+import type { RequestContext } from '../context';
 
 interface SlotsQuery {
   serviceId: string;

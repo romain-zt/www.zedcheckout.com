@@ -6,9 +6,9 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-import type { BookingCancellationProps } from './types.js';
-import { getCancellationCopy } from './copy.js';
-import { EmailLayout } from './email-layout.js';
+import type { BookingCancellationProps } from './types';
+import { getCancellationCopy } from './copy';
+import { EmailLayout } from './email-layout';
 
 export function BookingCancellationEmail(props: BookingCancellationProps) {
   const {

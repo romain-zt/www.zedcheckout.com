@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, integer, boolean, timestamp } from 'drizzle-orm/pg-core';
-import { tenants } from './tenants.js';
+import { tenants } from './tenants';
 
 export const availabilityRules = pgTable('availability_rules', {
   id: uuid('id').primaryKey().defaultRandom(),

@@ -1,4 +1,4 @@
-import type { RequestContext } from '../context.js';
+import type { RequestContext } from '../context';
 
 export async function handleListServices(ctx: RequestContext) {
   const services = await ctx.store.listActiveServices(ctx.tenantId);
