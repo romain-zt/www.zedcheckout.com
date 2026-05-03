@@ -9,5 +9,6 @@ export type { SessionData } from './auth.js';
 export { handleGetBalance } from './customer-balance.js';
 export { handleCancelBooking } from './cancel.js';
 export { handleRescheduleBooking } from './reschedule.js';
+export { handleGetManageBooking } from './manage.js';
 export { handleExpirePending } from './expire-pending.js';
 export { handleProcessEmails } from './process-emails.js';

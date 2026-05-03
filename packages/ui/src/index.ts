@@ -19,6 +19,7 @@ export { Card, cardVariants, type CardProps } from './card';
 export { Input, type InputProps } from './input';
 export { Skeleton, type SkeletonProps } from './skeleton';
 export { Badge, badgeVariants, type BadgeProps } from './badge';
+export { StatusBadge, type StatusBadgeProps } from './status-badge';
 export { ScrollArea, type ScrollAreaProps } from './scroll-area';
 export { Spinner, type SpinnerProps } from './spinner';
 export {
