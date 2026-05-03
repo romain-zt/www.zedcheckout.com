@@ -2,17 +2,14 @@
 
 ## Meta
 - **Status:** In Review
-- **Classification:** 1. Reusable Primitive
+- **Classification:** 5. Future Option
 - **Target:** zedslot
 - **Author:** Agent
 - **Date:** 2026-05-03
 
 ## Problem
 
-The architecture doc requires "smallest-valuable-slice user journey E2E on every PR." Currently there are zero E2E tests. The booking flow involves multi-step UI interactions (service selection → slot picking → payment → confirmation) that unit tests cannot cover. Without E2E tests:
-- Regressions in the checkout flow go undetected until manual testing
-- Payment integration issues (Stripe Elements rendering, webhook confirmation) are invisible in CI
-- Cancel/reschedule flows have no automated verification
+The architecture doc mentions E2E tests. However, with qualitative unit tests + integration tests covering the booking engine, API handlers, and store layer, E2E tests are a nice-to-have rather than a blocker for V0 pilot launch. The booking flow involves multi-step UI interactions (service selection → slot picking → payment → confirmation) that E2E tests could cover as an additional safety net.
 
 ## Solution
 
@@ -125,5 +122,5 @@ No new application APIs. Tests interact with the existing UI.
 
 ## Open Questions
 
-- [ ] Should E2E tests run on every PR or only on `main` pushes? Architecture doc says "every PR" but this adds CI time.
+- [x] Should E2E tests run on every PR or only on `main` pushes? — **Not blocking V0. Deferred to post-pilot.** Qualitative unit + integration tests are sufficient.
 - [x] Use Stripe test mode or mock Stripe entirely? — Stripe test mode for realistic integration testing.

@@ -152,5 +152,5 @@ No code changes. Infrastructure and configuration only.
 
 ## Open Questions
 
-- [ ] Is `admin.zedslot.com` the final admin domain for V0, or should it be `admin.littlebiceps.com`?
-- [ ] Should we do a "soft launch" (invite-only) before opening `book.littlebiceps.com` publicly?
+- [x] Is `admin.zedslot.com` the final admin domain for V0, or should it be `admin.littlebiceps.com`? — **`admin.zedslot.com`**
+- [x] Should we do a "soft launch" (invite-only) before opening `book.littlebiceps.com` publicly? — **Yes, soft launch first.**

@@ -164,7 +164,7 @@ All wrappers have: interface, test double, barrel export. Email also has product
 
 > **Spec:** `specs/deployment-and-ci.md`
 
-### Phase 12: E2E Tests — TODO
+### Phase 12: E2E Tests — DEFERRED (nice-to-have, not blocking V0)
 
 ```
 ├── Playwright setup + config
@@ -172,6 +172,8 @@ All wrappers have: interface, test double, barrel export. Email also has product
 ├── Pack credit redemption path
 ├── Cancel/reschedule path
 ```
+
+Qualitative unit + integration tests are sufficient for V0 pilot. E2E deferred to post-pilot.
 
 > **Spec:** `specs/e2e-tests.md`
 
@@ -212,9 +214,9 @@ F and G are fully independent of each other AND of all running tracks. Maximum p
 
 ### Sequential after all tracks
 
-Phase 11 (deployment) → Phase 12 (E2E) → Phase 13 (go-live). Each depends on the previous.
+Phase 11 (deployment) → Phase 13 (go-live). Phase 12 (E2E) deferred to post-pilot.
 
-**Exception:** CI workflows (part of Phase 11) can start as soon as `turbo.json` pipeline is extended — doesn't need E2E or go-live.
+**Exception:** CI workflows (part of Phase 11) can start as soon as Turborepo pipeline is extended.
 
 ---
 
