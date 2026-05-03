@@ -10,7 +10,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
