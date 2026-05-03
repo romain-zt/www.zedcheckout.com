@@ -13,6 +13,8 @@ export async function handleListServices(ctx: RequestContext) {
         priceCents: s.priceCents,
         requiresResource: s.requiresResource,
         requiresRoom: s.requiresRoom,
+        eligibleResourceIds: s.eligibleResourceIds,
+        eligibleRoomIds: s.eligibleRoomIds,
       })),
     },
   };
