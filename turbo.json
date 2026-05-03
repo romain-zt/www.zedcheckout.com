@@ -9,7 +9,9 @@
         "DATABASE_URL",
         "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
         "NEXT_PUBLIC_POSTHOG_KEY",
-        "NEXT_PUBLIC_POSTHOG_HOST"
+        "NEXT_PUBLIC_POSTHOG_HOST",
+        "SENTRY_DSN",
+        "PAYLOAD_SECRET"
       ]
     },
     "dev": {
