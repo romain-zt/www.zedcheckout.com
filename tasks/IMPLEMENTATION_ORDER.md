@@ -117,9 +117,7 @@ All wrappers have: interface, test double, barrel export. Email also has product
 
 ## Final Milestone: What Remains
 
-### Phase 9: Cross-cutting Packages — TODO (Tracks F + G)
-
-**Can run in parallel. No dependencies on running tracks.**
+### Phase 9: Cross-cutting Packages — DONE (Tracks F + G)
 
 ```
 ├── Track F: packages/feature-flags
@@ -127,42 +125,40 @@ All wrappers have: interface, test double, barrel export. Email also has product
 │   ├── FeatureFlagClient interface + PostHogFeatureFlagClient
 │   ├── StaticFeatureFlagClient (CI/offline fallback)
 │   ├── InMemoryFeatureFlagClient (test double)
+│   ├── 13 tests passing
 │
 ├── Track G: packages/observability
 │   ├── Sentry wrapper (initSentry, captureException, PII scrubbing)
 │   ├── Structured JSON logger (createLogger, logger.with() child loggers)
 │   ├── InMemorySentryClient + InMemoryLogger (test doubles)
+│   ├── 18 tests passing
 ```
 
-> **Spec:** `specs/cross-cutting-packages.md`
+> **Spec:** `specs/cross-cutting-packages.md` (Implemented)
 
-### Phase 10: Migrations + Seed — TODO (Track H, blocked by Track E)
-
-**Blocked by Phase 7 (PayloadCMS) landing. Payload owns the migration lifecycle.**
+### Phase 10: Migrations + Seed — DONE (Track H)
 
 ```
-├── payload migrate:create — initial migration (Payload internal tables + business tables)
-├── Custom migration for EXCLUDE constraints (btree_gist, no_room_overlap, no_resource_overlap)
+├── db:migrate + db:migrate:create scripts in apps/admin/package.json
+├── tooling/exclude-constraints.sql — EXCLUDE constraint SQL ready for custom migration
 ├── tooling/seed.ts — Little Biceps V0 data via Payload Local API (idempotent)
 │   ├── Tenant, admin user, 4 resources, 2 rooms, 3 services
-│   ├── Availability rules, global policy, service eligibility
+│   ├── Availability rules, global policy
+├── db:seed script in root package.json
 ```
 
-> **Spec:** `specs/migrations-and-seed.md`
+> **Spec:** `specs/migrations-and-seed.md` (Implemented)
 
-### Phase 11: Deployment + CI — TODO
-
-**Partially exists:** `turbo.json` has basic task config. Everything else is missing.
+### Phase 11: Deployment + CI — DONE
 
 ```
-├── turbo.json — extend with caching, env passthrough, app-specific outputs
-├── .github/workflows/ — CI pipeline (typecheck, test, lint on PR)
-├── Vercel project config for apps/booking + apps/admin
-├── Neon database provisioning
-├── Environment variables (Stripe, Resend, PostHog, Sentry, DATABASE_URL)
+├── turbo.json — extended with SENTRY_DSN + PAYLOAD_SECRET env passthrough
+├── .github/workflows/ci.yml — CI pipeline (typecheck, lint, test on PR + push to main)
+├── apps/admin/vercel.json — payload migrate in build command
+├── docs/env-vars.md — comprehensive env var documentation
 ```
 
-> **Spec:** `specs/deployment-and-ci.md`
+> **Spec:** `specs/deployment-and-ci.md` (Implemented)
 
 ### Phase 12: E2E Tests — DEFERRED (nice-to-have, not blocking V0)
 
@@ -233,9 +229,9 @@ Phase 11 (deployment) → Phase 13 (go-live). Phase 12 (E2E) deferred to post-pi
 | C | 6 | packages/ui + analytics | IN PROGRESS |
 | D | 8 | Email templates | IN PROGRESS |
 | E | 7 | PayloadCMS admin | IN PROGRESS |
-| F | 9 | packages/feature-flags | TODO — ready now |
-| G | 9 | packages/observability | TODO — ready now |
-| H | 10 | Migrations + seed | TODO — blocked by E |
-| — | 11 | Deployment + CI | TODO |
-| — | 12 | E2E tests | TODO |
-| — | 13 | Go-live | TODO |
+| F | 9 | packages/feature-flags | DONE |
+| G | 9 | packages/observability | DONE |
+| H | 10 | Migrations + seed | DONE |
+| — | 11 | Deployment + CI | DONE |
+| — | 12 | E2E tests | DEFERRED (post-pilot) |
+| — | 13 | Go-live | TODO — manual steps |
