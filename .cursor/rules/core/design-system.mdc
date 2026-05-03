@@ -1,0 +1,54 @@
+---
+description: Design system enforcement — loaded for all UI component and page files.
+globs: "src/**/*.{tsx,css}"
+---
+
+# Design System
+
+## Palette Tokens
+
+Use semantic tokens, never raw hex/oklch. The design system defines:
+
+| Token | Role | Usage |
+|-------|------|-------|
+| `primary` | Brand petrol | CTAs, focus rings, active nav |
+| `accent` | Warm amber | Secondary actions, highlights, today pill |
+| `oneiric` | Deep plum | Dream/mystical surfaces |
+| `success` | Sage green | Confirmations |
+| `destructive` | Terracotta | Errors, destructive actions |
+| `muted` | Neutral | Backgrounds, disabled states |
+
+## Typography Scale
+
+- Headings: `text-2xl sm:text-3xl` (section), `text-xl` (card), `text-base font-medium` (label)
+- Body: `text-sm text-slate-400` (secondary), `text-xs text-slate-500` (meta)
+- Never use more than 3 font sizes on one screen
+
+## Spacing
+
+- Card padding: `p-4 sm:p-6`
+- Section padding: `py-20 px-4`
+- Component gaps: `gap-3` (tight), `gap-4` (normal), `gap-6` (loose)
+
+## Component Patterns
+
+- Cards: `rounded-xl bg-slate-800/20 border border-slate-700/30`
+- Buttons: min 44x44px touch target, `rounded-lg` or `rounded-xl`
+- Inputs: `bg-slate-800/50 border-slate-700 text-white`
+- Overlays: use `safe-top safe-x` on fixed/absolute positioned elements
+
+## Animation
+
+- Entrance: `animate-[fade-in-up_0.4s_ease-out]`
+- Breathing: `animate-[breathe_4s_ease-in-out_infinite]`
+- Hover: `hover:scale-105 transition-transform` or `hover:opacity-90`
+- Page transitions: 200ms duration, ease-out timing
+- Use CSS animations from globals.css, not JS-driven animation libs
+
+## Anti-Patterns
+
+- Raw color values (`#6366f1`, `bg-indigo-500`) instead of tokens
+- Fixed pixel widths on responsive containers
+- Missing `min-h-[44px]` on interactive elements
+- z-index without purpose (max z-50 for nav, z-40 for overlays)
+- `position: fixed` without `safe-top` consideration

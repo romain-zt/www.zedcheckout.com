@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/format-after-edit.sh",
+        "matcher": "Write"
+      },
+      {
+        "command": ".cursor/hooks/check-design-tokens.sh",
+        "matcher": "*.tsx"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/guard-shell.sh",
+        "matcher": "git push --force|git push -f|rm -rf /|drop database|DROP DATABASE"
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": ".cursor/hooks/mode-trace.sh"
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/on-stop.sh",
+        "loop_limit": 3
+      }
+    ]
+  }
+}

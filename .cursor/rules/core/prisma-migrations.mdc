@@ -1,0 +1,60 @@
+---
+description: Prisma migration rules — always use the CLI, never edit migration files manually
+globs: ["prisma/**", "src/lib/actions/**", "src/lib/prisma*"]
+alwaysApply: true
+---
+
+# Prisma Migration Rules
+
+## NEVER do this manually
+- Do NOT create migration SQL files by hand
+- Do NOT rename migration folders
+- Do NOT delete migration folders
+- Do NOT edit `migration.sql` files after they are created
+
+## ALWAYS use the CLI
+
+### Create a new migration (dev/local)
+```bash
+pnpm prisma migrate dev --name <descriptive_name>
+```
+This generates a timestamped folder (`YYYYMMDDHHMMSS_name`), runs the migration locally, and updates the Prisma client.
+
+### Apply migrations in production / CI
+```bash
+pnpm prisma migrate deploy
+```
+This applies all pending migrations in order. It is safe to run multiple times (idempotent via checksum).
+
+### After schema changes, regenerate client
+```bash
+pnpm prisma generate
+```
+
+### Check migration status
+```bash
+pnpm prisma migrate status
+```
+
+## Migration folder naming
+- Prisma generates: `YYYYMMDDHHMMSS_name/migration.sql`
+- **Never** use bare names like `0001_init` — they sort before timestamp migrations and corrupt the history
+- Migrations are applied in the order they appear in `_prisma_migrations`, tracked by exact folder name
+
+## Deployment (Vercel)
+The `vercel.json` `buildCommand` must include the migrate step:
+```json
+"buildCommand": "pnpm prisma migrate deploy && pnpm run build"
+```
+
+## If migrations are corrupted
+1. Check `_prisma_migrations` table in the DB for failed entries
+2. Use `prisma migrate resolve --applied <name>` or `--rolled-back <name>` to fix state
+3. NEVER manually delete or recreate migration files to fix drift — use the CLI
+
+## Schema changes checklist
+- [ ] Edit `prisma/schema.prisma`
+- [ ] Run `pnpm prisma migrate dev --name <name>` locally
+- [ ] Verify generated SQL in the new migration folder
+- [ ] Run `pnpm test` to confirm nothing broke
+- [ ] Commit both `schema.prisma` AND the generated migration folder together

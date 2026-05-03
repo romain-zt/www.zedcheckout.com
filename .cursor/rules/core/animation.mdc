@@ -1,0 +1,33 @@
+---
+description: Animation standards — loaded when adding motion or transitions to UI.
+globs: "src/**/*.{tsx,css}"
+---
+
+# Animation Standards
+
+## Available Keyframes (globals.css)
+
+| Name | Duration | Use Case |
+|------|----------|----------|
+| `fade-in-up` | 0.4-0.6s | Step/page entrance |
+| `fade-in` | 0.3s | Element appearance |
+| `breathe` | 4s (loop) | Pulsing orbs, loading states |
+| `drift` | 20-30s (loop) | Ambient background blobs |
+| `gradient-shift` | 8s (loop) | Background gradient animation |
+| `slide-in-right` | 0.3s | Lateral element entrance |
+
+## Rules
+
+1. **CSS-only animations.** No JS animation libraries unless justified.
+2. **Prefer `transition-*` utilities** for hover/state changes (Tailwind handles these).
+3. **Reserve keyframe animations** for entrance effects and ambient background.
+4. **Duration guardrails:** interactions ≤300ms, entrances ≤600ms, ambient ≥4s.
+5. **Respect `prefers-reduced-motion`** — all ambient animations should gracefully degrade.
+6. **Stagger with delay**, not separate keyframes: `animation-delay: ${i * 100}ms`.
+
+## Anti-Patterns
+
+- Installing framer-motion/react-spring for simple fade-ins
+- Animation durations >1s for interactive feedback
+- Animations that block user interaction
+- GPU-heavy animations (box-shadow, filter) on mobile
