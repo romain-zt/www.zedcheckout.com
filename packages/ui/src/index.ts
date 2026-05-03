@@ -1,9 +1,9 @@
 // Utilities
-export { cn } from './lib/utils.js';
+export { cn } from './cn';
 
 // Design tokens
-export { colors, tailwindColors, cssCustomProperties as colorProperties } from './tokens/colors.js';
-export { spacing, tailwindSpacing, cssCustomProperties as spacingProperties } from './tokens/spacing.js';
+export { colors, tailwindColors, cssCustomProperties as colorProperties } from './tokens/colors';
+export { spacing, tailwindSpacing, cssCustomProperties as spacingProperties } from './tokens/spacing';
 export {
   fontFamily,
   fontSize,
@@ -11,22 +11,16 @@ export {
   letterSpacing,
   tailwindFontFamily,
   cssCustomProperties as typographyProperties,
-} from './tokens/typography.js';
+} from './tokens/typography';
 
 // Components
-export { Button, buttonVariants, type ButtonProps } from './components/Button.js';
-export {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-  cardVariants,
-  type CardProps,
-} from './components/Card.js';
-export { Input, inputVariants, type InputProps } from './components/Input.js';
-export { Badge, badgeVariants, type BadgeProps } from './components/Badge.js';
+export { Button, buttonVariants, type ButtonProps } from './button';
+export { Card, cardVariants, type CardProps } from './card';
+export { Input, type InputProps } from './input';
+export { Skeleton, type SkeletonProps } from './skeleton';
+export { Badge, badgeVariants, type BadgeProps } from './badge';
+export { ScrollArea, type ScrollAreaProps } from './scroll-area';
+export { Spinner, type SpinnerProps } from './spinner';
 export {
   Dialog,
   DialogOverlay,
@@ -38,8 +32,7 @@ export {
   dialogContentVariants,
   type DialogProps,
   type DialogContentProps,
-} from './components/Dialog.js';
-export { Skeleton, skeletonVariants, type SkeletonProps } from './components/Skeleton.js';
+} from './dialog';
 export {
   TabsList,
   TabsTrigger,
@@ -49,7 +42,7 @@ export {
   type TabsListProps,
   type TabsTriggerProps,
   type TabsContentProps,
-} from './components/Tabs.js';
+} from './tabs';
 export {
   RadioGroup,
   RadioItem,
@@ -57,4 +50,4 @@ export {
   radioItemVariants,
   type RadioGroupProps,
   type RadioItemProps,
-} from './components/RadioGroup.js';
+} from './radio-group';

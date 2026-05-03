@@ -1,6 +1,8 @@
 export { handleListServices } from './services.js';
 export { handleListSlots } from './slots.js';
+export { handleListResources } from './resources.js';
 export { handleCreateBooking, scheduleConfirmationEmails } from './bookings.js';
+export { handleGetBookingStatus } from './booking-status.js';
 export { handleStripeWebhook } from './stripe-webhook.js';
 export { handleMagicLink, handleVerify, resetRateLimiter } from './auth.js';
 export type { SessionData } from './auth.js';

@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../lib/utils.js';
+import { cn } from './cn';
 
 export const radioGroupVariants = cva('flex', {
   variants: {

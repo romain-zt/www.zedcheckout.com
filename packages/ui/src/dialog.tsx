@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../lib/utils.js';
+import { cn } from './cn';
 
 export const dialogOverlayVariants = cva(
   'fixed inset-0 z-50 bg-neutral-black/50 backdrop-blur-sm',

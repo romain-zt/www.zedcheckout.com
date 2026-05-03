@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../lib/utils.js';
+import { cn } from './cn';
 
 export const tabsListVariants = cva(
   'inline-flex items-center gap-2xs rounded-lg bg-neutral-100 p-2xs',
