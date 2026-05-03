@@ -614,9 +614,9 @@ describe('Customer balance', () => {
 describe('Tenant resolution', () => {
   it('resolves known hostnames', async () => {
     const { resolveTenantId } = await import('../lib/tenant.js');
-    expect(resolveTenantId('book.littlebiceps.com')).toBe('lb-tenant-001');
-    expect(resolveTenantId('littlebiceps.zedslot.com')).toBe('lb-tenant-001');
-    expect(resolveTenantId('localhost:3001')).toBe('lb-tenant-001');
+    expect(resolveTenantId('book.littlebiceps.com')).toBe('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
+    expect(resolveTenantId('littlebiceps.zedslot.com')).toBe('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
+    expect(resolveTenantId('localhost:3001')).toBe('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
   });
 
   it('returns null for unknown hostnames', async () => {

@@ -8,7 +8,7 @@ import type { RequestContext } from '../lib/context';
 import type { Dependencies } from '../lib/dependencies';
 import { seedTenant } from '../lib/tenant';
 
-export const TENANT_ID = 'lb-tenant-001';
+export const TENANT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 
 export function createTestDeps(): Dependencies & {
   payments: InMemoryPaymentsClient;
