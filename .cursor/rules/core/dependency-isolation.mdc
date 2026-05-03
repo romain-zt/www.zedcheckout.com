@@ -1,0 +1,80 @@
+---
+description: Every external dependency must be wrapped behind a project-owned interface. Domain code stays dependency-free. Always loaded.
+globs: *
+---
+
+# Dependency Isolation
+
+## Purpose
+
+Every external dependency (npm package, SaaS SDK, CMS, design framework) is a future migration cost, a future security audit, and a future "they pivoted, we're stuck" risk. We isolate them behind project-owned interfaces so swapping a vendor is a one-package change, not a repo-wide rewrite.
+
+This rule applies to **all code in the zedslot / zedcheckout monorepo**, every package, every app.
+
+## Hard Rules
+
+1. **No third-party imports in `packages/domain` or `packages/booking-engine`.** These are pure TypeScript over our own types. Zero deps. Zero exceptions.
+2. **Every external SDK is wrapped in a dedicated package** (`packages/payments` wraps Stripe, `packages/shopify` wraps Shopify SDKs, `packages/email` wraps Resend, `packages/feature-flags` wraps PostHog, `packages/database` wraps Drizzle, etc.). The wrapper exposes a small, stable, project-owned interface.
+3. **Apps and other packages only import the wrapper, never the underlying SDK directly.** Enforced by ESLint `no-restricted-imports` on the SDK package names from outside the wrapping package.
+4. **UI uses design tokens, never hardcoded values.** Colors, spacing, typography, shadows, radii — every visual primitive comes from `packages/ui` (or its design-tokens subpath). Tailwind classes that bake in raw values (`text-[#1E2A47]`, `p-[13px]`) are forbidden — use a token (`text-navy`, `p-md`).
+5. **Components are headless + variants** — `packages/ui` exposes unstyled primitives + `class-variance-authority` variant maps. Apps compose; they don't re-invent.
+6. **No global singletons from external libraries.** Stripe / Shopify / PostHog / Resend / Sentry clients are constructed in their wrapper package and passed via dependency injection (factory function or context), not imported from a singleton module.
+7. **Every wrapper has a `__test-double` export** — a fake/stub implementation usable in tests without touching the real SDK. Tests in apps and other packages use the test double, never the live SDK.
+8. **Adding a new top-level dependency requires justification.** Note in the PR description: what is it for, what's the project-owned wrapper, what's the kill-switch if we drop it.
+
+## Anti-Patterns to Block
+
+- `import Stripe from 'stripe'` anywhere outside `packages/payments`
+- `import { shopifyApi } from '@shopify/shopify-api'` anywhere outside `packages/shopify`
+- `import { Resend } from 'resend'` anywhere outside `packages/email`
+- `import posthog from 'posthog-node'` anywhere outside `packages/feature-flags` or `packages/analytics`
+- Tailwind arbitrary-value classes for design tokens: `bg-[#FFC9B9]`, `text-[14px]` — use the token equivalent
+- "Convenience" re-exports of an SDK type from a wrapper package — wrap the type too, even if it's just a type alias
+- Per-app `lib/stripe.ts` or `utils/email.ts` files that thinly wrap an SDK — that work belongs in a shared package
+- Importing a heavyweight UI framework (MUI, Chakra, Mantine) — we're shadcn + CVA, full stop
+- Storing API keys in env vars consumed directly by app code — keys are read by the wrapper package only
+
+## Examples
+
+### Good
+
+```ts
+// apps/booking/src/checkout/confirm.ts
+import { payments } from '@zedslot/payments';
+import { bookings } from '@zedslot/database';
+
+const intent = await payments.createPaymentIntent({
+  amountCents: total,
+  currency: 'eur',
+  idempotencyKey: bookingId,
+});
+```
+
+### Bad
+
+```ts
+// apps/booking/src/checkout/confirm.ts
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_KEY!);
+const intent = await stripe.paymentIntents.create({ amount: total, currency: 'eur' });
+```
+
+### Good
+
+```tsx
+// apps/booking/src/components/PrimaryButton.tsx
+import { Button } from '@zedslot/ui';
+
+<Button variant="primary" size="lg">Pay</Button>
+```
+
+### Bad
+
+```tsx
+<button className="bg-[#1E2A47] text-white px-[20px] py-[14px] rounded-[8px]">Pay</button>
+```
+
+## When in Doubt
+
+If you're unsure whether a dep needs wrapping, ask: **"If we replaced this vendor tomorrow, how many files would change?"** If the answer is more than the wrapper package itself, it's not wrapped tightly enough.

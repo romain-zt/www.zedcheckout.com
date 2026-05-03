@@ -1,0 +1,36 @@
+---
+description: Consult authoritative external docs before implementing against any external library. Always loaded.
+globs: *
+---
+
+# External Docs
+
+## Purpose
+
+Hallucinated APIs are the #1 way agents waste tokens and break code. Every external dependency in this repo has a canonical documentation URL listed in `docs/references.md`. **Consult it before writing code that uses the library** — especially for: Next.js, Stripe, Shopify, Drizzle, PayloadCMS, Tailwind, shadcn/ui, React Email, PostHog, Sentry.
+
+## Hard Rules
+
+1. **Never invent API methods, options, or schemas from memory.** If you're not 100% sure of the call signature, look it up.
+2. **`docs/references.md` is the source of truth** for which docs are authoritative. Don't blindly trust Stack Overflow / blog posts that may be stale.
+3. **Use available skills first.** If a `*-best-practices` skill exists for the dep (e.g., `stripe-best-practices`, `shopify-admin`), read it before writing code.
+4. **Use available MCP servers** for live inspection where possible (e.g., `Stripe` MCP for live API state).
+5. **If `docs/references.md` doesn't list the doc** for a library you're about to use, **add it to the file in the same PR** and justify the new dependency per `dependency-isolation.mdc` and `scope-control.mdc`.
+6. **Cite the doc when you make a non-obvious choice.** Inline code comments should reference the URL when an option's behavior depends on docs (e.g., "// Stripe: idempotency_key TTL = 24h, see https://docs.stripe.com/api/idempotent_requests").
+
+## Anti-Patterns
+
+- "I think Stripe takes a `customer_id` parameter on `paymentIntents.create`" — **look it up**, don't think.
+- Pasting a code snippet from a blog without verifying against the canonical docs.
+- Using a deprecated API (e.g., Stripe Charges API instead of PaymentIntents) because it was the answer when you were trained.
+- Skipping docs because the IDE auto-completion looks plausible.
+- Adding a new dep without updating `docs/references.md`.
+
+## Cursor IDE inline indexing
+
+Per-user setup (not committed): add the canonical URLs from `docs/references.md` to `Settings → Indexing & Docs` to enable `@Docs <name>` inline search.
+
+## Reference
+
+- `docs/references.md` — the curated list of authoritative URLs + pre-installed skills + MCP servers.
+- `.cursor/rules/core/dependency-isolation.mdc` — every external SDK must be wrapped, regardless of how well-documented it is.
