@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     '@zedslot/auth',
     '@zedslot/email',
     '@zedslot/shopify',
+    '@zedslot/ui',
   ],
 };
 
