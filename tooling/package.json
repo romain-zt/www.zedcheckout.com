@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "payload": "^3.0.0",
     "@payloadcms/db-postgres": "^3.0.0",
     "@zedslot/database": "workspace:*",
-    "@zedslot/domain": "workspace:*"
+    "@zedslot/domain": "workspace:*",
+    "drizzle-orm": "^0.38.4",
+    "payload": "^3.0.0"
   },
   "devDependencies": {
     "tsx": "^4.0.0",

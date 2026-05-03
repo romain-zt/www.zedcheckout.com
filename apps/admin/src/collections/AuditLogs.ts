@@ -64,10 +64,5 @@ export const AuditLogs: CollectionConfig = {
       required: true,
       admin: { readOnly: true },
     },
-    {
-      name: 'created_at',
-      type: 'date',
-      admin: { readOnly: true, position: 'sidebar' },
-    },
   ],
 }

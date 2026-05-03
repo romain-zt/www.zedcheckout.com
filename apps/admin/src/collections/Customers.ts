@@ -63,10 +63,5 @@ export const Customers: CollectionConfig = {
       defaultValue: 0,
       admin: { readOnly: true },
     },
-    {
-      name: 'created_at',
-      type: 'date',
-      admin: { readOnly: true, position: 'sidebar' },
-    },
   ],
 }

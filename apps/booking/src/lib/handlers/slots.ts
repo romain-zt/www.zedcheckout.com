@@ -29,7 +29,7 @@ export async function handleListSlots(ctx: RequestContext, query: SlotsQuery) {
   const from = new Date(query.from);
   const to = new Date(query.to);
 
-  const tenant = (await import('../tenant.js')).getTenant(ctx.tenantId);
+  const tenant = (await import('../tenant')).getTenant(ctx.tenantId);
   const tz = tenant?.timezone ?? 'Europe/Paris';
 
   const slots = listAvailableSlots(service, { from, to }, filteredResources, rooms, bookings, rules, tz);

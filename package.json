@@ -13,7 +13,7 @@
     "build:web": "next build",
     "start:web": "next start",
     "lint:web": "next lint",
-    "db:seed": "tsx tooling/seed.ts"
+    "db:seed": "dotenv -e .env.local -- pnpm --filter @zedslot/tooling exec tsx seed.ts"
   },
   "repository": {
     "type": "git",
@@ -46,8 +46,10 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.22",
+    "dotenv-cli": "^11.0.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18",
+    "tsx": "^4.21.0",
     "turbo": "^2.5.0"
   }
 }

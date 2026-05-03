@@ -8,10 +8,10 @@
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "typecheck": "tsc --noEmit",
-    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
-    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
-    "db:migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
-    "db:migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create"
+    "generate:types": "dotenv -e ../../.env.local -- cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "generate:importmap": "dotenv -e ../../.env.local -- cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "db:migrate": "dotenv -e ../../.env.local -- cross-env NODE_OPTIONS=--no-deprecation payload migrate",
+    "db:migrate:create": "dotenv -e ../../.env.local -- cross-env NODE_OPTIONS=--no-deprecation payload migrate:create"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.0.0",

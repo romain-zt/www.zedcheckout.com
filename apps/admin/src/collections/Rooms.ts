@@ -48,10 +48,5 @@ export const Rooms: CollectionConfig = {
         { label: 'Disabled', value: 'disabled' },
       ],
     },
-    {
-      name: 'created_at',
-      type: 'date',
-      admin: { readOnly: true, position: 'sidebar' },
-    },
   ],
 }

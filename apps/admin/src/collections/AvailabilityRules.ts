@@ -99,10 +99,5 @@ export const AvailabilityRules: CollectionConfig = {
       type: 'checkbox',
       defaultValue: false,
     },
-    {
-      name: 'created_at',
-      type: 'date',
-      admin: { readOnly: true, position: 'sidebar' },
-    },
   ],
 }

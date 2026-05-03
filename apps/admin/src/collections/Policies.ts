@@ -83,10 +83,5 @@ export const Policies: CollectionConfig = {
       defaultValue: 2,
       min: 0,
     },
-    {
-      name: 'created_at',
-      type: 'date',
-      admin: { readOnly: true, position: 'sidebar' },
-    },
   ],
 }

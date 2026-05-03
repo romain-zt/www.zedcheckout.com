@@ -23,22 +23,23 @@ const dirname = path.dirname(filename)
 // Drizzle version in @zedslot/database (0.38.x) differs from
 // @payloadcms/db-postgres (0.45.x). Tables are runtime-compatible;
 // the cast is safe. Will resolve when database package upgrades.
-const existingTables = {
+// Only register Drizzle-managed tables that have NO corresponding Payload
+// collection. Tables with a Payload collection are managed by Payload's DDL.
+const drizzleOnlyTables = {
   tenants: schema.tenants,
-  services: schema.services,
   service_resources: schema.serviceResources,
   service_rooms: schema.serviceRooms,
-  resources: schema.resources,
-  rooms: schema.rooms,
-  availability_rules: schema.availabilityRules,
-  bookings: schema.bookings,
-  customers: schema.customers,
   payments: schema.payments,
   refunds: schema.refunds,
-  policies: schema.policies,
   pack_holds: schema.packHolds,
   scheduled_emails: schema.scheduledEmails,
-  audit_logs: schema.auditLogs,
+} as Record<string, unknown>
+
+const drizzleOnlyEnums = {
+  payment_status: schema.paymentStatusEnum,
+  pack_hold_status: schema.packHoldStatusEnum,
+  email_type: schema.emailTypeEnum,
+  email_status: schema.emailStatusEnum,
 } as Record<string, unknown>
 
 export default buildConfig({
@@ -68,6 +69,7 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    idType: 'uuid',
     push: false,
     // Register existing Drizzle tables so Payload doesn't try to drop them.
     // See: https://payloadcms.com/docs/database/postgres#beforeSchemaInit
@@ -77,7 +79,11 @@ export default buildConfig({
           ...payloadSchema,
           tables: {
             ...payloadSchema.tables,
-            ...(existingTables as typeof payloadSchema.tables),
+            ...(drizzleOnlyTables as typeof payloadSchema.tables),
+          },
+          enums: {
+            ...payloadSchema.enums,
+            ...(drizzleOnlyEnums as typeof payloadSchema.enums),
           },
         }
       },

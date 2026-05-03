@@ -95,10 +95,5 @@ export const Bookings: CollectionConfig = {
       type: 'number',
       admin: { readOnly: true },
     },
-    {
-      name: 'created_at',
-      type: 'date',
-      admin: { readOnly: true, position: 'sidebar' },
-    },
   ],
 }
