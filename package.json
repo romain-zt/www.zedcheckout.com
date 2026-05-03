@@ -12,7 +12,8 @@
     "dev:web": "next dev",
     "build:web": "next build",
     "start:web": "next start",
-    "lint:web": "next lint"
+    "lint:web": "next lint",
+    "db:seed": "tsx tooling/seed.ts"
   },
   "repository": {
     "type": "git",
