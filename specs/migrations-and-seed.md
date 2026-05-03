@@ -86,7 +86,7 @@ ALTER TABLE bookings ADD CONSTRAINT no_resource_overlap
 
 | Entity | Values |
 |--------|--------|
-| Tenant | id=`lb-tenant-001`, slug=`littlebiceps`, displayName=`Little Biceps`, timezone=`Europe/Paris`, defaultLocale=`fr` |
+| Tenant | id=`a1b2c3d4-e5f6-7890-abcd-ef1234567890`, slug=`littlebiceps`, displayName=`Little Biceps`, timezone=`Europe/Paris`, defaultLocale=`fr` |
 | Admin user | `admin@littlebiceps.com` (for Payload login) |
 | Resources (4) | Oriane, Emmanuelle, Iris, Stéphanie |
 | Rooms (2) | Room A, Room B |

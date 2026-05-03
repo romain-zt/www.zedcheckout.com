@@ -63,6 +63,57 @@ For third-party keys, obtain them from the respective dashboards:
 - **Sentry**: Project Settings → Client Keys (DSN)
 - **Shopify**: Admin → Apps → [your app] → API credentials
 
+## Local Development Setup
+
+### 1. Start Postgres
+
+```bash
+docker compose up -d
+```
+
+This starts a Postgres 16 container on port 5434 (to avoid conflicts with any local Postgres on 5432).
+
+### 2. Create `.env.local`
+
+```bash
+cp .env.local.example .env.local
+```
+
+The defaults point to the Docker Postgres. Add your Stripe test keys if you want payment flows to work; otherwise the booking app falls back to InMemory test doubles.
+
+### 3. Run migrations
+
+```bash
+pnpm --filter @zedslot/admin db:migrate
+```
+
+This runs `payload migrate` which creates all tables (Payload internal + business tables).
+
+### 4. Apply EXCLUDE constraints (once after initial migration)
+
+```bash
+psql postgresql://zedslot:zedslot_dev@localhost:5434/zedslot < tooling/exclude-constraints.sql
+```
+
+### 5. Seed data
+
+```bash
+pnpm db:seed
+```
+
+Seeds Little Biceps V0 data: tenant, admin user (`admin@littlebiceps.com` / `changeme123!`), 4 practitioners, 2 rooms, 3 services, availability rules, global policy.
+
+The seed is idempotent — safe to run multiple times.
+
+### 6. Start dev servers
+
+```bash
+pnpm dev
+```
+
+- Booking app: http://localhost:3001
+- Admin: http://localhost:3002 (login with `admin@littlebiceps.com` / `changeme123!`)
+
 ## Vercel Configuration
 
 All variables must be set in the Vercel project dashboard under **Settings → Environment Variables**.
